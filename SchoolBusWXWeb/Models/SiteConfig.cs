@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
+// ReSharper disable ClassNeverInstantiated.Global
 namespace SchoolBusWXWeb.Models
 {
     public class SiteConfig
     {
-        public MqttOption mqttOption { get; set; }
+        public MqttOption MqttOption { get; set; }
     }
 
     public class MqttOption

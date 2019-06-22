@@ -11,6 +11,7 @@ using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 
 // ReSharper disable IdentifierTypo
@@ -30,15 +31,13 @@ namespace SchoolBusWXWeb.StartupTask
         {
             _serviceProvider = serviceProvider;
             _appLifetime = appLifetime;
-            _option = option.Value.mqttOption;
+            _option = option.Value.MqttOption;
         }
         public async Task ExecuteAsync(CancellationToken cancellationToken = default)
         {
-            using (_serviceProvider.CreateScope())
-            {
-                await ConnectMqttServerAsync();
-            }
-            //#region 控制程序生命周期
+            await ConnectMqttServerAsync();
+
+            #region 控制程序生命周期
             // 发生在应用启动成功以后，也就是Startup.Configure()方法结束后。
             _appLifetime.ApplicationStarted.Register(() =>
             {
@@ -55,7 +54,7 @@ namespace SchoolBusWXWeb.StartupTask
                 _isReconnect = false;
                 await _mqttClient.DisconnectAsync();
             });
-            //#endregion
+            #endregion
         }
         private async Task ConnectMqttServerAsync()
         {
@@ -149,4 +148,6 @@ namespace SchoolBusWXWeb.StartupTask
             }
         }
     }
+
+
 }

@@ -38,7 +38,6 @@ namespace SchoolBusWXWeb
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
             services.Configure<SiteConfig>(Configuration.GetSection("SiteConfig"));
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddStartupTask<MqttStartupFilter>();
         }
