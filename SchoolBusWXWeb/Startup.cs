@@ -44,8 +44,25 @@ namespace SchoolBusWXWeb
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime appLifetime)
         {
+            #region 控制程序生命周期
+            // 发生在应用启动成功以后，也就是Startup.Configure()方法结束后。
+            //appLifetime.ApplicationStarted.Register(() =>
+            //{
+            //    Console.WriteLine("开始");
+            //});
+            //// 发生在程序正在执行退出的过程中，此时还有请求正在被处理。应用程序也会等到这个事件完成后，再退出。
+            //appLifetime.ApplicationStopping.Register(() =>
+            //{
+            //    Console.WriteLine("关闭ing");
+            //});
+            //// 发生在程序正在完成正常退出的时候，所有请求都被处理完成。程序会在处理完这货的Action委托代码以后退出
+            //appLifetime.ApplicationStopped.Register( () =>
+            //{
+            //    Console.WriteLine("关闭");
+            //});
+            #endregion
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
