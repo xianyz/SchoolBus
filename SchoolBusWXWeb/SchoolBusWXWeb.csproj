@@ -11,7 +11,15 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
     <PackageReference Include="MQTTnet" Version="3.0.2" />
+    <PackageReference Include="Senparc.Weixin.MP" Version="16.7.9" />
+    <PackageReference Include="Senparc.Weixin.MP.MVC" Version="7.2.13" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="CommServices\MessageHandlers\CustomMessageHandler\Async\" />
   </ItemGroup>
 
 </Project>
