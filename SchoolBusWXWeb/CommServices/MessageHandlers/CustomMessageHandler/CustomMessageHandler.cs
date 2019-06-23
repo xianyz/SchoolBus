@@ -1,4 +1,5 @@
-﻿using Senparc.NeuChar.Entities;
+﻿using System;
+using Senparc.NeuChar.Entities;
 using Senparc.Weixin;
 using Senparc.Weixin.MP.Entities;
 using Senparc.Weixin.MP.Entities.Request;
@@ -7,6 +8,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using SchoolBusWXWeb.Models;
+using Senparc.NeuChar.Entities.Request;
+
+// ReSharper disable RedundantToStringCall
+
 // ReSharper disable NotAccessedField.Local
 
 
@@ -21,6 +27,7 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
         private readonly string _appId = Config.SenparcWeixinSetting.WeixinAppId;
         public CustomMessageHandler(Stream inputStream, PostModel postModel, int maxRecordCount = 0) : base(inputStream, postModel, maxRecordCount)
         {
+            base.CurrentMessageContext.ExpireMinutes = 10; // 设置CurrentMessageContext.StorageData 过期时间
             if (!string.IsNullOrEmpty(postModel.AppId))
             {
                 _appId = postModel.AppId;//通过第三方开放平台发送过来的请求
@@ -29,21 +36,35 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
             OmitRepeatedMessageFunc = requestMessage => !(requestMessage is RequestMessageText textRequestMessage) || textRequestMessage.Content != "容错";
         }
 
-
+        /// <summary>
+        /// 前置消息过滤
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public override async Task OnExecutingAsync(CancellationToken cancellationToken)
         {
             //测试MessageContext.StorageData
-            if (CurrentMessageContext.StorageData == null || (CurrentMessageContext.StorageData is int))
+            if (CurrentMessageContext.StorageData is StorageModel storagemodel)
             {
-                CurrentMessageContext.StorageData = 0;
+                storagemodel.CMDCount++;
             }
+            // CancelExcute=true; // 消息就不会向下执行,用于某些情况过滤
             await base.OnExecutingAsync(cancellationToken);
         }
 
+        /// <summary>
+        /// 后置消息处理 (比如给消息加上签名) 已经对数据操作这里就不能处理了
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public override async Task OnExecutedAsync(CancellationToken cancellationToken)
         {
+            if (ResponseMessage is ResponseMessageText responseMessage)
+            {
+                responseMessage.Content += "\r\n[刘哲测试Async]";
+            }
+            // 超过5s中的处理 这里可以用队列
             await base.OnExecutedAsync(cancellationToken);
-            CurrentMessageContext.StorageData = ((int)CurrentMessageContext.StorageData) + 1;
         }
 
         /// <summary>
@@ -55,9 +76,38 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
         {
             return await Task.Run(() =>
             {
-                
+
                 var defaultResponseMessage = CreateResponseMessage<ResponseMessageText>();
-                defaultResponseMessage.Content = $"{requestMessage.FromUserName},你刚才发送了消息Async。{requestMessage.Content}";
+                var count = 0;
+                if (CurrentMessageContext.StorageData is StorageModel storagemodeltemp)
+                {
+                    count = storagemodeltemp.CMDCount;
+                }
+                defaultResponseMessage.Content = $"{requestMessage.FromUserName},你刚才发送了消息Async。{requestMessage.Content},cmdcount:{count}";
+                try
+                {
+                    var requestHandler = requestMessage.StartHandler()
+                        .Keyword("cmd", () =>
+                         {
+                             CurrentMessageContext.StorageData = new StorageModel
+                             {
+                                 IsCMD = true
+                             };
+                             return defaultResponseMessage;
+                         }).Keyword("exit", () =>
+                         {
+                             if (CurrentMessageContext.StorageData is StorageModel storagemodel)
+                             {
+                                 storagemodel.IsCMD = false;
+                             }
+                             return defaultResponseMessage;
+                         }).Default(() => defaultResponseMessage);
+                    return requestHandler.GetResponseMessage();
+                }
+                catch (Exception e)
+                {
+                    defaultResponseMessage.Content = "异常:" + e.ToString();
+                }
                 return defaultResponseMessage;
             });
         }
@@ -102,14 +152,42 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
                     Url = "http://metro.360wll.cn/Bing/Index"
                 }
             };
+            if (requestMessage.EventKey == "key7")
+            {
+                var defaultResponseMessage = CreateResponseMessage<ResponseMessageText>();
+                if (CurrentMessageContext.StorageData is StorageModel storagemodel)
+                {
+                    defaultResponseMessage.Content = storagemodel.IsCMD ? "当前已经进入CMD状态" : "当前已经退出CMD状态";
+                }
+                else
+                {
+                    defaultResponseMessage.Content = "找不到StorageData";
+                }
+                return defaultResponseMessage;
+            }
             if (requestMessage.EventKey == "key6")
             {
                 return new ResponseMessageNoResponse();
             }
+            // 可以用客服消息冒充
+            await Senparc.Weixin.MP.AdvancedAPIs.CustomApi.SendTextAsync(_appId, OpenId, "服务器发来的客服消息");
             return responseMessage;
 
         }
 
+        /// <summary>
+        /// 用户第一次关注
+        /// </summary>
+        /// <param name="requestMessage"></param>
+        /// <returns></returns>
+        public override async Task<IResponseMessageBase> OnEvent_SubscribeRequestAsync(RequestMessageEvent_Subscribe requestMessage)
+        {
+            var userInfo = await Senparc.Weixin.MP.AdvancedAPIs.UserApi.InfoAsync(_appId, OpenId);
+            var nickName = userInfo?.nickname ?? "test";
+            var responseMessage = CreateResponseMessage<ResponseMessageText>();
+            responseMessage.Content = $"欢迎您 {nickName} 的到来";
+            return responseMessage;
+        }
         public override async Task<IResponseMessageBase> DefaultResponseMessageAsync(IRequestMessageBase requestMessage)
         {
             /* 所有没有被处理的消息会默认返回这里的结果，

@@ -46,11 +46,8 @@ namespace SchoolBusWXWeb.Controllers
                 return Content("参数错误！");
             }
 
-            //v4.2.2之后的版本，可以设置每个人上下文消息储存的最大数量，防止内存占用过多，如果该参数小于等于0，则不限制
-            var maxRecordCount = 10;
-
             //自定义MessageHandler，对微信请求的详细判断操作都在这里面。
-            var messageHandler = new CustomMessageHandler(Request.GetRequestMemoryStream(), postModel, maxRecordCount);
+            var messageHandler = new CustomMessageHandler(Request.GetRequestMemoryStream(), postModel, 10);
 
             messageHandler.SaveRequestMessageLog();//记录 Request 日志（可选）
 
