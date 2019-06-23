@@ -40,24 +40,23 @@ namespace SchoolBusWXWeb
                 options.CheckConsentNeeded = context => false;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            
+
             services.Configure<SiteConfig>(Configuration.GetSection("SiteConfig"));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddStartupTask<MqttStartupFilter>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddMemoryCache();// 使用本地缓存必须添加
-            services.AddSession();    // 使用Session
-            
-            services.AddSenparcGlobalServices(Configuration) // Senparc.CO2NET 全局注册
-                .AddSenparcWeixinServices(Configuration);    // Senparc.Weixin 注册
+            services.AddMemoryCache();                           // 使用本地缓存必须添加
+            services.AddSession();                               // 使用Session
+
+            services.AddSenparcGlobalServices(Configuration)     // Senparc.CO2NET 全局注册
+                    .AddSenparcWeixinServices(Configuration);    // Senparc.Weixin 注册
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime appLifetime, IOptions<SenparcSetting> senparcSetting, IOptions<SenparcWeixinSetting> senparcWeixinSetting)
         {
-            // 微信sdk使用
-            app.UseEnableRequestRewind();
+            app.UseEnableRequestRewind();  // 微信sdk使用
             app.UseSession();
             if (env.IsDevelopment())
             {
@@ -75,50 +74,20 @@ namespace SchoolBusWXWeb
 
             app.UseMvc(routes =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
 
-            // 启动 CO2NET 全局注册，必须！
-            IRegisterService register = RegisterService.Start(env, senparcSetting.Value)
-                //关于 UseSenparcGlobal() 的更多用法见 CO2NET Demo：https://github.com/Senparc/Senparc.CO2NET/blob/master/Sample/Senparc.CO2NET.Sample.netcore/Startup.cs
-                .UseSenparcGlobal();
-            #region 注册日志（按需，建议）
+            RegisterService.Start(env, senparcSetting.Value)
+                           .UseSenparcGlobal()               // 启动 CO2NET 全局注册，必须！
+                           .RegisterTraceLog(ConfigTraceLog) // 微信配置开始 注册日志(按需，建议) 配置TraceLog
+                           .UseSenparcWeixin(senparcWeixinSetting.Value, senparcSetting.Value)
+                           .RegisterMpAccount(senparcWeixinSetting.Value, "【刘哲测试】公众号"); // 注册公众号(可注册多个)
 
-            register.RegisterTraceLog(ConfigTraceLog);//配置TraceLog
-
-            #endregion
-
-            #region 微信相关配置
-
-
-            /* 微信配置开始
-             * 
-             * 建议按照以下顺序进行注册，尤其须将缓存放在第一位！
-             */
-
-            //注册开始
-
-
-            //开始注册微信信息，必须！
-            register.UseSenparcWeixin(senparcWeixinSetting.Value, senparcSetting.Value)
-                //注意：上一行没有 ; 下面可接着写 .RegisterXX()
-
-            #region 注册公众号或小程序（按需）
-
-                //注册公众号（可注册多个）                                                -- DPBMARK MP
-                .RegisterMpAccount(senparcWeixinSetting.Value, "【刘哲测试】公众号")// DPBMARK_END
-
-            #endregion
-                ;
-            /* 微信配置结束 */
-            #endregion
         }
         /// <summary>
         /// 配置微信跟踪日志
         /// </summary>
-        private void ConfigTraceLog()
+        private static void ConfigTraceLog()
         {
             //这里设为Debug状态时，/App_Data/WeixinTraceLog/目录下会生成日志文件记录所有的API请求日志，正式发布版本建议关闭
 
@@ -131,7 +100,7 @@ namespace SchoolBusWXWeb
                 //加入每次触发Log后需要执行的代码
             };
 
-            //当发生基于WeixinException的异常时触发
+            // 当发生基于WeixinException的异常时触发
             WeixinTrace.OnWeixinExceptionFunc = ex =>
             {
                 //加入每次触发WeixinExceptionLog后需要执行的代码

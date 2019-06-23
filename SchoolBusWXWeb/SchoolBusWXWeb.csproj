@@ -17,9 +17,4 @@
     <PackageReference Include="Senparc.Weixin.MP.MVC" Version="7.2.13" />
   </ItemGroup>
 
-
-  <ItemGroup>
-    <Folder Include="CommServices\MessageHandlers\CustomMessageHandler\Async\" />
-  </ItemGroup>
-
 </Project>
