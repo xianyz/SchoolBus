@@ -12,6 +12,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using SchoolBusWXWeb.CommServices.MessageHandlers.MessageQueue;
+// ReSharper disable RedundantToStringCallForValueType
 
 // ReSharper disable RedundantToStringCall
 
@@ -211,6 +212,27 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
             responseMessage.Content = $"欢迎您 {nickName} 的到来";
             return responseMessage;
         }
+
+        /// <summary>
+        /// 发送模板消息后的微信回调请求
+        /// </summary>
+        /// <param name="requestMessage"></param>
+        /// <returns></returns>
+        public override async Task<IResponseMessageBase> OnEvent_TemplateSendJobFinishRequestAsync(RequestMessageEvent_TemplateSendJobFinish requestMessage)
+        {
+            if (requestMessage.Status == "success")
+            {
+                // 进行逻辑处理 看是否成功处理等
+               await CustomApi.SendTextAsync(_appId,OpenId,"模板消息发送成功"+requestMessage.MsgID.ToString());
+            }
+            return new SuccessResponseMessage();
+        }
+
+        /// <summary>
+        /// 默认消息对没有对应类型消息的默认处理
+        /// </summary>
+        /// <param name="requestMessage"></param>
+        /// <returns></returns>
         public override async Task<IResponseMessageBase> DefaultResponseMessageAsync(IRequestMessageBase requestMessage)
         {
             /* 所有没有被处理的消息会默认返回这里的结果，
