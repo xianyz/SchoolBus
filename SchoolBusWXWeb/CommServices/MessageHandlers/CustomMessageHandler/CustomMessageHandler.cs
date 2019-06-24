@@ -1,15 +1,17 @@
-﻿using System;
+﻿using SchoolBusWXWeb.Models;
 using Senparc.NeuChar.Entities;
+using Senparc.NeuChar.Entities.Request;
 using Senparc.Weixin;
+using Senparc.Weixin.MP.AdvancedAPIs;
 using Senparc.Weixin.MP.Entities;
 using Senparc.Weixin.MP.Entities.Request;
 using Senparc.Weixin.MP.MessageHandlers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using SchoolBusWXWeb.Models;
-using Senparc.NeuChar.Entities.Request;
+using SchoolBusWXWeb.CommServices.MessageHandlers.MessageQueue;
 
 // ReSharper disable RedundantToStringCall
 
@@ -18,15 +20,21 @@ using Senparc.NeuChar.Entities.Request;
 
 namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
 {
+
     /// <summary>
     /// 自定义MessageHandler
     /// 把MessageHandler作为基类，重写对应请求的处理方法
     /// </summary>
     public class CustomMessageHandler : MessageHandler<CustomMessageContext>
     {
+        private DateTime StartTime { get; set; }
+        private DateTime EndTime { get; set; }
+
         private readonly string _appId = Config.SenparcWeixinSetting.WeixinAppId;
+
         public CustomMessageHandler(Stream inputStream, PostModel postModel, int maxRecordCount = 0) : base(inputStream, postModel, maxRecordCount)
         {
+            StartTime = DateTime.Now;
             base.CurrentMessageContext.ExpireMinutes = 10; // 设置CurrentMessageContext.StorageData 过期时间
             if (!string.IsNullOrEmpty(postModel.AppId))
             {
@@ -65,6 +73,21 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
             }
             // 超过5s中的处理 这里可以用队列
             await base.OnExecutedAsync(cancellationToken);
+
+            #region 如果处理超时容灾方法
+
+            //await Task.Delay(5000, cancellationToken);
+            //EndTime = DateTime.Now;
+            //var runTime = (EndTime - StartTime).TotalSeconds;
+            //if (runTime > 4)
+            //{
+            //    var queueHandler = new MessageQueueHandler();
+
+            //    ResponseMessage = await queueHandler.SendMessage(_appId, OpenId, ResponseMessage);
+            //}
+
+            #endregion
+
         }
 
         /// <summary>
@@ -170,7 +193,7 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
                 return new ResponseMessageNoResponse();
             }
             // 可以用客服消息冒充
-            await Senparc.Weixin.MP.AdvancedAPIs.CustomApi.SendTextAsync(_appId, OpenId, "服务器发来的客服消息");
+            await CustomApi.SendTextAsync(_appId, OpenId, "服务器发来的客服消息");
             return responseMessage;
 
         }
@@ -182,7 +205,7 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
         /// <returns></returns>
         public override async Task<IResponseMessageBase> OnEvent_SubscribeRequestAsync(RequestMessageEvent_Subscribe requestMessage)
         {
-            var userInfo = await Senparc.Weixin.MP.AdvancedAPIs.UserApi.InfoAsync(_appId, OpenId);
+            var userInfo = await UserApi.InfoAsync(_appId, OpenId);
             var nickName = userInfo?.nickname ?? "test";
             var responseMessage = CreateResponseMessage<ResponseMessageText>();
             responseMessage.Content = $"欢迎您 {nickName} 的到来";

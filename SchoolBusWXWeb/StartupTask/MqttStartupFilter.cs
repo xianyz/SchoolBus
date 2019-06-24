@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using MQTTnet;
 using MQTTnet.Client;
@@ -11,8 +11,7 @@ using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
+// ReSharper disable NotAccessedField.Local
 
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
@@ -76,7 +75,7 @@ namespace SchoolBusWXWeb.StartupTask
                 if (_mqttClient == null)
                 {
                     _mqttClient = new MqttFactory().CreateMqttClient();
-                    
+
                     _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(e =>
                     {
                         Console.WriteLine($">> ### 接受消息 ###{Environment.NewLine}");
@@ -86,7 +85,7 @@ namespace SchoolBusWXWeb.StartupTask
                         Console.WriteLine($">> Retain = {e.ApplicationMessage.Retain}{Environment.NewLine}");
 
                     });
-                   
+
                     _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(async e =>
                     {
                         Console.WriteLine("已连接到MQTT服务器！" + Environment.NewLine);
@@ -99,7 +98,7 @@ namespace SchoolBusWXWeb.StartupTask
                         Console.WriteLine($">> [{curTime.ToLongTimeString()}]");
                         Console.WriteLine("已断开MQTT连接！" + Environment.NewLine);
                         //Reconnecting 重连
-                        if (_isReconnect)
+                        if (_isReconnect && !e.ClientWasConnected)
                         {
                             Console.WriteLine("正在尝试重新连接" + Environment.NewLine);
                             await Task.Delay(TimeSpan.FromSeconds(5));

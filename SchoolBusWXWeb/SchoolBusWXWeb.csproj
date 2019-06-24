@@ -1,8 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
     <LangVersion>7.3</LangVersion>
     <UserSecretsId>e2cc770e-5c7b-441e-883c-d157600d6c95</UserSecretsId>
   </PropertyGroup>
@@ -12,7 +13,7 @@
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
-    <PackageReference Include="MQTTnet" Version="3.0.2" />
+    <PackageReference Include="MQTTnet" Version="3.0.3" />
     <PackageReference Include="Senparc.Weixin.MP" Version="16.7.9" />
     <PackageReference Include="Senparc.Weixin.MP.MVC" Version="7.2.13" />
   </ItemGroup>
