@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using SchoolBusWXWeb.Models;
 using Senparc.CO2NET.Extensions;
 using Senparc.Weixin;
 using Senparc.Weixin.MP.Containers;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+// ReSharper disable NotAccessedField.Local
 
 namespace SchoolBusWXWeb.Controllers
 {
     public class HomeController : Controller
     {
-        public static readonly string AppId = Config.SenparcWeixinSetting.WeixinAppId;//与微信公众账号后台的AppId设置保持一致，区分大小写。
+        private static readonly string AppId = Config.SenparcWeixinSetting.WeixinAppId;//与微信公众账号后台的AppId设置保持一致，区分大小写。
 
         private readonly SiteConfig _option;
         public HomeController(IOptions<SiteConfig> option)
