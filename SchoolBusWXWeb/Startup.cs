@@ -42,7 +42,7 @@ namespace SchoolBusWXWeb
             });
 
             services.Configure<SiteConfig>(Configuration.GetSection("SiteConfig"));
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            
 
             services.AddStartupTask<MqttStartupFilter>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -51,6 +51,7 @@ namespace SchoolBusWXWeb
 
             services.AddSenparcGlobalServices(Configuration)     // Senparc.CO2NET 全局注册
                     .AddSenparcWeixinServices(Configuration);    // Senparc.Weixin 注册
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,17 +73,16 @@ namespace SchoolBusWXWeb
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            RegisterService.Start(env, senparcSetting.Value)
+                .UseSenparcGlobal()               // 启动 CO2NET 全局注册，必须！
+                .RegisterTraceLog(ConfigTraceLog) // 微信配置开始 注册日志(按需，建议) 配置TraceLog
+                .UseSenparcWeixin(senparcWeixinSetting.Value, senparcSetting.Value)
+                .RegisterMpAccount(senparcWeixinSetting.Value, "【刘哲测试】公众号"); // 注册公众号(可注册多个)
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
-
-            RegisterService.Start(env, senparcSetting.Value)
-                           .UseSenparcGlobal()               // 启动 CO2NET 全局注册，必须！
-                           .RegisterTraceLog(ConfigTraceLog) // 微信配置开始 注册日志(按需，建议) 配置TraceLog
-                           .UseSenparcWeixin(senparcWeixinSetting.Value, senparcSetting.Value)
-                           .RegisterMpAccount(senparcWeixinSetting.Value, "【刘哲测试】公众号"); // 注册公众号(可注册多个)
-
         }
         /// <summary>
         /// 配置微信跟踪日志

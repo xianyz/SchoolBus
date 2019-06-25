@@ -176,7 +176,7 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
                     Url = "http://metro.360wll.cn/Bing/Index"
                 }
             };
-            if (requestMessage.EventKey == "key7")
+            if (requestMessage.EventKey == "key2") // 刷卡记录
             {
                 var defaultResponseMessage = CreateResponseMessage<ResponseMessageText>();
                 if (CurrentMessageContext.StorageData is StorageModel storagemodel)
@@ -189,7 +189,7 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
                 }
                 return defaultResponseMessage;
             }
-            if (requestMessage.EventKey == "key6")
+            if (requestMessage.EventKey == "key6") // 实时位置 不返回消息
             {
                 return new ResponseMessageNoResponse();
             }

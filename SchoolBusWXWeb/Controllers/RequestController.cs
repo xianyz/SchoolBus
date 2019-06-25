@@ -18,7 +18,7 @@ namespace SchoolBusWXWeb.Controllers
 {
     public class RequestController : Controller
     {
-        private readonly string _appId = Config.SenparcWeixinSetting.WeixinAppId;
+        public string _appId = Config.SenparcWeixinSetting.WeixinAppId;
         public IActionResult Get(string url = "https://www.baidu.com")
         {
             var html = Senparc.CO2NET.HttpUtility.RequestUtility.HttpGet(url, encoding: Encoding.UTF8);
@@ -113,7 +113,7 @@ namespace SchoolBusWXWeb.Controllers
         /// <returns></returns>
         public IActionResult SendTemplateMessage( string openid = "ovzSu1Ux_R10fGTWCEawfdVADSy8")
         {
-            const string templateId = "6RzeJPMnzoPv5AyWTx2ezAhDEyKmbidf4JspdBNT4Io";
+            // const string templateId = "6RzeJPMnzoPv5AyWTx2ezAhDEyKmbidf4JspdBNT4Io";
             const string url = "https://www.baidu.com"; // 模板消息下面的链接
             //var testData = new //TestTemplateData()
             //{
