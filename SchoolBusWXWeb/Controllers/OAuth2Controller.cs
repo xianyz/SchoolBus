@@ -76,12 +76,9 @@ namespace SchoolBusWXWeb.Controllers
             try
             {
                 OAuthUserInfo userInfo = OAuthApi.GetUserInfo(result.access_token, result.openid);
-                if (!string.IsNullOrEmpty(returnUrl))
-                {
-                    HttpContext.Session.SetString("Userinfo", userInfo.ToJson());
-                    return Redirect(returnUrl);
-                }
-                return View(userInfo);
+                if (string.IsNullOrEmpty(returnUrl)) return View(userInfo);
+                HttpContext.Session.SetString("Userinfo", userInfo.ToJson());
+                return Redirect(returnUrl);
             }
             catch (ErrorJsonResultException ex)
             {
