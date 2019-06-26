@@ -1,13 +1,18 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SchoolBusWXWeb.Models;
 using SchoolBusWXWeb.StartupTask;
+using SchoolBusWXWeb.Utilities;
 using Senparc.CO2NET;
 using Senparc.CO2NET.RegisterServices;
 using Senparc.CO2NET.Trace;
@@ -53,6 +58,22 @@ namespace SchoolBusWXWeb
             services.AddSenparcGlobalServices(Configuration)     // Senparc.CO2NET 全局注册
                     .AddSenparcWeixinServices(Configuration);    // Senparc.Weixin 注册
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            #region 健康检擦服务
+            services.AddHealthChecks()
+                .AddNpgSql(
+                    Configuration["Settings:DefaultConnection"],
+                    "SELECT 1;",
+                    null,
+                    "schoolbussql",
+                    HealthStatus.Degraded,
+                    new[] { "db", "sql", "sqlserver" });
+            services.AddHealthChecksUI();
+            #endregion
+
+            #region miniprofiler 监控
+            services.AddMiniProfiler();
+            #endregion
+
             //添加认证Cookie信息
             //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).
             //AddCookie(options =>
@@ -63,8 +84,9 @@ namespace SchoolBusWXWeb
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime appLifetime, IOptions<SenparcSetting> senparcSetting, IOptions<SenparcWeixinSetting> senparcWeixinSetting)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<SenparcSetting> senparcSetting, IOptions<SenparcWeixinSetting> senparcWeixinSetting)
         {
+            app.SetUtilsProviderConfiguration(Configuration, loggerFactory); // 静态工具类
             app.UseEnableRequestRewind();  // 微信sdk使用
             app.UseSession();
             if (env.IsDevelopment())
@@ -80,12 +102,27 @@ namespace SchoolBusWXWeb
             //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            #region 健康检查中间件 https://localhost:5001/healthchecks-ui
+            app.UseHealthChecks("/healthz", new HealthCheckOptions()
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
+            app.UseHealthChecksUI();
+            #endregion
 
+            #region miniprofiler 监控
+            app.UseMiniProfiler();
+            #endregion
+
+            #region 微信相关
             RegisterService.Start(env, senparcSetting.Value)
                 .UseSenparcGlobal()               // 启动 CO2NET 全局注册，必须！
                 .RegisterTraceLog(ConfigTraceLog) // 微信配置开始 注册日志(按需，建议) 配置TraceLog
                 .UseSenparcWeixin(senparcWeixinSetting.Value, senparcSetting.Value)
                 .RegisterMpAccount(senparcWeixinSetting.Value, "【刘哲测试】公众号"); // 注册公众号(可注册多个)
+            #endregion
+
             //app.UseAuthentication();//验证中间件
             app.UseMvc(routes =>
             {
