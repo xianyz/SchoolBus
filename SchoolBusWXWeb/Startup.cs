@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -42,7 +43,7 @@ namespace SchoolBusWXWeb
             });
 
             services.Configure<SiteConfig>(Configuration.GetSection("SiteConfig"));
-            
+
 
             services.AddStartupTask<MqttStartupFilter>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -52,6 +53,13 @@ namespace SchoolBusWXWeb
             services.AddSenparcGlobalServices(Configuration)     // Senparc.CO2NET 全局注册
                     .AddSenparcWeixinServices(Configuration);    // Senparc.Weixin 注册
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            //添加认证Cookie信息
+            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).
+            //AddCookie(options =>
+            //          {
+            //              options.LoginPath = new PathString("/login");
+            //              options.AccessDeniedPath = new PathString("/denied");
+            //          });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,9 +75,9 @@ namespace SchoolBusWXWeb
             {
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                //app.UseHsts();
             }
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
@@ -78,7 +86,7 @@ namespace SchoolBusWXWeb
                 .RegisterTraceLog(ConfigTraceLog) // 微信配置开始 注册日志(按需，建议) 配置TraceLog
                 .UseSenparcWeixin(senparcWeixinSetting.Value, senparcSetting.Value)
                 .RegisterMpAccount(senparcWeixinSetting.Value, "【刘哲测试】公众号"); // 注册公众号(可注册多个)
-
+            //app.UseAuthentication();//验证中间件
             app.UseMvc(routes =>
             {
                 routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");

@@ -6,6 +6,33 @@ namespace SchoolBusWXWeb.Models
 {
     public class SiteConfig
     {
+        /// <summary>
+        /// ScholleBus数据库链接字符串
+        /// </summary>
+        public string DefaultConnection { get; set; }
+        
+        /// <summary>
+        /// 七牛AccessKey
+        /// </summary>
+        public string AccessKey { get; set; }
+
+        /// <summary>
+        /// 七牛SecretKey
+        /// </summary>
+        public string SecretKey { get; set; }
+
+        /// <summary>
+        /// 七牛Bucket:first
+        /// </summary>
+        public string Bucketfirst { get; set; }
+
+        /// <summary>
+        /// 七牛Domain
+        /// </summary>
+        public string Domain { get; set; }
+        /// <summary>
+        /// mqtt配置项
+        /// </summary>
         public MqttOption MqttOption { get; set; }
     }
 
