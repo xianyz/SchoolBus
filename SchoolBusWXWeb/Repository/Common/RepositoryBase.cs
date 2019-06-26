@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace SchoolBusWXWeb.Repository.Common
 {
     /// <summary>
-    ///     基类数据仓储(Dapper.Helper)
+    /// 基类数据仓储(Dapper.Helper)
     /// </summary>
     public class RepositoryBase : IRepositoryBase
     {
@@ -21,7 +21,7 @@ namespace SchoolBusWXWeb.Repository.Common
         }
 
         /// <summary>
-        ///     返回第一行第一列
+        /// 返回第一行第一列
         /// </summary>
         /// <param name="sql">自定义拼接sql</param>
         /// <param name="pms">动态参数</param>
@@ -35,7 +35,7 @@ namespace SchoolBusWXWeb.Repository.Common
         }
 
         /// <summary>
-        ///     获取单个实体
+        /// 获取单个实体
         /// </summary>
         /// <param name="sql">自定义拼接sql</param>
         /// <param name="pms">动态参数</param>
@@ -49,13 +49,12 @@ namespace SchoolBusWXWeb.Repository.Common
         }
 
         /// <summary>
-        ///     获取所有实体
+        /// 获取所有实体
         /// </summary>
         /// <param name="sql">自定义拼接sql</param>
         /// <param name="pms">动态参数</param>
         /// <returns>返回实体集合</returns>
-        public async Task<IEnumerable<T>> GetAllEntityAsync<T>(string sql, DynamicParameters pms = null)
-            where T : class, new()
+        public async Task<IEnumerable<T>> GetAllEntityAsync<T>(string sql, DynamicParameters pms = null) where T : class, new()
         {
             using (var conn = await DataBaseConfig.GetNpgSqlConnectionAsync(_connectionstr))
             {
@@ -64,7 +63,7 @@ namespace SchoolBusWXWeb.Repository.Common
         }
 
         /// <summary>
-        ///     根据多条语句返回多个结果集
+        /// 根据多条语句返回多个结果集
         /// </summary>
         /// <typeparam name="T">返回实体</typeparam>
         /// <param name="sql">自定义拼接sql多个sql用;隔开</param>
@@ -96,7 +95,7 @@ namespace SchoolBusWXWeb.Repository.Common
         }
 
         /// <summary>
-        ///     获取dynamic(动态)类型的集合
+        /// 获取dynamic(动态)类型的集合
         /// </summary>
         /// <param name="sql">自定义拼接sql</param>
         /// <param name="pms">动态参数</param>
@@ -110,7 +109,7 @@ namespace SchoolBusWXWeb.Repository.Common
         }
 
         /// <summary>
-        ///     增删改,实体方法
+        /// 增删改,实体方法
         /// </summary>
         /// <param name="sql">自定义拼接sql</param>
         /// <param name="t">实体</param>
@@ -124,7 +123,7 @@ namespace SchoolBusWXWeb.Repository.Common
         }
 
         /// <summary>
-        ///     增删改,参数方法
+        /// 增删改,参数方法
         /// </summary>
         /// <param name="sql">自定义拼接sql</param>
         /// <param name="pms">动态参数</param>
@@ -204,7 +203,7 @@ namespace SchoolBusWXWeb.Repository.Common
         }
 
         /// <summary>
-        ///     新增实体返回对应主键Id
+        /// 新增实体返回对应主键Id
         /// </summary>
         /// <param name="sql">自定义拼接sql</param>
         /// <param name="t">实体</param>
@@ -219,7 +218,7 @@ namespace SchoolBusWXWeb.Repository.Common
         }
 
         /// <summary>
-        ///     分页存储过程
+        /// 分页
         /// </summary>
         /// <param name="criteria">表名等集合</param>
         /// <returns>分页数据</returns>

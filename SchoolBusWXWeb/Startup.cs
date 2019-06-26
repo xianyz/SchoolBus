@@ -1,5 +1,4 @@
 ﻿using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -10,7 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SchoolBusWXWeb.Business;
 using SchoolBusWXWeb.Models;
+using SchoolBusWXWeb.Repository;
 using SchoolBusWXWeb.StartupTask;
 using SchoolBusWXWeb.Utilities;
 using Senparc.CO2NET;
@@ -23,7 +24,6 @@ using Senparc.Weixin.RegisterServices;
 // ReSharper disable CommentTypo
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable SuggestVarOrType_SimpleTypes
-
 // ReSharper disable StringLiteralTypo
 
 namespace SchoolBusWXWeb
@@ -48,39 +48,21 @@ namespace SchoolBusWXWeb
             });
 
             services.Configure<SiteConfig>(Configuration.GetSection("SiteConfig"));
-
+            services.AddScoped<ISchoolBusBusines, SchoolBusBusines>();
+            services.AddScoped<ISchoolBusRepository, SchoolBusRepository>();
 
             services.AddStartupTask<MqttStartupFilter>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddMemoryCache();                           // 使用本地缓存必须添加
             services.AddSession();                               // 使用Session
-
+            #region 健康检擦服务
+            services.AddHealthChecks().AddNpgSql(Configuration["SiteConfig:DefaultConnection"], failureStatus: HealthStatus.Degraded);
+            services.AddHealthChecksUI();
+            #endregion
             services.AddSenparcGlobalServices(Configuration)     // Senparc.CO2NET 全局注册
                     .AddSenparcWeixinServices(Configuration);    // Senparc.Weixin 注册
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            #region 健康检擦服务
-            services.AddHealthChecks()
-                .AddNpgSql(
-                    Configuration["Settings:DefaultConnection"],
-                    "SELECT 1;",
-                    null,
-                    "schoolbussql",
-                    HealthStatus.Degraded,
-                    new[] { "public", "sql", "sqlserver" });
-            services.AddHealthChecksUI();
-            #endregion
-
-            #region miniprofiler 监控
-            services.AddMiniProfiler();
-            #endregion
-
-            //添加认证Cookie信息
-            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).
-            //AddCookie(options =>
-            //          {
-            //              options.LoginPath = new PathString("/login");
-            //              options.AccessDeniedPath = new PathString("/denied");
-            //          });
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -111,10 +93,6 @@ namespace SchoolBusWXWeb
             app.UseHealthChecksUI();
             #endregion
 
-            #region miniprofiler 监控
-            app.UseMiniProfiler();
-            #endregion
-
             #region 微信相关
             RegisterService.Start(env, senparcSetting.Value)
                 .UseSenparcGlobal()               // 启动 CO2NET 全局注册，必须！
@@ -123,7 +101,6 @@ namespace SchoolBusWXWeb
                 .RegisterMpAccount(senparcWeixinSetting.Value, "【刘哲测试】公众号"); // 注册公众号(可注册多个)
             #endregion
 
-            //app.UseAuthentication();//验证中间件
             app.UseMvc(routes =>
             {
                 routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");

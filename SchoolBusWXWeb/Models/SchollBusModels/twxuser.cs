@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+// ReSharper disable UnusedMember.Global
+// ReSharper disable InconsistentNaming
 
 namespace SchoolBusWXWeb.Models.SchollBusModels
 {
@@ -46,6 +48,7 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         /// 备注
         /// </summary>
         [BindNever]
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string fremark { get; set; }
         /// <summary>
         /// 创建时间
