@@ -13,7 +13,7 @@ namespace SchoolBusWXWeb.Repository.Common
     /// </summary>
     public static class DataBaseConfig
     {
-        public static async Task<NpgsqlConnection> GetSqlConnectionAsync(string npgsqlConnectionString)
+        public static async Task<NpgsqlConnection> GetNpgSqlConnectionAsync(string npgsqlConnectionString)
         {
             if (string.IsNullOrWhiteSpace(npgsqlConnectionString)) npgsqlConnectionString = AppSetting.DbConnection;
             IDbConnection conn = new NpgsqlConnection(npgsqlConnectionString);

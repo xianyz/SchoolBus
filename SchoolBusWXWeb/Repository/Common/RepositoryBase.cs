@@ -30,7 +30,7 @@ namespace SchoolBusWXWeb.Repository.Common
         /// <returns>返回实体</returns>
         public async Task<T> GetExecuteScalarAsync<T>(string sql, DynamicParameters pms = null)
         {
-            using (var conn = await DataBaseConfig.GetSqlConnectionAsync(_connectionstr))
+            using (var conn = await DataBaseConfig.GetNpgSqlConnectionAsync(_connectionstr))
             {
                 return await conn.ExecuteScalarAsync<T>(sql, pms);
             }
@@ -44,7 +44,7 @@ namespace SchoolBusWXWeb.Repository.Common
         /// <returns>返回实体</returns>
         public async Task<T> GetEntityAsync<T>(string sql, DynamicParameters pms = null) where T : class, new()
         {
-            using (var conn = await DataBaseConfig.GetSqlConnectionAsync(_connectionstr))
+            using (var conn = await DataBaseConfig.GetNpgSqlConnectionAsync(_connectionstr))
             {
                 return await conn.QueryFirstOrDefaultAsync<T>(sql, pms);
             }
@@ -59,7 +59,7 @@ namespace SchoolBusWXWeb.Repository.Common
         public async Task<IEnumerable<T>> GetAllEntityAsync<T>(string sql, DynamicParameters pms = null)
             where T : class, new()
         {
-            using (var conn = await DataBaseConfig.GetSqlConnectionAsync(_connectionstr))
+            using (var conn = await DataBaseConfig.GetNpgSqlConnectionAsync(_connectionstr))
             {
                 return await conn.QueryAsync<T>(sql, pms);
             }
@@ -76,7 +76,7 @@ namespace SchoolBusWXWeb.Repository.Common
         public async Task<List<T>> GetMultipleEntityAsync<T>(string sql, DynamicParameters pms = null, bool isnull = false) where T : class, new()
         {
             var list = new List<T>();
-            using (var conn = await DataBaseConfig.GetSqlConnectionAsync(_connectionstr))
+            using (var conn = await DataBaseConfig.GetNpgSqlConnectionAsync(_connectionstr))
             {
                 var multi = await conn.QueryMultipleAsync(sql, pms); // 执行查询，获取结果集集合
 
@@ -105,7 +105,7 @@ namespace SchoolBusWXWeb.Repository.Common
         /// <returns></returns>
         public async Task<IEnumerable<dynamic>> GetDynamicAsync(string sql, DynamicParameters pms = null)
         {
-            using (var conn = await DataBaseConfig.GetSqlConnectionAsync(_connectionstr))
+            using (var conn = await DataBaseConfig.GetNpgSqlConnectionAsync(_connectionstr))
             {
                 return await conn.QueryAsync(sql, pms);
             }
@@ -119,7 +119,7 @@ namespace SchoolBusWXWeb.Repository.Common
         /// <returns>返回受影响的行数</returns>
         public async Task<int> ExecuteEntityAsync<T>(string sql, T t) where T : class, new()
         {
-            using (var conn = await DataBaseConfig.GetSqlConnectionAsync(_connectionstr))
+            using (var conn = await DataBaseConfig.GetNpgSqlConnectionAsync(_connectionstr))
             {
                 return await conn.ExecuteAsync(sql, t);
             }
@@ -133,7 +133,7 @@ namespace SchoolBusWXWeb.Repository.Common
         /// <returns>返回受影响的行数</returns>
         public async Task<int> ExecuteEntityAsync(string sql, DynamicParameters pms = null)
         {
-            using (var conn = await DataBaseConfig.GetSqlConnectionAsync(_connectionstr))
+            using (var conn = await DataBaseConfig.GetNpgSqlConnectionAsync(_connectionstr))
             {
                 return await conn.ExecuteAsync(sql, pms);
             }
@@ -148,7 +148,7 @@ namespace SchoolBusWXWeb.Repository.Common
         public async Task<int> ExecuteMultipleEntityAsync<T>(string sql, IEnumerable<T> t) where T : class, new()
         {
             int i;
-            using (var conn = await DataBaseConfig.GetSqlConnectionAsync(_connectionstr))
+            using (var conn = await DataBaseConfig.GetNpgSqlConnectionAsync(_connectionstr))
             {
                 await conn.OpenAsync();
                 using (var trans = conn.BeginTransaction())
@@ -181,7 +181,7 @@ namespace SchoolBusWXWeb.Repository.Common
         public async Task<int> ExecuteMultipleEntityAsync(string sql, object obj)
         {
             int i;
-            using (var conn = await DataBaseConfig.GetSqlConnectionAsync(_connectionstr))
+            using (var conn = await DataBaseConfig.GetNpgSqlConnectionAsync(_connectionstr))
             {
                 await conn.OpenAsync();
                 using (var trans = conn.BeginTransaction())
@@ -213,7 +213,7 @@ namespace SchoolBusWXWeb.Repository.Common
         /// <returns>实体主键</returns>
         public async Task<int> GetAddEntityIdAsync<T>(string sql, T t) where T : class, new()
         {
-            using (var conn = await DataBaseConfig.GetSqlConnectionAsync(_connectionstr))
+            using (var conn = await DataBaseConfig.GetNpgSqlConnectionAsync(_connectionstr))
             {
                 sql += ";SELECT SCOPE_IDENTITY()";
                 return await conn.ExecuteScalarAsync<int>(sql, t);
@@ -227,7 +227,7 @@ namespace SchoolBusWXWeb.Repository.Common
         /// <returns>分页数据</returns>
         public async Task<PageDataView<T>> GetPageDataAsync<T>(PageCriteria criteria) where T : class, new()
         {
-            using (var conn = await DataBaseConfig.GetSqlConnectionAsync(_connectionstr))
+            using (var conn = await DataBaseConfig.GetNpgSqlConnectionAsync(_connectionstr))
             {
                 var p = new DynamicParameters();
                 var proName = "Module_Common_PagerNew";
