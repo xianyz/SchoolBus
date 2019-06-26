@@ -66,7 +66,7 @@ namespace SchoolBusWXWeb
                     null,
                     "schoolbussql",
                     HealthStatus.Degraded,
-                    new[] { "db", "sql", "sqlserver" });
+                    new[] { "public", "sql", "sqlserver" });
             services.AddHealthChecksUI();
             #endregion
 
