@@ -16,7 +16,6 @@ namespace SchoolBusWXWeb.Controllers
         public IActionResult Index()
         {
             ViewData["userinfo"] = HttpContext.Session.GetString("Userinfo");
-            ViewData["appid"] = HttpContext.Session.GetString("appid");
             return View();
         }
     }

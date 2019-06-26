@@ -17,6 +17,7 @@ namespace SchoolBusWXWeb.Filters
         {
             httpContext.Session.SetString("appid", Config.SenparcWeixinSetting.WeixinAppId);
             return httpContext.Session.GetString("Userinfo") != null;
+            //return true;
         }
     }
 }

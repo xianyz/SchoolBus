@@ -1,0 +1,966 @@
+﻿@{ 
+    Layout=null;
+}
+<!doctype html>
+<html xmlns:o="http://www.w3.org/1999/xhtml" lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <link href="~/lib/mui/css/mui.min.css" rel="stylesheet" />
+    <link href="~/font/iconfont.css" rel="stylesheet" />
+    <link href="~/css/main.css" rel="stylesheet" />
+    <link href="~/lib/mui/css/mui.picker.min.css" rel="stylesheet" />
+
+    <title>注册</title>
+    <style>
+        [v-cloak] {
+            display: none;
+        }    .mui-checkbox input[type=checkbox]:checked:before, .mui-radio input[type=radio]:checked:before {
+                 color: #FCC142 !important;
+             }
+
+        .mui-checkbox input[type=checkbox]:before, .mui-radio input[type=radio]:before {
+            font-size: 24px;
+        }
+
+        .mui-checkbox.mui-left input[type=checkbox], .mui-radio.mui-left input[type=radio] {
+            left: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="register_pic">
+        <img src="~/img/pic1.jpg" />
+    </div>
+    <div class="register_login" id="vue" >
+        <div class="login_content">
+            <div class="input">
+                <img src="~/img/login-icon1.png" />
+                <div class="input-wrapper" onclick="$(this).find('input').focus()">
+                    <span style="width: 20%">卡号</span>
+                    <input style="width: 70%;float: right" class="input" type="text" maxlength="10">
+                </div>
+            </div>
+            <div class="input">
+                <img src="~/img/login-icon4.png" />
+                <div class="input-wrapper" id="relationship">
+                    <span style="width: 20%">与学生关系</span>
+                    <!--placeholder="选择与学生的关系">-->
+                    <input style="width: 50%;float: right" id="relationshipname" readonly="" class="input" type="text">
+                </div>
+            </div>
+            <div class="input">
+                <img src="~/img/login-icon2.png" />
+                <div class="input-wrapper" onclick="$(this).find('input').focus()">
+                    <span style="width: 20%">手机号码</span>
+                    <!--<input v-model="phoneNum" class="input" type="text" maxlength="11" placeholder="请输入手机号">-->
+                    <input style="width: 70%;float: right" v-model="phoneNum" class="input" type="text" maxlength="11">
+                </div>
+            </div>
+            <div class="input">
+                <img src="~/img/login-icon3.png" />
+                <div class="input-wrapper" onclick="$(this).find('input').focus()">
+                    <span style="width: 20%">验证码</span>
+                    <!--<input v-model="verificationCode" style="width: 50%;" type="text" maxlength="6" placeholder="请输入验证码">-->
+                    <input style="width: 50%" v-model="verificationCode" style="text-align:right;width: 50%;float: right" type="text" maxlength="6">
+                </div>
+            </div>
+            <div style="border: none" class="input">
+                <div class="input-wrapper" onclick="$(this).find('input').focus()">
+                    <button style="width: 45%;float: right" id="generateCode" click="sendSmsCode()" type="button" class="check_code">
+                       获取验证码
+                    </button>
+                </div>
+            </div>
+            <div class="agree mui-input-row mui-checkbox mui-left">
+                <input id="checkbox" name="checkbox" type="checkbox" v-model="isAgree">
+                <p> 我已经同意<a onclick="popoverClick('#div')" href="javascript:;"> 服务条款</a></p>
+            </div>
+            <button type="button" click="doRegister()" class=" btn mui-btn mui-btn-warning">马上注册</button>
+        </div>
+    </div>
+    <!--弹出层（通过）开始-->
+    <div style="display: none" id="div">
+        <div id="popover" class="popover">
+            <div class="text WordSection1" style="layout-grid:15.6pt">
+
+                <h5 style=" text-align: center; color: black;font-weight: 600;margin: 10px 0 ; font-size: 12pt">鲸卫士校车联盟用户服务条款</h5>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span class="fwb"><b><u><span style="font-size:10.5pt;font-family:宋体;color:black">欢迎申请使用沈阳博雅品牌管理有限公司旗下鲸卫士校车联盟平台（下列简称为“鲸卫士”或“鲸卫士校车联盟”）提供的服务。</span></u></b></span><span style="font-size:10.5pt;font-family:宋体;color:black">
+                        请您（下列简称为“用户”）仔细阅读以下全部内容<span class="fwb"><b><u>（特别是粗体下划线标注的内容）</u></b></span>。如用户不同意本服务条款任意内容，请勿注册或使用鲸卫士服务。如用户通过进入注册程序并点击“同意条款并注册”，即表示用户与沈阳博雅品牌管理有限公司已达成协议，自愿接受本服务条款的所有内容（未成年需在法定监护人的陪同下约阅读）。此后，用户不得以未阅读本服务条款内容作任何形式的抗辩。<span class="fwb"><b><u>因此，在您点击“同意协议并注册”前，请认真阅读本服务条款。</u></b></span><span lang="EN-US"><o:p></o:p></span>
+                    </span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt;mso-outline-level:1">
+                    <span lang="EN-US"
+                          style="font-size:10.5pt;font-family:宋体;color:black">1.</span><span style="font-size:10.5pt;font-family:宋体;color:black">服务条款的确认<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">
+                        鲸卫士校车联盟平台产品的所有权以及相关软件的知识产权归沈阳博雅品牌管理有限公司所有。鲸卫士校车联盟所提供的服务必须按照其服务条款和操作规则严格执行。本服务条款的效力范围及于鲸卫士校车联盟的一切产品和服务，用户在享受鲸卫士校车联盟任何单项服务时，应当受本服务条款的约束。<span lang="EN-US"><o:p></o:p></span>
+                    </span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span class="fwb"><b><u><span style="font-size:10.5pt;font-family:宋体;color:black">当用户使用鲸卫士校车联盟各单项服务时，应以鲸卫士校车联盟认可的方式同意该单项服务的服务条款以及鲸卫士校车联盟在该单项服务中发出的各类公告（下列简称为“单项条款”），在此情况下单项条款与本服务条款同时对用户产生效力。若单项条款与本服务条款存在同类条款的冲突，则在单项条款约束范围内应以单项条款为准。如您拒绝同意单项服务的服务条款，应当立即停止使用该单项服务。</span></u></b></span><span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black"><o:p></o:p></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt;mso-outline-level:1">
+                    <span lang="EN-US"
+                          style="font-size:10.5pt;font-family:宋体;color:black">2.</span><span style="font-size:10.5pt;font-family:宋体;color:black">鲸卫士校车联盟帐号服务简介<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span class="fwb"><b><u><span style="font-size:10.5pt;font-family:宋体;color:black">本服务条款所称的“鲸卫士校车联盟帐号”是指用户注册的合法、有效的帐号，包括：在鲸卫士校车联盟平台注册的帐号；</span></u></b></span><span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black"><o:p></o:p></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">
+                        您理解：鲸卫士校车联盟仅提供信息存储空间、提供搜索等相关的网络服务，除此之外与相关网络服务有关的设备（如个人电脑、手机及其他与接入互联网或移动网有关的装置）及所需的费用（如为接入互联网而支付的电话费及上网费、为使用移动网而支付的手机费）均由您自行负担。<span lang="EN-US"><o:p></o:p></span>
+                    </span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt;mso-outline-level:1">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">3.</span><span style="font-size:10.5pt;font-family:宋体;color:black">鲸卫士校车联盟帐号注册规则<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">
+                        鲸卫士校车联盟帐号注册资料包括但不限于用户的鲸卫士校车联盟帐号名称、头像、密码、注册或更新鲸卫士校车联盟帐号时输入的所有信息以及用户使用鲸卫士校车联盟各单项服务时输入的名称、头像等所有信息。<span lang="EN-US"><o:p></o:p></span>
+                    </span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">
+                        用户在注册鲸卫士校车联盟帐号时承诺遵守法律法规、社会主义制度、国家利益、公民合法权益、公共秩序、社会道德风尚和信息真实性等七条底线，不得在鲸卫士校车联盟帐号注册资料中出现违法和不良信息，且用户保证其在注册和使用帐号时，不得有以下情形：<span lang="EN-US"><o:p></o:p></span>
+                    </span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt;mso-outline-level:1">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">（<span lang="EN-US">1</span>）违反宪法或法律法规规定的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">（<span lang="EN-US">2</span>）危害国家安全，泄露国家秘密，颠覆国家政权，破坏国家统一的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">（<span lang="EN-US">3</span>）损害国家荣誉和利益的，损害公共利益的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">（<span lang="EN-US">4</span>）煽动民族仇恨、民族歧视，破坏民族团结的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">（<span lang="EN-US">5</span>）破坏国家宗教政策，宣扬邪教和封建迷信的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">（<span lang="EN-US">6</span>）散布谣言，扰乱社会秩序，破坏社会稳定的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">（<span lang="EN-US">7</span>）散布淫秽、色情、赌博、暴力、凶杀、恐怖或者教唆犯罪的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">（<span lang="EN-US">8</span>）侮辱或者诽谤他人，侵害他人合法权益的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">（<span lang="EN-US">9</span>）含有法律、行政法规禁止的其他内容的。<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">
+                        若用户提供给鲸卫士校车联盟的帐号注册资料不准确，不真实，含有违法或不良信息的，鲸卫士校车联盟有权不予注册，并保留终止用户使用鲸卫士校车联盟各项服务的权利。若用户以虚假信息骗取帐号注册或帐号头像、个人简介等注册资料存在违法和不良信息的，鲸卫士校车联盟有权采取通知限期改正、暂停使用、注销登记等措施。对于冒用关联机构或社会名人注册帐号名称的，鲸卫士校车联盟有权注销该帐号，并向政府主管部门进行报告。<span lang="EN-US"><o:p></o:p></span>
+                    </span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">根据相关法律、法规规定以及考虑到鲸卫士校车联盟产品服务的重要性，用户同意：<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">（<span lang="EN-US">1</span>）在注册鲸卫士校车联盟帐号时提交个人有效身份信息；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">（<span lang="EN-US">2</span>）提供及时、详尽及准确的账户注册资料；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">（<span lang="EN-US">3</span>）不断更新注册资料，符合及时、详尽准确的要求。<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">
+                        用户同意，其提供的真实、准确、合法的鲸卫士校车联盟帐号注册资料是作为认定用户与其鲸卫士校车联盟帐号的关联性以及用户身份的唯一证据。用户在享用鲸卫士校车联盟各项服务的同时，同意接受鲸卫士校车联盟提供的各类信息服务。<span lang="EN-US"><o:p></o:p></span>
+                    </span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">为使用户及时、全面了解鲸卫士校车联盟提供的各项服务，用户同意，鲸卫士校车联盟可以多次、长期向用户发送各类商业性短信息而无需另行获得用户的同意。<span lang="EN-US"><o:p></o:p></span></span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">
+                                用户同意与注册、使用鲸卫士校车联盟帐号相关的一切资料、数据和记录，包括但不限于鲸卫士校车联盟帐号、注册资料、所有登录、消费记录和相关的使用统计数字等归沈阳博雅品牌管理有限公司所有。发生争议时，用户同意以沈阳博雅品牌管理有限公司的系统数据为准，沈阳博雅品牌管理有限公司保证该数据的真实性。<span lang="EN-US"><o:p></o:p></span>
+                            </span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">
+                                尽管有前述约定，对于用户使用鲸卫士校车联盟帐号享受鲸卫士校车联盟旗下单项服务时产生的一切数据，包括但不限于产品登录记录、消费记录及其他产品日志、产品客户服务记录、用户在产品中创造的社会网络内容等，归具体产品运营主体所有。发生争议时，用户同意以具体产品运营主体的系统数据为准。但是如果单项条款存在与前述不同的约定，则以单项条款约定为准。<span lang="EN-US"><o:p></o:p></span>
+                            </span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt;mso-outline-level:1">
+                    <b>
+                        <u>
+                            <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">4.</span>
+                        </u>
+                    </b><b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">服务条款的修改<span lang="EN-US"><o:p></o:p></span></span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">
+                                鲸卫士校车联盟有权在必要时通过在网页上发出公告等合理方式修改本服务条款以及各单项服务的相关条款。用户在享受各项服务时，应及时查阅了解修改的内容，并自觉遵守本服务条款以及该单项服务的相关条款。用户如继续使用本服务条款涉及的服务，则视为对修改内容的同意，当发生有关争议时，以最新的服务条款为准；用户在不同意修改内容的情况下，有权停止使用本服务条款涉及的服务。<span lang="EN-US"><o:p></o:p></span>
+                            </span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt;mso-outline-level:1">
+                    <b>
+                        <u>
+                            <span lang="EN-US"
+                                  style="font-size:10.5pt;font-family:宋体;color:black">5.</span>
+                        </u>
+                    </b><b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">服务的变更或中止<span lang="EN-US"><o:p></o:p></span></span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">
+                                鲸卫士校车联盟始终在不断变更和改进服务。鲸卫士校车联盟可能会增加或删除功能，也可能暂停或彻底停止某项服务。用户同意鲸卫士校车联盟有权行使上述权利且不需对用户或第三方承担任何责任。<span lang="EN-US"><o:p></o:p></span>
+                            </span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt;mso-outline-level:1">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">6.</span><span style="font-size:10.5pt;font-family:宋体;color:black">用户的帐号、密码和安全性<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">
+                        鲸卫士校车联盟平台采用微信授权绑定方式进行注册。用户应维持密码及帐号的机密安全，如果用户未保管好自己的帐号和密码而对用户、鲸卫士校车联盟或第三方造成损害，用户将负全部责任。用户同意若发现任何非法使用用户帐号或安全漏洞的情况，有义务立即通告鲸卫士校车联盟。<span lang="EN-US"><o:p></o:p></span>
+                    </span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt;mso-outline-level:1">
+                    <b>
+                        <u>
+                            <span lang="EN-US"
+                                  style="font-size:10.5pt;font-family:宋体;color:black">7.</span>
+                        </u>
+                    </b>
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">用户隐私制度<span lang="EN-US"><o:p></o:p></span></span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">
+                                用户知悉并同意，为便于向用户提供更好的服务，鲸卫士校车联盟将在用户自愿选择服务或者提供信息的情况下收集用户的个人信息，并将这些信息进行整合。在用户使用鲸卫士校车联盟服务时，服务器会自动记录一些信息，包括但不限于<span lang="EN-US">URL</span>、<span lang="EN-US">IP</span>地址、浏览器类型、使用语言、访问日期和时间等。为方便用户登录或使用鲸卫士校车联盟的服务，鲸卫士校车联盟在有需要时将使用<span lang="EN-US">cookies</span>等技术，并将收集到的信息发送到对应的服务器。用户可以选择接受或者拒绝<span lang="EN-US">cookies</span>。如用户选择拒绝<span lang="EN-US">cookies</span>，则用户有可能无法登录或使用依赖于<span lang="EN-US">cookies</span>的服务或者功能。鲸卫士校车联盟收集的信息将成为鲸卫士校车联盟常规商业档案的一部分，且有可能因为转让、合并、收购、重组等原因而被转移到鲸卫士校车联盟的继任公司或者指定的一方。鲸卫士校车联盟同意善意使用收集的信息，且采取各项措施保证信息安全。<span lang="EN-US"><o:p></o:p></span>
+                            </span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">
+                                尊重用户个人隐私是鲸卫士校车联盟的一项基本政策。所以，鲸卫士校车联盟不会公开或透露用户的注册资料及保存在鲸卫士校车联盟各项服务中的非公开内容，除非鲸卫士校车联盟在诚信的基础上认为透露这些信息在以下几种情况是必要的：<span lang="EN-US"><o:p></o:p></span>
+                            </span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt;mso-outline-level:1">
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">
+                                （<span lang="EN-US">1</span>）事先获得用户的明确授权；或<span lang="EN-US"><o:p></o:p></span>
+                            </span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">
+                                （<span lang="EN-US">2</span>）遵守有关法律规定，包括在国家有关机关查询时，提供用户的注册信息、用户在鲸卫士校车联盟的网页上发布的信息内容及其发布时间、互联网地址或者域名；或<span lang="EN-US"><o:p></o:p></span>
+                            </span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt;mso-outline-level:1">
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">
+                                （<span lang="EN-US">3</span>）保持维护鲸卫士校车联盟的知识产权和其他重要权利；或<span lang="EN-US"><o:p></o:p></span>
+                            </span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">（<span lang="EN-US">4</span>）在紧急情况下竭力维护用户个人和社会大众的隐私安全；或<span lang="EN-US"><o:p></o:p></span></span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">（<span lang="EN-US">5</span>）根据本条款相关规定或者鲸卫士校车联盟认为必要的其他情况下。<span lang="EN-US"><o:p></o:p></span></span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">
+                                鲸卫士校车联盟可能会与第三方合作向用户提供相关的网络服务，在此情况下，如该第三方同意承担与鲸卫士校车联盟同等的保护用户隐私的责任，则鲸卫士校车联盟可将用户信息提供给该第三方。<span lang="EN-US"><o:p></o:p></span>
+                            </span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span lang="EN-US">
+                        <a href="http://s1.analysys.cn/snippets/html/opt-out-note.html" target="_blank">
+                            <b>
+                                <span lang="EN-US" style="font-size:10.5pt;font-family:宋体">
+                                    <span lang="EN-US">用户体验计划</span>
+                                </span>
+                            </b>
+                        </a>
+                    </span><b>
+                        <u>
+                            <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black"><o:p></o:p></span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <b>
+                        <u>
+                            <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">8.</span>
+                        </u>
+                    </b><b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">
+                                不可抗力条款<span lang="EN-US"><o:p></o:p></span>
+                            </span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">
+                                鲸卫士校车联盟对不可抗力导致的损失不承担责任。本服务条款所指不可抗力包括：天灾、法律法规或政府指令的变更，因网络服务特性而特有的原因，例如境内外基础电信运营商的故障、计算机或互联网相关技术缺陷、互联网覆盖范围限制、计算机病毒、黑客攻击等因素，及其他合法范围内的不能预见、不能避免并不能克服的客观情况。<span lang="EN-US"><o:p></o:p></span>
+                            </span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt;mso-outline-level:1">
+                    <b>
+                        <u>
+                            <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">9.</span>
+                        </u>
+                    </b>
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">禁止服务的商业化<span lang="EN-US"><o:p></o:p></span></span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">
+                                用户承诺，非经鲸卫士校车联盟同意，用户不能利用鲸卫士校车联盟各项服务进行销售或其他商业用途。如用户有需要将服务用于商业用途，应书面通知鲸卫士校车联盟并获得鲸卫士校车联盟的明确授权。<span lang="EN-US"><o:p></o:p></span>
+                            </span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt;mso-outline-level:1">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">10.</span><span style="font-size:10.5pt;font-family:宋体;color:black">用户管理<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">用户独立承担其发布内容的责任。用户对服务的使用必须遵守所有适用于服务的地方法律、国家法律和国际法律。用户承诺：<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">
+                        （<span lang="EN-US">1</span>）用户在鲸卫士校车联盟产品上发布信息或者利用鲸卫士校车联盟的服务时必须符合中国有关法规，不得在鲸卫士校车联盟产品上或者利用鲸卫士校车联盟的服务制作、复制、发布、传播以下信息：<span lang="EN-US"><o:p></o:p></span>
+                    </span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">(a)</span><span style="font-size:10.5pt;font-family:宋体;color:black">违反宪法确定的基本原则的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">(b)</span><span style="font-size:10.5pt;font-family:宋体;color:black">危害国家安全，泄露国家秘密，颠覆国家政权，破坏国家统一的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">(c)</span><span style="font-size:10.5pt;font-family:宋体;color:black">损害国家荣誉和利益的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">(d)</span><span style="font-size:10.5pt;font-family:宋体;color:black">煽动民族仇恨、民族歧视，破坏民族团结的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">(e)</span><span style="font-size:10.5pt;font-family:宋体;color:black">破坏国家宗教政策，宣扬邪教和封建迷信的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">(f)</span><span style="font-size:10.5pt;font-family:宋体;color:black">散布谣言，扰乱社会秩序，破坏社会稳定的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">(g)</span><span style="font-size:10.5pt;font-family:宋体;color:black">散布淫秽、色情、赌博、暴力、恐怖或者教唆犯罪的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">(h)</span><span style="font-size:10.5pt;font-family:宋体;color:black">侮辱或者诽谤他人，侵害他人合法权益的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">(<span class="SpellE">i</span>)</span><span style="font-size:10.5pt;font-family:宋体;color:black">煽动非法集会、结社、游行、示威、聚众扰乱社会秩序的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">(j)</span><span style="font-size:10.5pt;font-family:宋体;color:black">以非法民间组织名义活动的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">(k)</span><span style="font-size:10.5pt;font-family:宋体;color:black">含有法律、行政法规禁止的其他内容的。<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">
+                        （<span lang="EN-US">2</span>）用户在鲸卫士校车联盟的网页上发布信息或者利用鲸卫士校车联盟的服务时还必须符合其他有关国家和地区的法律规定以及国际法的有关规定。用户需遵守法律法规的规定使用鲸卫士校车联盟服务。<span lang="EN-US"><o:p></o:p></span>
+                    </span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">（<span lang="EN-US">3</span>）用户不得利用鲸卫士校车联盟的服务从事以下活动：<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">(a)</span><span style="font-size:10.5pt;font-family:宋体;color:black">未经允许，进入计算机信息网络或者使用计算机信息网络资源的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">(b)</span><span style="font-size:10.5pt;font-family:宋体;color:black">未经允许，对计算机信息网络功能进行删除、修改或者增加的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">(c)</span><span style="font-size:10.5pt;font-family:宋体;color:black">未经允许，对进入计算机信息网络中存储、处理或者传输的数据和应用程序进行删除、修改或者增加的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">(d)</span><span style="font-size:10.5pt;font-family:宋体;color:black">故意制作、传播计算机病毒等破坏性程序的；<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">(e)</span><span style="font-size:10.5pt;font-family:宋体;color:black">其他危害计算机信息网络安全的行为。<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">（<span lang="EN-US">4</span>）用户不得以任何方式干扰鲸卫士校车联盟的服务。<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">（<span lang="EN-US">5</span>）用户不得滥用鲸卫士校车联盟服务，包括但不限于：利用鲸卫士校车联盟服务进行侵害他人知识产权或者合法利益的其他行为。<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">（<span lang="EN-US">6</span>）用户应遵守鲸卫士校车联盟的所有其他规定和程序。<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span class="fwb"><b><u><span style="font-size:10.5pt;font-family:宋体;color:black">用户须对自己在使用鲸卫士校车联盟服务过程中的行为承担法律责任。用户承担法律责任的形式包括但不限于：对受到侵害者进行赔偿，以及在鲸卫士校车联盟首先承担了因用户行为导致的行政处罚或侵权损害赔偿责任后，用户应给予鲸卫士校车联盟等额的赔偿。</span></u></b></span><span style="font-size:10.5pt;font-family:宋体;color:black">
+                        若用户违反以上规定，鲸卫士校车联盟有权作出独立判断立即暂停或终止对用户提供部分或全部服务，包括锁定、注销、删除用户鲸卫士校车联盟帐号等措施。用户理解，如果鲸卫士校车联盟发现其网站传输的信息明显属于上段第<span lang="EN-US">(1)</span>条所列内容之一，依据中国法律，鲸卫士校车联盟有义务立即停止传输，保存有关记录，向国家有关机关报告，并且删除含有该内容的地址、目录或关闭服务器。<span lang="EN-US"><o:p></o:p></span>
+                    </span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">
+                        用户使用鲸卫士校车联盟电子公告服务，包括电子布告牌、电子白板、电子论坛和留言板等以交互形式为上网用户提供信息发布条件的行为，也须遵守本条的规定以及鲸卫士校车联盟将专门发布的电子公告服务规则，上段中描述的法律后果和法律责任同样适用于电子公告服务的用户。<span lang="EN-US"><o:p></o:p></span>
+                    </span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt;mso-outline-level:1">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">11.</span><span style="font-size:10.5pt;font-family:宋体;color:black">保障<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">
+                        用户同意保障和维护鲸卫士校车联盟全体成员的利益，承担由用户违反服务条款的损害补偿费用，其它人使用用户的电脑、帐号而产生的费用。用户或者使用用户帐号的过程中侵犯第三方知识产权及其他权利而导致被侵权人索赔的，由用户承担责任。<span lang="EN-US"><o:p></o:p></span>
+                    </span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">如用户或其它网络服务提供者利用鲸卫士校车联盟的服务侵害他人民事权益的，应当承担侵权等法律责任。<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">
+                        如用户利用鲸卫士校车联盟的服务实施侵权行为的，被侵权人有权通知鲸卫士校车联盟采取删除、屏蔽、断开链接等必要措施。鲸卫士校车联盟接到通知后，因自身过错若未及时采取必要措施的，按法律规定承担责任。<span lang="EN-US"><o:p></o:p></span>
+                    </span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt;mso-outline-level:1">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">12.</span><span style="font-size:10.5pt;font-family:宋体;color:black">通知<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">
+                        所有发给用户的通知都可通过电子邮件、常规的信件或在网站显著位置公告的方式进行传送。鲸卫士校车联盟将通过上述方法之一将消息传递给用户，告知他们服务条款的修改、服务变更、或其它重要事情。同时，鲸卫士校车联盟保留对申请了鲸卫士校车联盟的用户投放商业性广告的权利。<span lang="EN-US"><o:p></o:p></span>
+                    </span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt;mso-outline-level:1">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">13.</span><span style="font-size:10.5pt;font-family:宋体;color:black">内容、商标的所有权<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">
+                        鲸卫士校车联盟提供的内容包括但不限于：非用户上传<span lang="EN-US">/</span>提供的文字、软件、声音、相片、视频、图表等。所有这些内容均属于鲸卫士校车联盟，并受版权、商标、专利和其它财产所有权法律的保护。所以，用户只能在鲸卫士校车联盟授权下才能使用这些内容，而不能擅自复制、再造这些内容、或创造与内容有关的派生产品。<span lang="EN-US"><o:p></o:p></span>
+                    </span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">
+                        鲸卫士校车联盟等，以及鲸卫士校车联盟的其他标志及鲸卫士校车联盟产品、服务的名称，均为沈阳博雅品牌管理有限公司之商标（以下简称“鲸卫士校车联盟标识”）。未经沈阳博雅品牌管理有限公司事先书面同意，您不得将鲸卫士校车联盟标识以任何方式展示或使用或作其他处理，也不得向他人表明您有权展示、使用、或其他有权处理鲸卫士校车联盟标识的行为。<span lang="EN-US"><o:p></o:p></span>
+                    </span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt;mso-outline-level:1">
+                    <b>
+                        <u>
+                            <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">14.</span>
+                        </u>
+                    </b>
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">法律<span lang="EN-US"><o:p></o:p></span></span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">本条款适用中华人民共和国的法律，并且排除一切冲突法规定的适用。<span lang="EN-US"><o:p></o:p></span></span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">如出现纠纷，用户和鲸卫士校车联盟一致同意将纠纷交由沈阳博雅品牌管理有限公司所在地法院管辖。<span lang="EN-US"><o:p></o:p></span></span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt;mso-outline-level:1">
+                    <b>
+                        <u>
+                            <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">15.</span>
+                        </u>
+                    </b><b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">信息储存及相关知识产权<span lang="EN-US"><o:p></o:p></span></span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">
+                                鲸卫士校车联盟对鲸卫士校车联盟帐号上所有服务将尽力维护其安全性及方便性，但对服务中出现的信息（包括但不限于用户发布的信息）删除或储存失败不承担任何责任。另外鲸卫士校车联盟有权判定用户的行为是否符合本服务条款的要求，如果用户违背了本服务条款的规定，鲸卫士校车联盟有权中止或者终止对其鲸卫士校车联盟帐号的服务。<span lang="EN-US"><o:p></o:p></span>
+                            </span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <b>
+                        <u>
+                            <span style="font-size:10.5pt;font-family:宋体;color:black">
+                                鲸卫士校车联盟尊重知识产权并注重保护用户享有的各项权利。在鲸卫士校车联盟帐号所含服务中，用户可能需要通过上传、发布等各种方式向鲸卫士校车联盟提供内容。在此情况下，用户仍然享有此等内容的完整知识产权。用户在提供内容时将授予鲸卫士校车联盟一项全球性的免费许可，允许鲸卫士校车联盟使用、传播、复制、修改、再许可、翻译、创建衍生作品、出版、表演及展示此等内容。<span lang="EN-US"><o:p></o:p></span>
+                            </span>
+                        </u>
+                    </b>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">16.</span><span style="font-size:10.5pt;font-family:宋体;color:black">青少年用户特别提示<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">青少年用户必须遵守全国青少年网络文明公约：<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">要善于网上学习，不浏览不良信息；要诚实友好交流，不侮辱欺诈他人；要增强自护意识，不随意约会网友；要维护网络安全，不破坏网络秩序；要有益身心健康，不沉溺虚拟时空。<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt;mso-outline-level:1">
+                    <span lang="EN-US" style="font-size:10.5pt;font-family:宋体;color:black">17.</span><span style="font-size:10.5pt;font-family:宋体;color:black">其他<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">
+                        （<span lang="EN-US">1</span>）鲸卫士校车联盟不行使、未能及时行使或者未充分行使本条款或者按照法律规定所享有的权利，不应被视为放弃该权利，也不影响鲸卫士校车联盟在将来行使该权利。<span lang="EN-US"><o:p></o:p></span>
+                    </span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">
+                        （<span lang="EN-US">2</span>）如本条款中的任何条款无论因何种原因完全或部分无效或不具有执行力，本服务条款的其余条款仍应有效且具有约束力，鲸卫士校车联盟及用户均应尽力使该条款设定的本意得到实现。<span lang="EN-US"><o:p></o:p></span>
+                    </span>
+                </p>
+
+                <p style="margin:0cm;margin-bottom:.0001pt;text-align:justify;text-justify:inter-ideograph;text-indent:24.0pt">
+                    <span style="font-size:10.5pt;font-family:宋体;color:black">（<span lang="EN-US">3</span>）本条款中的标题仅为方便而设，不作为解释本条款的依据。<span lang="EN-US"><o:p></o:p></span></span>
+                </p>
+
+                <p class="MsoNormal"><span lang="EN-US" style="font-size:10.5pt;font-family:宋体"><o:p>&nbsp;</o:p></span></p>
+
+            </div>
+            <div class="agree_btn">
+                <button type="button" onclick="popClose('#div')" class="mui-btn mui-btn-primary">
+                    关闭
+                </button>
+            </div>
+        </div>
+    </div>
+    <!--弹出层（通过）结束-->
+
+    <script src="~/lib/mui/js/mui.min.js"></script>
+    <script src="~/lib/mui/js/mui.picker.all.js"></script>
+    <script src="~/lib/jquery/jquery.2.1.4.min.js"></script>
+    <script src="~/js/base.js"></script>
+    <script src="http://res2.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+
+    <script>
+        (function () {
+            var windowHeight = $(window).height();
+            var bodyHeight = $('body').height();
+
+            if (windowHeight < bodyHeight) {
+                $('.pic').css({
+                    position: 'absolute',
+                    bottom: 0,
+                    left: '10%',
+                    width: '80%'
+                })
+            }
+
+            // jssdk初始化参数
+            //$.post('/wechat/getJssdk', {
+            //    wxcode: 'wxid',
+            //    url: window.location.href
+            //}, function (data) {
+            //    if (data.code === 1) {
+            //        wx.config({
+            //            debug: data.data.debug,
+            //            appId: data.data.appId,
+            //            timestamp: data.data.timestamp,
+            //            nonceStr: data.data.nonceStr,
+            //            signature: data.data.signature,
+            //            jsApiList: [
+            //                'onMenuShareTimeline',
+            //                'onMenuShareAppMessage',
+            //                'onMenuShareQQ',
+            //                'onMenuShareWeibo',
+            //                'updateAppMessageShareData',
+            //                'closeWindow'
+            //            ]
+            //        });
+            //        wx.ready(function () {
+            //            // 自定义“分享给朋友”及“分享到QQ”按钮的分享内容
+            //            //                wx.updateAppMessageShareData({
+            //            //                    title: '乘车卡绑定', // 分享标题
+            //            //                    desc: '', // 分享描述
+            //            //                    link: 'http://www.iot-online.top/SchoolBusPlatform/index?type=0', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+            //            //                    imgUrl: 'http://www.iot-online.top/SchoolBusPlatform/common/resource/img/pic1.jpg', // 分享图标
+            //            //                    success: function () {
+            //            //                        // 设置成功
+            //            //                    }
+            //            //                })
+            //            wx.onMenuShareAppMessage({
+            //                title: '鲸卫士校车联盟', // 分享标题
+            //                desc: '绑定乘车卡,关注孩子乘车安全', // 分享描述
+            //                link: 'http://www.iot-online.top/index?type=0', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+            //                imgUrl: 'http://www.iot-online.top/common/resource/img/pic1.jpg', // 分享图标
+            //                type: '', // 分享类型,music、video或link，不填默认为link
+            //                dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+            //                success: function () {
+            //                    // 用户点击了分享后执行的回调函数
+            //                }
+            //            });
+            //        });
+            //    }
+            //});
+
+            // 监听返回按钮
+            pushHistory();
+            window.addEventListener("popstate", function (e) {
+                //关闭当前浏览器
+                wx.closeWindow();
+            }, false);
+            function pushHistory() {
+                var state = {
+                    title: "title",
+                    url: "#"
+                };
+                window.history.pushState(state, "title", "#");
+            }
+
+        })();
+
+    //与学生关系选择
+    $(function () {
+        $("#relationship").click(function () {
+            var picker = new mui.PopPicker();
+            picker.setData([{
+                value: '父亲',
+                text: '父亲'
+            }, {
+                value: '母亲',
+                text: '母亲'
+            }, {
+                value: '爷爷',
+                text: '爷爷'
+            }, {
+                value: '奶奶',
+                text: '奶奶'
+            }, {
+                value: '姥爷',
+                text: '姥爷'
+            }, {
+                value: '姥姥',
+                text: '姥姥'
+            }, {
+                value: '其他',
+                text: '其他'
+            }]);
+            picker.show(function (selectItems) {
+                $("#relationshipname").val(selectItems[0].text);
+                alert(selectItems[0].text);
+  
+            })
+        });
+    })
+    </script>
+    <script type="text/javascript">
+        //var vue = new Vue({
+        //    el: '#vue',
+        //    data: {
+        //        wxid: localStorage.getItem("wxid"),// 微信ID
+        //        cardNum: '',//卡号
+        //        relationship: '',//与学生关系
+        //        phoneNum: '',//手机号
+        //        verificationCode: '',//验证码
+        //        codePrompt: '获取验证码',
+        //        isAgree: true//是否同意条款
+        //    },
+        //    methods: {
+                // 获取该微信用户注册信息
+                //getWxUserInfo: function () {
+                //    $.ajax({
+                //        type: "POST",
+                //        url: "/webService/getWxUserInfo",
+                //        data: {
+                //            wxid: vue.wxid
+                //        },
+                //        success: function (data) {
+                //            // 注册过则默认赋值
+                //            if (data.code !== 1) {
+                //                // 注册过则默认赋值
+                //                vue.relationship = localStorage.getItem("relationship");
+                //                vue.phoneNum = localStorage.getItem("phoneNum");
+                //            }
+                //        }
+                //    })
+                //},
+
+                // 获取验证码
+                //sendSmsCode: function () {
+                //    $.ajax({
+                //        type: "POST",
+                //        url: "/webService/sendSmsCode",
+                //        data: {
+                //            // 手机号
+                //            phoneNum: vue.phoneNum,
+                //            // 验证码类型（0：注册）
+                //            verificationCodeType: 0
+                //        },
+                //        success: function (data) {
+                //            if (data.code === 201) {
+                //                settime()
+                //            } else {
+                //                alert(data.msg);
+                //            }
+                //        }
+                //    });
+                //},
+
+                // （不）同意条款
+                //doConfirm: function () {
+                //    vue.isAgree = !vue.isAgree;
+                //},
+
+                // 注册
+                //doRegister: function () {
+                //    if (vue.isAgree) {
+                //        $.ajax({
+                //            type: "POST",
+                //            url: "/webService/doRegister",
+                //            data: {
+                //                // 微信ID
+                //                wxid: vue.wxid,
+                //                // 姓名
+                //                userName: localStorage.getItem("userName"),
+                //                // 卡号
+                //                cardNum: vue.cardNum,
+                //                // 与学生关系
+                //                relationship: vue.relationship,
+                //                // 手机号
+                //                phoneNum: vue.phoneNum,
+                //                // 验证码
+                //                verificationCode: vue.verificationCode
+                //            },
+                //            success: function (data) {
+
+                //                if (data.code === 1) {
+                //                    //个人信息本地存储
+                //                    localStorage.setItem("wxid", vue.wxid);
+                //                    //跳转完善信息页
+                //                    window.location.href = "/goBinding?wxid=" + localStorage.getItem("wxid");
+                //                } else {
+                //                    alert(data.msg);
+                //                }
+
+                //            }
+                //        });
+                //    } else {
+                //        alert("请先确认条款信息！");
+                //    }
+                //}
+
+        //    }
+        //});
+
+        //vue.$nextTick(function () {
+        //    // 获取该微信用户注册信息
+        //    vue.getWxUserInfo();
+        //});
+
+        // （不）同意条款
+        mui('body').on('tap', '#checkbox', function () {
+            vue.isAgree = !vue.isAgree;
+        });
+
+        //倒计时
+        var countdown = 60;
+        var _generate_code = $("#generateCode");
+        function settime() {
+            if (countdown === 0) {
+                _generate_code.attr("disabled", false);
+                vue.codePrompt = "获取验证码";
+                countdown = 60;
+                return false;
+            } else {
+                _generate_code.attr("disabled", true);
+                vue.codePrompt = "重新发送(" + countdown + ")";
+                countdown--;
+            }
+            setTimeout(function () {
+                settime();
+            }, 1000);
+        }
+
+        function popoverClick(d) {
+            $(d).show();
+            $(d).width($(window).width()).height($(window).height());
+            $("body").height($(window).height()).css("overflow", "hidden");
+            $(d).find(".popover").css({ "margin-top": -$(d).find(".popover").height() / 2, "top": "50%" });
+        }
+
+        function popClose(d) {
+            $(d).hide();
+            $("body").css("overflow", "auto");
+        }
+    </script>
+
+</body>
+</html>

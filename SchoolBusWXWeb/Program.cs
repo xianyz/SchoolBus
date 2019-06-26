@@ -20,6 +20,7 @@ namespace SchoolBusWXWeb
 #if !DEBUG
                   .UseUrls("http://0.0.0.0:5005/")
 #endif
+                .UseUrls("http://0.0.0.0:5005/")
                 .UseStartup<Startup>();
     }
 }
