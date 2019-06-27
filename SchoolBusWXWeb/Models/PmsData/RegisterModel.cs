@@ -27,7 +27,8 @@ namespace SchoolBusWXWeb.Models.PmsData
         /// </summary>
         [Required(ErrorMessage = "请填写与学生关系")]
         [StringLength(10)]
-        [RegularExpression(@"[(父亲)(母亲)(爷爷)(奶奶)(姥爷)(姥姥)(其他)]", ErrorMessage = "和学生关系不正确")]
+        //[RegularExpression(@"^[父亲][母亲][\u7237\u7237][奶奶][姥爷][姥姥][其他]", ErrorMessage = "和学生关系不正确")]
+        [RegularExpression(@"^[爷爷]$", ErrorMessage = "和学生关系不正确")]
         public string relationship { get; set; }
         /// <summary>
         /// 手机号

@@ -34,7 +34,7 @@ namespace SchoolBusWXWeb.Business
 
         public async Task<RegisVD> DoRegisterAsync(RegisterModel user)
         {
-            RegisVD regis = new RegisVD();
+            var regis = new RegisVD();
             #region 卡号校验
             var cardRecord = await _schoolBusRepository.GetCardByCodeAsync(user.cardNum);
             if (cardRecord == null)

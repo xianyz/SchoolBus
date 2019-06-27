@@ -22,13 +22,13 @@ namespace SchoolBusWXWeb.Controllers
         {
             if (string.IsNullOrEmpty(pkid)) return View();
             var data = await _schoolBusBusines.GetTwxuserAsync(pkid);
-            return View(data);
+            return View(new RegisterModel());
         }
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterModel user)
         {
-            RegisVD res = new RegisVD();
+            var res = new RegisVD();
             if (ModelState.IsValid)
             {
 #if DEBUG

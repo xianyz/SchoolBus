@@ -1,12 +1,14 @@
-﻿@{ 
-    Layout=null;
+﻿@{
+    Layout = null;
 }
-<!doctype html>
-<html xmlns:o="http://www.w3.org/1999/xhtml" lang="zh-CN">
+@using SchoolBusWXWeb.Models.PmsData
+@model RegisterModel
+
+<!DOCTYPE html>
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="renderer" content="webkit">
     <link href="~/lib/mui/css/mui.min.css" rel="stylesheet" />
@@ -16,11 +18,10 @@
 
     <title>注册</title>
     <style>
-        [v-cloak] {
-            display: none;
-        }    .mui-checkbox input[type=checkbox]:checked:before, .mui-radio input[type=radio]:checked:before {
-                 color: #FCC142 !important;
-             }
+
+        .mui-checkbox input[type=checkbox]:checked:before, .mui-radio input[type=radio]:checked:before {
+            color: #FCC142 !important;
+        }
 
         .mui-checkbox input[type=checkbox]:before, .mui-radio input[type=radio]:before {
             font-size: 24px;
@@ -35,52 +36,59 @@
     <div class="register_pic">
         <img src="~/img/pic1.jpg" />
     </div>
-    <div class="register_login" id="vue" >
+    <div class="register_login" id="vue">
+        <form id="frm" name="frm" method="post" asp-action="Register">
         <div class="login_content">
-            <div class="input">
-                <img src="~/img/login-icon1.png" />
-                <div class="input-wrapper" onclick="$(this).find('input').focus()">
-                    <span style="width: 20%">卡号</span>
-                    <input style="width: 70%;float: right" class="input" type="text" maxlength="10">
+                <div class="input">
+                    <img src="~/img/login-icon1.png" />
+                    <div class="input-wrapper" onclick="$(this).find('input').focus()">
+                        <span style="width: 20%">卡号</span>
+                        <span asp-validation-for="cardNum" style="color: red"></span>
+                        <input type="text" asp-for="cardNum" value="@Model.cardNum" maxlength="10" class="input" style="width: 70%; float: right" />
+                    </div>
                 </div>
-            </div>
-            <div class="input">
-                <img src="~/img/login-icon4.png" />
-                <div class="input-wrapper" id="relationship">
-                    <span style="width: 20%">与学生关系</span>
-                    <!--placeholder="选择与学生的关系">-->
-                    <input style="width: 50%;float: right" id="relationshipname" readonly="" class="input" type="text">
+                <div class="input">
+                    <img src="~/img/login-icon4.png" />
+                    <div class="input-wrapper" id="relationshipname">
+                        <span style="width: 20%">与学生关系</span>
+                        <span asp-validation-for="relationship" style="color: red"></span>
+                        <!--placeholder="选择与学生的关系">-->
+                        <input type="text" asp-for="relationship" value="@Model.relationship" class="input" style="width: 50%; float: right" />
+                        @*<input style="width: 50%; float: right" id="relationship" readonly="" class="input" type="text">*@
+                    </div>
                 </div>
-            </div>
-            <div class="input">
-                <img src="~/img/login-icon2.png" />
-                <div class="input-wrapper" onclick="$(this).find('input').focus()">
-                    <span style="width: 20%">手机号码</span>
-                    <!--<input v-model="phoneNum" class="input" type="text" maxlength="11" placeholder="请输入手机号">-->
-                    <input style="width: 70%;float: right" v-model="phoneNum" class="input" type="text" maxlength="11">
+                <div class="input">
+                    <img src="~/img/login-icon2.png" />
+                    <div class="input-wrapper" onclick="$(this).find('input').focus()">
+                        <span style="width: 20%">手机号码</span>
+                        <span asp-validation-for="phoneNum" style="color: red"></span>
+                        @*<input style="width: 70%; float: right" class="input" type="text" maxlength="11">*@
+                        <input type="text" asp-for="phoneNum" value="@Model.phoneNum" maxlength="11" class="input" style="width: 70%; float: right" />
+                    </div>
                 </div>
-            </div>
-            <div class="input">
-                <img src="~/img/login-icon3.png" />
-                <div class="input-wrapper" onclick="$(this).find('input').focus()">
-                    <span style="width: 20%">验证码</span>
-                    <!--<input v-model="verificationCode" style="width: 50%;" type="text" maxlength="6" placeholder="请输入验证码">-->
-                    <input style="width: 50%" v-model="verificationCode" style="text-align:right;width: 50%;float: right" type="text" maxlength="6">
+                <div class="input">
+                    <img src="~/img/login-icon3.png" />
+                    <div class="input-wrapper" onclick="$(this).find('input').focus()">
+                        <span style="width: 20%">验证码</span>
+                        <span asp-validation-for="verificationCode" style="color: red"></span>
+                        <input type="text" asp-for="verificationCode" maxlength="6" class="input" style="text-align: right; width: 50%; float: right" />
+                        @*<input style="text-align: right; width: 50%; float: right" type="text" maxlength="6">*@
+                    </div>
                 </div>
-            </div>
-            <div style="border: none" class="input">
-                <div class="input-wrapper" onclick="$(this).find('input').focus()">
-                    <button style="width: 45%;float: right" id="generateCode" click="sendSmsCode()" type="button" class="check_code">
-                       获取验证码
-                    </button>
+                <div style="border: none" class="input">
+                    <div class="input-wrapper" onclick="$(this).find('input').focus()">
+                        <button style="width: 45%; float: right" id="generateCode" click="sendSmsCode()" type="button" class="check_code">
+                            获取验证码
+                        </button>
+                    </div>
                 </div>
+                <div class="agree mui-input-row mui-checkbox mui-left">
+                    <input id="checkbox" name="checkbox" type="checkbox" checked="checked">
+                    <p> 我已经同意<a onclick="popoverClick('#div')" href="javascript:;"> 服务条款</a></p>
+                </div>
+                <button type="submit" class="btn mui-btn mui-btn-warning">马上注册</button>
             </div>
-            <div class="agree mui-input-row mui-checkbox mui-left">
-                <input id="checkbox" name="checkbox" type="checkbox" checked="checked">
-                <p> 我已经同意<a onclick="popoverClick('#div')" href="javascript:;"> 服务条款</a></p>
-            </div>
-            <button type="button" click="doRegister()" class=" btn mui-btn mui-btn-warning">马上注册</button>
-        </div>
+        </form>
     </div>
     <!--弹出层（通过）开始-->
     <div style="display: none" id="div">
@@ -704,231 +712,91 @@
     </div>
     <!--弹出层（通过）结束-->
 
+    <script src="~/lib/jquery/jquery.2.1.4.min.js"></script>
     <script src="~/lib/mui/js/mui.min.js"></script>
     <script src="~/lib/mui/js/mui.picker.all.js"></script>
-    <script src="~/lib/jquery/jquery.2.1.4.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
     <script src="~/js/base.js"></script>
-    <script src="http://res2.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    <script src="@(this.Context.Request.Scheme)://res2.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
 
     <script>
-        (function () {
-            var windowHeight = $(window).height();
-            var bodyHeight = $('body').height();
 
-            if (windowHeight < bodyHeight) {
-                $('.pic').css({
-                    position: 'absolute',
-                    bottom: 0,
-                    left: '10%',
-                    width: '80%'
+        //与学生关系选择
+        $(function () {
+            $("#relationshipname").click(function () {
+                var picker = new mui.PopPicker();
+                picker.setData([{
+                    value: '父亲',
+                    text: '父亲'
+                }, {
+                    value: '母亲',
+                    text: '母亲'
+                }, {
+                    value: '爷爷',
+                    text: '爷爷'
+                }, {
+                    value: '奶奶',
+                    text: '奶奶'
+                }, {
+                    value: '姥爷',
+                    text: '姥爷'
+                }, {
+                    value: '姥姥',
+                    text: '姥姥'
+                }, {
+                    value: '其他',
+                    text: '其他'
+                }]);
+                picker.show(function (selectItems) {
+                    $("#relationship").val(selectItems[0].text);
                 })
-            }
-
-            // jssdk初始化参数
-            //$.post('/wechat/getJssdk', {
-            //    wxcode: 'wxid',
-            //    url: window.location.href
-            //}, function (data) {
-            //    if (data.code === 1) {
-            //        wx.config({
-            //            debug: data.data.debug,
-            //            appId: data.data.appId,
-            //            timestamp: data.data.timestamp,
-            //            nonceStr: data.data.nonceStr,
-            //            signature: data.data.signature,
-            //            jsApiList: [
-            //                'onMenuShareTimeline',
-            //                'onMenuShareAppMessage',
-            //                'onMenuShareQQ',
-            //                'onMenuShareWeibo',
-            //                'updateAppMessageShareData',
-            //                'closeWindow'
-            //            ]
-            //        });
-            //        wx.ready(function () {
-            //            // 自定义“分享给朋友”及“分享到QQ”按钮的分享内容
-            //            //                wx.updateAppMessageShareData({
-            //            //                    title: '乘车卡绑定', // 分享标题
-            //            //                    desc: '', // 分享描述
-            //            //                    link: 'http://www.iot-online.top/SchoolBusPlatform/index?type=0', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-            //            //                    imgUrl: 'http://www.iot-online.top/SchoolBusPlatform/common/resource/img/pic1.jpg', // 分享图标
-            //            //                    success: function () {
-            //            //                        // 设置成功
-            //            //                    }
-            //            //                })
-            //            wx.onMenuShareAppMessage({
-            //                title: '鲸卫士校车联盟', // 分享标题
-            //                desc: '绑定乘车卡,关注孩子乘车安全', // 分享描述
-            //                link: 'http://www.iot-online.top/index?type=0', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-            //                imgUrl: 'http://www.iot-online.top/common/resource/img/pic1.jpg', // 分享图标
-            //                type: '', // 分享类型,music、video或link，不填默认为link
-            //                dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
-            //                success: function () {
-            //                    // 用户点击了分享后执行的回调函数
-            //                }
-            //            });
-            //        });
-            //    }
-            //});
-
-            // 监听返回按钮
-            pushHistory();
-            window.addEventListener("popstate", function (e) {
-                //关闭当前浏览器
-                wx.closeWindow();
-            }, false);
-            function pushHistory() {
-                var state = {
-                    title: "title",
-                    url: "#"
-                };
-                window.history.pushState(state, "title", "#");
-            }
-
-        })();
-
-    //与学生关系选择
-    $(function () {
-        $("#relationship").click(function () {
-            var picker = new mui.PopPicker();
-            picker.setData([{
-                value: '父亲',
-                text: '父亲'
-            }, {
-                value: '母亲',
-                text: '母亲'
-            }, {
-                value: '爷爷',
-                text: '爷爷'
-            }, {
-                value: '奶奶',
-                text: '奶奶'
-            }, {
-                value: '姥爷',
-                text: '姥爷'
-            }, {
-                value: '姥姥',
-                text: '姥姥'
-            }, {
-                value: '其他',
-                text: '其他'
-            }]);
-            picker.show(function (selectItems) {
-                $("#relationshipname").val(selectItems[0].text);
-                alert(selectItems[0].text);
-  
-            })
+            });
         });
-    })
+
+        $('#frm').submit(function () {
+            if ($(this).valid()) {
+                $.ajax({
+                    url: this.action,
+                    type: this.method,
+                    data: $(this).serialize(),
+                    success: function (result) {
+                        console.log(result);
+                    },
+                    error: function (result) {
+                        console.log(result);
+                    },
+                    complete: function (XMLHttpRequest, textStatus) {
+
+                    }
+                });
+            }
+            return false;
+        });
     </script>
     <script type="text/javascript">
-        //var vue = new Vue({
-        //    el: '#vue',
-        //    data: {
-        //        wxid: localStorage.getItem("wxid"),// 微信ID
-        //        cardNum: '',//卡号
-        //        relationship: '',//与学生关系
-        //        phoneNum: '',//手机号
-        //        verificationCode: '',//验证码
-        //        codePrompt: '获取验证码',
-        //        isAgree: true//是否同意条款
-        //    },
-        //    methods: {
-                // 获取该微信用户注册信息
-                //getWxUserInfo: function () {
-                //    $.ajax({
-                //        type: "POST",
-                //        url: "/webService/getWxUserInfo",
-                //        data: {
-                //            wxid: vue.wxid
-                //        },
-                //        success: function (data) {
-                //            // 注册过则默认赋值
-                //            if (data.code !== 1) {
-                //                // 注册过则默认赋值
-                //                vue.relationship = localStorage.getItem("relationship");
-                //                vue.phoneNum = localStorage.getItem("phoneNum");
-                //            }
-                //        }
-                //    })
-                //},
 
-                // 获取验证码
-                //sendSmsCode: function () {
-                //    $.ajax({
-                //        type: "POST",
-                //        url: "/webService/sendSmsCode",
-                //        data: {
-                //            // 手机号
-                //            phoneNum: vue.phoneNum,
-                //            // 验证码类型（0：注册）
-                //            verificationCodeType: 0
-                //        },
-                //        success: function (data) {
-                //            if (data.code === 201) {
-                //                settime()
-                //            } else {
-                //                alert(data.msg);
-                //            }
-                //        }
-                //    });
-                //},
+        // 获取验证码
+        //sendSmsCode: function () {
+        //    $.ajax({
+        //        type: "POST",
+        //        url: "/webService/sendSmsCode",
+        //        data: {
+        //            // 手机号
+        //            phoneNum: vue.phoneNum,
+        //            // 验证码类型（0：注册）
+        //            verificationCodeType: 0
+        //        },
+        //        success: function (data) {
+        //            if (data.code === 201) {
+        //                settime()
+        //            } else {
+        //                alert(data.msg);
+        //            }
+        //        }
+        //    });
+        //},
 
-                // （不）同意条款
-                //doConfirm: function () {
-                //    vue.isAgree = !vue.isAgree;
-                //},
-
-                // 注册
-                //doRegister: function () {
-                //    if (vue.isAgree) {
-                //        $.ajax({
-                //            type: "POST",
-                //            url: "/webService/doRegister",
-                //            data: {
-                //                // 微信ID
-                //                wxid: vue.wxid,
-                //                // 姓名
-                //                userName: localStorage.getItem("userName"),
-                //                // 卡号
-                //                cardNum: vue.cardNum,
-                //                // 与学生关系
-                //                relationship: vue.relationship,
-                //                // 手机号
-                //                phoneNum: vue.phoneNum,
-                //                // 验证码
-                //                verificationCode: vue.verificationCode
-                //            },
-                //            success: function (data) {
-
-                //                if (data.code === 1) {
-                //                    //个人信息本地存储
-                //                    localStorage.setItem("wxid", vue.wxid);
-                //                    //跳转完善信息页
-                //                    window.location.href = "/goBinding?wxid=" + localStorage.getItem("wxid");
-                //                } else {
-                //                    alert(data.msg);
-                //                }
-
-                //            }
-                //        });
-                //    } else {
-                //        alert("请先确认条款信息！");
-                //    }
-                //}
-
-        //    }
-        //});
-
-        //vue.$nextTick(function () {
-        //    // 获取该微信用户注册信息
-        //    vue.getWxUserInfo();
-        //});
-
-        // （不）同意条款
-        mui('body').on('tap', '#checkbox', function () {
-            vue.isAgree = !vue.isAgree;
-        });
 
         //倒计时
         var countdown = 60;
@@ -961,6 +829,5 @@
             $("body").css("overflow", "auto");
         }
     </script>
-
 </body>
 </html>
