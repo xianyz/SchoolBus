@@ -16,7 +16,7 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         [BindNever]
         public string fwxid { get; set; }
         /// <summary>
-        /// 卡片id   外键 tcard 表fcode字段
+        /// 卡片id   外键 tcard 表pkid字段
         /// </summary>
         [BindNever]
         public string fk_card_id { get; set; }

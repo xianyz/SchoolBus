@@ -8,6 +8,9 @@ namespace SchoolBusWXWeb.Repository
 {
     public interface ISchoolBusRepository
     {
-        Task<twxuser> GetTwxuserAsync();
+        Task<twxuser> GetTwxuserBypkidAsync(string pkid);
+        Task<twxuser> GetTwxuserBytOpenidAsync(string openid);
+        Task<tcard> GetCardBypkidAsync(string pkid);
+        Task<tcard> GetCardByCode(string fcode);
     }
 }

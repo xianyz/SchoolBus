@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
 using SchoolBusWXWeb.Filters;
@@ -8,11 +6,12 @@ using SchoolBusWXWeb.Models.ViewData;
 using Senparc.Weixin;
 using Senparc.Weixin.MP.AdvancedAPIs.OAuth;
 using Senparc.Weixin.MP.Helpers;
+using System;
 
 namespace SchoolBusWXWeb.Controllers
 {
-    [CustomOAuth(null, "/OAuth2/UserInfoCallback", Senparc.Weixin.MP.OAuthScope.snsapi_userinfo)]
-    public class OAuthAndJsSdkController : Controller
+    [CustomOAuth(null, "/OAuth2/UserInfoCallback")]
+    public class OAuthAndJsSdkController : ControllerEx
     {
         protected OAuthUserInfo UserInfoe { get; set; }
 
