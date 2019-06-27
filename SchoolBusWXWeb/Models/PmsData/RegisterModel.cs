@@ -35,7 +35,7 @@ namespace SchoolBusWXWeb.Models.PmsData
         /// </summary>
         [Required(ErrorMessage = "填写正确手机号码")]
         [StringLength(11, ErrorMessage = "手机号不能超过11个字符")]
-        [RegularExpression(@"^1[3456789][0-9]{9}$", ErrorMessage = "手机号格式不正确")]
+        [RegularExpression(@"^1[3456789][0-9]{9}$", ErrorMessage = "号码格式不对")]
         public string phoneNum { get; set; }
         /// <summary>
         /// 验证码

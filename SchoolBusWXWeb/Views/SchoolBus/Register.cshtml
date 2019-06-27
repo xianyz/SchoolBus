@@ -36,43 +36,40 @@
     <div class="register_pic">
         <img src="~/img/pic1.jpg" />
     </div>
-    <div class="register_login" id="vue">
+    <div class="register_login">
         <form id="frm" name="frm" method="post" asp-action="Register">
-        <div class="login_content">
+            <div class="login_content">
                 <div class="input">
                     <img src="~/img/login-icon1.png" />
                     <div class="input-wrapper" onclick="$(this).find('input').focus()">
-                        <span style="width: 20%">卡号</span>
-                        <span asp-validation-for="cardNum" style="color: red"></span>
-                        <input type="text" asp-for="cardNum" value="@Model.cardNum" maxlength="10" class="input" style="width: 70%; float: right" />
+                        <span style="width: 10%">卡号</span>
+                        <input type="text" asp-for="cardNum" value="@Model.cardNum" maxlength="10" class="input" style="width: 50%; float: right" />
+                        <span asp-validation-for="cardNum" style="width: 40%;color: red;"></span>
                     </div>
                 </div>
                 <div class="input">
                     <img src="~/img/login-icon4.png" />
                     <div class="input-wrapper" id="relationshipname">
-                        <span style="width: 20%">与学生关系</span>
-                        <span asp-validation-for="relationship" style="color: red"></span>
+                        <span style="width: 10%">与学生关系</span>
                         <!--placeholder="选择与学生的关系">-->
-                        <input type="text" asp-for="relationship" value="@Model.relationship" class="input" style="width: 50%; float: right" />
-                        @*<input style="width: 50%; float: right" id="relationship" readonly="" class="input" type="text">*@
+                        <input type="text" asp-for="relationship" value="@Model.relationship" class="input" style="width: 20%; float: right" />
+                        <span asp-validation-for="relationship" style="width: 60%;color: red"></span>
                     </div>
                 </div>
                 <div class="input">
                     <img src="~/img/login-icon2.png" />
                     <div class="input-wrapper" onclick="$(this).find('input').focus()">
-                        <span style="width: 20%">手机号码</span>
-                        <span asp-validation-for="phoneNum" style="color: red"></span>
-                        @*<input style="width: 70%; float: right" class="input" type="text" maxlength="11">*@
-                        <input type="text" asp-for="phoneNum" value="@Model.phoneNum" maxlength="11" class="input" style="width: 70%; float: right" />
+                        <span style="width: 1%">手机号码</span>
+                        <input type="text" asp-for="phoneNum" value="@Model.phoneNum" maxlength="11" class="input" style="width: 45%; float: right" />
+                        <span asp-validation-for="phoneNum" style="width: 54%;color: red"></span>
                     </div>
                 </div>
                 <div class="input">
                     <img src="~/img/login-icon3.png" />
                     <div class="input-wrapper" onclick="$(this).find('input').focus()">
                         <span style="width: 20%">验证码</span>
-                        <span asp-validation-for="verificationCode" style="color: red"></span>
-                        <input type="text" asp-for="verificationCode" maxlength="6" class="input" style="text-align: right; width: 50%; float: right" />
-                        @*<input style="text-align: right; width: 50%; float: right" type="text" maxlength="6">*@
+                        <input type="text" asp-for="verificationCode" maxlength="6" class="input" style="text-align: right; width: 40%; float: right" />
+                        <span asp-validation-for="verificationCode" style="width: 40%;color: red"></span>
                     </div>
                 </div>
                 <div style="border: none" class="input">
