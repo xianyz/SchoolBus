@@ -32,7 +32,7 @@ namespace SchoolBusWXWeb.Business
         }
 
 
-        public async Task<RegisVD> DoRegister(RegisterModel user)
+        public async Task<RegisVD> DoRegisterAsync(RegisterModel user)
         {
             RegisVD regis = new RegisVD();
             #region 卡号校验
@@ -145,7 +145,7 @@ namespace SchoolBusWXWeb.Business
             if (cardRecord.ftrialdate != null)
             {
                 DateTime triald = Convert.ToDateTime(cardRecord.ftrialdate);
-                var trialdateRecord = await _schoolBusRepository.GetSchoolConfig("001"); // 首次注册试用期（天）
+                var trialdateRecord = await _schoolBusRepository.GetSchoolConfigAsync("001"); // 首次注册试用期（天）
                 int.TryParse(trialdateRecord.fvalue, out int tt);
                 cardRecord.ftrialdate = triald.AddYears(tt);  // 卡片试用期赋值
             }

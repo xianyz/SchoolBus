@@ -13,6 +13,6 @@ namespace SchoolBusWXWeb.Business
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task<RegisVD> DoRegister(RegisterModel user);
+        Task<RegisVD> DoRegisterAsync(RegisterModel user);
     }
 }

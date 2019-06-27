@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SchoolBusWXWeb.Business;
 using SchoolBusWXWeb.Models.PmsData;
-using SchoolBusWXWeb.Models.SchollBusModels;
+using SchoolBusWXWeb.Models.ViewData;
+using System.Threading.Tasks;
 
 namespace SchoolBusWXWeb.Controllers
 {
@@ -27,23 +24,25 @@ namespace SchoolBusWXWeb.Controllers
             var data = await _schoolBusBusines.GetTwxuserAsync(pkid);
             return View(data);
         }
+
         [HttpPost]
         public async Task<IActionResult> Register(RegisterModel user)
         {
+            RegisVD res = new RegisVD();
             if (ModelState.IsValid)
             {
 #if DEBUG
                 user.wxid = "oBcNx1lHzHxIpKm5m64XX99zTMGs";
 #else
-                user.wxid=UserInfoe.openid;
+                //user.wxid=UserInfoe.openid;
 #endif
-
+                res = await _schoolBusBusines.DoRegisterAsync(user);
             }
             else
             {
-                
+                res.msg = GetModelStateError();
             }
-            return View();
+            return Json(res);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace SchoolBusWXWeb.Repository
         Task<int> InsertWxUserAsync(twxuser user);
         Task<int> UpdateUserCardAsync(string oldcard, string newcard);
         Task<int> UpdateWxUserAsync(twxuser user);
-        Task<tconfig> GetSchoolConfig(string fcode);
+        Task<tconfig> GetSchoolConfigAsync(string fcode);
         Task<int> UpdateTCardAsync(tcard card);
     }
 }

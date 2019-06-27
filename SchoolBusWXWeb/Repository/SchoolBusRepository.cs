@@ -127,7 +127,7 @@ namespace SchoolBusWXWeb.Repository
         /// </summary>
         /// <param name="fcode"></param>
         /// <returns></returns>
-        public async Task<tconfig> GetSchoolConfig(string fcode)
+        public async Task<tconfig> GetSchoolConfigAsync(string fcode)
         {
             const string sql = "select * from public.tconfig where fcode=@fcode'";
             var p = new DynamicParameters();
