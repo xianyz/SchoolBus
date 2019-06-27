@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Senparc.Weixin.MP.Helpers;
+﻿using Senparc.Weixin.MP.Helpers;
 // ReSharper disable InconsistentNaming
 
 namespace SchoolBusWXWeb.Models.ViewData

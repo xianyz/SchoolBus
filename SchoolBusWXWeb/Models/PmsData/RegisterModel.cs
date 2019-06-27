@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace SchoolBusWXWeb.Models.PmsData
 {
@@ -15,10 +11,9 @@ namespace SchoolBusWXWeb.Models.PmsData
         [BindNever]
         public string wxid { get; set; }
         /// <summary>
-        /// 用户名称
+        /// 微信昵称
         /// </summary>
         [BindNever]
-        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string userName { get; set; }
         /// <summary>
         /// 卡号
@@ -45,6 +40,7 @@ namespace SchoolBusWXWeb.Models.PmsData
         /// 验证码
         /// </summary>
         [Required(ErrorMessage = "填写正确验证码")]
+        [StringLength(6, ErrorMessage = "手机号不能超过6个字符")]
         public string verificationCode { get; set; }
     }
 }

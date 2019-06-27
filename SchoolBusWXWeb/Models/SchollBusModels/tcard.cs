@@ -61,6 +61,10 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         [StringLength(200)]
         public string fremark { get; set; }
         /// <summary>
+        /// 试用到期时间
+        /// </summary>
+        public DateTime? ftrialdate { get; set; }
+        /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime fcreatetime { get; set; }

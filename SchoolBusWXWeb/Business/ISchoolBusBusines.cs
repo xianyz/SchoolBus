@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using SchoolBusWXWeb.Models.PmsData;
+﻿using SchoolBusWXWeb.Models.PmsData;
 using SchoolBusWXWeb.Models.SchollBusModels;
+using SchoolBusWXWeb.Models.ViewData;
+using System.Threading.Tasks;
 
 namespace SchoolBusWXWeb.Business
 {
@@ -15,6 +13,6 @@ namespace SchoolBusWXWeb.Business
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task<int> DoRegister(RegisterModel user);
+        Task<RegisVD> DoRegister(RegisterModel user);
     }
 }

@@ -13,25 +13,24 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         /// <summary>
         /// 微信openid
         /// </summary>
-        [BindNever]
+        [Required(ErrorMessage = "微信OpenId不能为空")]
         public string fwxid { get; set; }
         /// <summary>
         /// 卡片id   外键 tcard 表pkid字段
         /// </summary>
-        [BindNever]
+        [Required(ErrorMessage = "卡片Id不能为空")]
         public string fk_card_id { get; set; }
         /// <summary>
         /// 微信昵称
         /// </summary>
-        [BindNever]
+        [Required(ErrorMessage = "微信昵称不能为空")]
         public string fname { get; set; }
         /// <summary>
         /// 与学生关系
         /// </summary>
         [Required(ErrorMessage = "请填写与学生关系")]
         [StringLength(10)]
-        [DisplayFormat(ConvertEmptyStringToNull = false)]
-        public string frelationship { get; set; } = string.Empty;
+        public string frelationship { get; set; } 
         /// <summary>
         /// 电话
         /// </summary>
@@ -42,18 +41,14 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         /// <summary>
         /// 状态
         /// </summary>
-        [BindNever]
         public int fstatus { get; set; }
         /// <summary>
         /// 备注
         /// </summary>
-        [BindNever]
-        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string fremark { get; set; }
         /// <summary>
         /// 创建时间
         /// </summary>
-        [BindNever]
         public DateTime fcreatetime { get; set; } = DateTime.Now;
     }
 }

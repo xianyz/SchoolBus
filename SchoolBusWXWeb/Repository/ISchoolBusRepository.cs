@@ -11,6 +11,12 @@ namespace SchoolBusWXWeb.Repository
         Task<twxuser> GetTwxuserBypkidAsync(string pkid);
         Task<twxuser> GetTwxuserBytOpenidAsync(string openid);
         Task<tcard> GetCardBypkidAsync(string pkid);
-        Task<tcard> GetCardByCode(string fcode);
+        Task<tcard> GetCardByCodeAsync(string fcode);
+        Task<List<tsms>> GetSmsListBySendTimeAsync(string phone, int type,DateTime st,DateTime et);
+        Task<int> InsertWxUserAsync(twxuser user);
+        Task<int> UpdateUserCardAsync(string oldcard, string newcard);
+        Task<int> UpdateWxUserAsync(twxuser user);
+        Task<tconfig> GetSchoolConfig(string fcode);
+        Task<int> UpdateTCardAsync(tcard card);
     }
 }
