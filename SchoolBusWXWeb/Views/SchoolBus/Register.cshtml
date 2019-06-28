@@ -35,12 +35,13 @@
         <img src="~/img/pic1.jpg" />
     </div>
     <div class="register_login">
-        <form id="frm" name="frm" method="post" asp-action="Register">
+        <form id="frm" name="frm" method="post" asp-action="Register" autocomplete="off">
             <div class="login_content">
                 <div class="input">
                     <img src="~/img/login-icon1.png" />
                     <div class="input-wrapper" onclick="$(this).find('input').focus()">
                         <span style="width: 10%">卡号</span>
+                        @*3603631297*@
                         <input type="text" asp-for="cardNum" value="@Model.cardNum" maxlength="10" class="input" style="width: 50%; float: right" />
                         <span asp-validation-for="cardNum" style="width: 40%;color: red;"></span>
                     </div>

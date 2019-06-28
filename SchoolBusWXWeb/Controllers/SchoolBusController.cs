@@ -33,6 +33,7 @@ namespace SchoolBusWXWeb.Controllers
             {
 #if DEBUG
                 user.wxid = "oBcNx1lHzHxIpKm5m64XX99zTMGs";
+                user.userName="测试昵称";
 #else
                 //user.wxid=UserInfoe.openid;
 #endif

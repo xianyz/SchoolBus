@@ -28,7 +28,6 @@ namespace SchoolBusWXWeb.Business
                 Console.WriteLine(e);
                 throw;
             }
-
         }
 
 
@@ -41,6 +40,7 @@ namespace SchoolBusWXWeb.Business
             {
                 return new RegisVD { msg = "卡号错误，请重新输入" };
             }
+            cardRecord.pkid = cardRecord.pkid.TrimEnd();
             switch (cardRecord.fstatus)
             {
                 case 2:
@@ -51,26 +51,25 @@ namespace SchoolBusWXWeb.Business
             #endregion
 
             #region 验证码校验
-            DateTime st = DateTime.Now;
-            DateTime et = st.AddMinutes(-10);
-            var codeList = await _schoolBusRepository.GetSmsListBySendTimeAsync(user.phoneNum, 0, st, et);
-            if (codeList.Count > 0)
-            {
-                var codeM = codeList.FirstOrDefault(c => c.fvcode == user.verificationCode);
-                if (codeM == null)
-                {
-                    return new RegisVD { msg = "验证码错误，请重新输入" };
-                }
-
-                if (st > codeM.finvalidtime)
-                {
-                    return new RegisVD { msg = "验证码超时" };
-                }
-            }
-            else
-            {
-                return new RegisVD { msg = "验证码超时" };
-            }
+            //DateTime st = DateTime.Now;
+            //DateTime et = st.AddMinutes(-10);
+            //var codeList = await _schoolBusRepository.GetSmsListBySendTimeAsync(user.phoneNum, 0, st, et);
+            //if (codeList.Count > 0)
+            //{
+            //    var codeM = codeList.FirstOrDefault(c => c.fvcode == user.verificationCode);
+            //    if (codeM == null)
+            //    {
+            //        return new RegisVD { msg = "验证码错误，请重新输入" };
+            //    }
+            //    if (st > codeM.finvalidtime)
+            //    {
+            //        return new RegisVD { msg = "验证码超时" };
+            //    }
+            //}
+            //else
+            //{
+            //    return new RegisVD { msg = "验证码超时" };
+            //}
             #endregion
 
             #region 微信号校验和注册操作
@@ -129,6 +128,7 @@ namespace SchoolBusWXWeb.Business
                     return new RegisVD { msg = "更新所有绑定老卡用户卡片信息" };
                 }
                 #region 更新已有用户信息
+                userRecord.pkid= userRecord.pkid.TrimEnd();
                 userRecord.fk_card_id = cardRecord.pkid;
                 userRecord.frelationship = user.relationship;
                 userRecord.fphone = user.phoneNum;

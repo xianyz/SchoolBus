@@ -22,7 +22,7 @@ namespace SchoolBusWXWeb.Repository
         {
             const string sql = "select * from public.twxuser where pkid=@pkid";
             var p = new DynamicParameters();
-            p.Add("@pkid", pkid);
+            p.Add("@pkid", pkid.TrimEnd());
             return await GetEntityAsync<twxuser>(sql, p);
         }
 
@@ -35,7 +35,7 @@ namespace SchoolBusWXWeb.Repository
         {
             const string sql = "SELECT * from public.twxuser where fstate=0 and fwxid=@fwxid";
             var p = new DynamicParameters();
-            p.Add("@fwxid", openid);
+            p.Add("@fwxid", openid.TrimEnd());
             return await GetEntityAsync<twxuser>(sql, p);
         }
 
@@ -48,7 +48,7 @@ namespace SchoolBusWXWeb.Repository
         {
             const string sql = "select * from public.tcard where pkid=@pkid";
             var p = new DynamicParameters();
-            p.Add("@pkid", pkid);
+            p.Add("@pkid", pkid.TrimEnd());
             return await GetEntityAsync<tcard>(sql, p);
         }
 
@@ -59,9 +59,9 @@ namespace SchoolBusWXWeb.Repository
         /// <returns></returns>
         public async Task<tcard> GetCardByCodeAsync(string fcode)
         {
-            const string sql = "SELECT tcard.fcode, tcard.fstatus,tcard.fname, tdevice.fplatenumber,tschool.fname AS fschoolname FROM tcard LEFT JOIN tdevice ON tcard.fk_device_id = tdevice.pkid LEFT JOIN tschool ON tcard.fk_school_id = tschool.pkid WHERE tcard.fcode = @fcode";
+            const string sql = "SELECT tcard.pkid, tcard.fcode, tcard.fstatus,tcard.fname,tcard.ftrialdate, tdevice.fplatenumber,tschool.fname AS fschoolname FROM tcard LEFT JOIN tdevice ON tcard.fk_device_id = tdevice.pkid LEFT JOIN tschool ON tcard.fk_school_id = tschool.pkid WHERE tcard.fcode = @fcode";
             var p = new DynamicParameters();
-            p.Add("@fcode", fcode);
+            p.Add("@fcode", fcode.TrimEnd());
             return await GetEntityAsync<tcard>(sql, p);
         }
 
@@ -106,8 +106,8 @@ namespace SchoolBusWXWeb.Repository
         {
             const string sql = "UPDATE public.twxuser SET fk_card_id = @newcard WHERE pkid IN (SELECT pkid FROM public.twxuser WHERE fk_card_id = @oldcard)";
             var p = new DynamicParameters();
-            p.Add("@oldcard", oldcard);
-            p.Add("@newcard", newcard);
+            p.Add("@oldcard", oldcard.TrimEnd());
+            p.Add("@newcard", newcard.TrimEnd());
             return await ExecuteEntityAsync(sql, p);
         }
 
@@ -129,9 +129,9 @@ namespace SchoolBusWXWeb.Repository
         /// <returns></returns>
         public async Task<tconfig> GetSchoolConfigAsync(string fcode)
         {
-            const string sql = "select * from public.tconfig where fcode=@fcode'";
+            const string sql = "select * from public.tconfig where fcode=@fcode";
             var p = new DynamicParameters();
-            p.Add("@fcode", fcode);
+            p.Add("@fcode", fcode.TrimEnd());
             return await GetEntityAsync<tconfig>(sql, p);
         }
 
