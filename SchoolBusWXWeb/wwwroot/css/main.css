@@ -8,6 +8,12 @@ body {
   font-size: 14px;
   background-color: #ffffff;
 }
+.mui-bar:before {
+  height: 0;
+}
+.mui-bar:after {
+  height: 0;
+}
 input {
   margin-bottom: 0 !important;
 }
@@ -101,7 +107,7 @@ input {
   border: none;
 }
 .register_login {
-  padding: 0 30px;
+  padding: 0 5%;
 }
 .register_login .login_content .agree {
   height: 30px;
@@ -126,13 +132,13 @@ input {
 }
 .register_login .login_content .input img {
   display: block;
-  margin: 21px 17px 20px 17px;
+  margin: 21px 0px 20px 10px;
   width: 16px;
   height: 16px;
   float: left;
 }
 .register_login .login_content .input .input-wrapper {
-  margin-left: 50px;
+  margin-left: 35px;
   position: relative;
 }
 .register_login .login_content .input .input-wrapper > input {
@@ -178,7 +184,7 @@ input {
   width: 100%;
 }
 .information {
-  padding: 0 30px;
+  padding: 0 5%;
   margin: 30px auto 20px auto;
 }
 .information .w25 {
@@ -303,30 +309,32 @@ input {
 .record h1 {
   position: relative;
   left: -5px;
-  color: #4a4d55;
+  color: #000;
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 500;
 }
 .record ul {
+  border-left: 1px solid #e3e3e3;
   padding: 0;
   list-style-type: none;
-  border-left: solid 1px #cccdd3;
 }
 .record ul li {
-  margin-left: -5px;
+  margin-left: -6px;
+  position: relative;
+}
+.record ul li em {
+  background: #fff;
+  top: 13px;
+  border: 2px solid #ff3548;
+  position: absolute;
+  display: block;
+  width: 11px;
+  height: 11px;
+  font-size: 12px;
+  border-radius: 100%;
 }
 .record ul li .top {
   overflow: hidden;
-}
-.record ul li .top em {
-  margin-top: 5px;
-  background-color: #f65d5d;
-  float: left;
-  display: block;
-  width: 10px;
-  height: 10px;
-  font-size: 12px;
-  border-radius: 100%;
 }
 .record ul li .top span {
   margin-left: 10%;
@@ -337,10 +345,10 @@ input {
 }
 .record ul li .text p {
   float: left;
-  margin-left: 13%;
+  margin-left: 10%;
 }
 .address_top {
-  background-color: #fab136;
+  background-color: #ffa800;
   box-sizing: border-box;
 }
 .address_top .box {
@@ -364,12 +372,12 @@ input {
   margin: 0;
   color: #fff;
   font-weight: normal;
-  font-size: large;
+  font-size: 22px;
 }
 .address_top .box .left {
-  width: 30%;
+  width: 40%;
   float: left;
-  background-color: #f48f21;
+  background-color: #f07b12;
 }
 .address_top .box .center {
   width: 40%;
@@ -380,7 +388,7 @@ input {
   text-align: right;
   font-size: 16px;
   line-height: 15px;
-  margin: 0;
+  margin: 0 10px 0 0;
   padding-top: 12px;
   height: 55px;
   color: #fff;
@@ -393,9 +401,26 @@ input {
   width: 65%;
 }
 .address_top .box .right {
-  width: 30%;
+  background: url("../img/top_bg.png") 0 0 no-repeat;
+  width: 60%;
   float: left;
-  background-color: #f48f21;
+}
+.address_top .box .right em {
+  font-style: normal;
+}
+.address_top .box .right span {
+  text-align: right;
+  font-size: 16px;
+  line-height: 15px;
+  margin: 0 15px 0 0;
+  padding-top: 12px;
+  height: 55px;
+  color: #fff;
+  width: 40%;
+  float: left;
+}
+.address_top .box .right h1 {
+  text-align: left;
 }
 .mui-slider img {
   display: block;
@@ -403,8 +428,29 @@ input {
 .mui-slider-indicator {
   bottom: 0;
 }
-.mui-bar-tab .mui-tab-item.mui-active {
-  color: #f07503;
+.mui-bar-tab .mui-tab-item .mui-icon1 {
+  background: url("../img/ico1.png") no-repeat;
+  background-size: 85%;
+}
+.mui-bar-tab .mui-active .mui-icon1 {
+  background: url("../img/ico1_active.png") no-repeat !important;
+  background-size: 85% !important;
+}
+.mui-bar-tab .mui-tab-item .mui-icon2 {
+  background: url("../img/ico2.png") no-repeat;
+  background-size: 85%;
+}
+.mui-bar-tab .mui-active .mui-icon2 {
+  background: url("../img/ico2_active.png") no-repeat !important;
+  background-size: 85% !important;
+}
+.mui-bar-tab .mui-tab-item .mui-icon3 {
+  background: url("../img/ico3.png") no-repeat;
+  background-size: 85%;
+}
+.mui-bar-tab .mui-active .mui-icon3 {
+  background: url("../img/ico3_active.png") no-repeat !important;
+  background-size: 85% !important;
 }
 .mui-bar-tab .mui-tab-item {
   color: #666666;
@@ -423,44 +469,6 @@ input {
 }
 .pic_fix .delete {
   margin: 25px auto 0 auto;
-  width: 35px;
-  height: 35px;
-}
-.map_height {
-  width: 100%;
-  overflow: hidden;
-  position: relative;
-}
-.map_btn {
-  z-index: 999;
-  font-size: 14px;
-  position: fixed;
-  color: #fff;
-  top: 65px;
-  right: 10px;
-  height: 30px;
-  line-height: 30px;
-  display: block;
-}
-.map_btn .tab {
-  padding: 0 10px;
-  float: left;
-  background: #c1c1c1;
-}
-.map_btn .active {
-  background: #F07B12;
-}
-.map_position {
-  position: absolute;
-  left: 10px;
-  bottom: 10px;
-  background-color: #fff;
-  z-index: 999;
-  text-align: center;
-  line-height: 35px;
-}
-.map_position img {
-  display: block;
   width: 35px;
   height: 35px;
 }
@@ -488,7 +496,7 @@ input {
   color: #333;
   width: 85%;
   display: inline-block;
-  text-align: left ;
+  text-align: left;
   margin: 20px auto 0 auto;
 }
 .binding_btn button {
@@ -500,5 +508,225 @@ input {
   width: 85%;
   background-color: #05B910;
   margin: 10px auto 0 auto;
+}
+/*新增*/
+.ifram {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+}
+.map_none {
+  background: url("../img/map_bg.png") 0 0 no-repeat;
+  background-size: cover;
+}
+.map_none .map_title {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  color: #fff;
+  font-size: 20px;
+  text-align: center;
+  width: 100%;
+}
+.backtop {
+  background-color: #fff;
+  text-align: center;
+  width: 40px;
+  height: 40px;
+  position: fixed;
+  bottom: 65px;
+  right: 10px;
+  border: solid 1px #cccccc;
+  border-radius: 8px;
+}
+.backtop img {
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  margin-top: 7px;
+}
+.address_fix {
+  width: 30px;
+  height: 30px;
+  position: fixed;
+  z-index: 999;
+  bottom: 65px;
+  left: 50%;
+  margin-left: -15px;
+}
+.address_fix img {
+  width: 30px;
+  height: 30px;
+  display: block;
+}
+.address__banner {
+  width: 100%;
+  background: #fdfdfd;
+}
+.address__banner .mui-slider {
+  height: 130px;
+  width: 95%;
+  margin: 0 auto;
+}
+.address__banner .mui-slider img {
+  display: block;
+  height: 130px;
+}
+.address_name {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-wrap: wrap;
+  height: 35px;
+  justify-content: center;
+  font-size: 16px;
+}
+.address_name .box {
+  overflow: hidden;
+}
+.address_name .box img {
+  float: left;
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+}
+.address_name .box span {
+  height: 25px;
+  line-height: 25px;
+  margin-left: 10px;
+  float: left;
+}
+.address_name .box #setFullMap {
+  padding: 0 10px;
+  height: 30px;
+  color: #FFF;
+  line-height: 30px;
+  border-radius: 5px;
+  border: none;
+  background: rgba(83, 167, 233, 0.8);
+}
+.fix_btn {
+  position: fixed;
+  left: 10px;
+  bottom: 75px;
+  z-index: 99999;
+  text-align: center;
+  line-height: 35px;
+  display: none;
+  width: 35px;
+  height: 35px;
+}
+.map_box {
+  width: 95%;
+  margin: 0 auto;
+  height: 330px;
+  position: relative;
+}
+.map_box .map_reset {
+  position: absolute;
+  left: 10px;
+  bottom: 25px;
+  z-index: 1;
+  text-align: center;
+  line-height: 35px;
+  display: block;
+  width: 35px;
+  height: 35px;
+}
+.map_box .address_map {
+  background: #333333;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.map_box #closeFullMap {
+  padding: 0;
+  display: none;
+  position: fixed;
+  right: 15px;
+  top: 15px;
+  z-index: 10000;
+}
+.map_box .map_btn {
+  z-index: 999;
+  font-size: 14px;
+  position: absolute;
+  color: #53a7e9;
+  top: 15px;
+  right: 10px;
+  height: 30px;
+  line-height: 30px;
+  display: block;
+}
+.map_box .map_btn .tab1 {
+  padding: 0 15px;
+  float: left;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 15px 0 0 15px;
+}
+.map_box .map_btn .tab2 {
+  border-radius: 0 15px 15px 0;
+  padding: 0 15px;
+  float: left;
+  background: rgba(255, 255, 255, 0.8);
+}
+.map_box .map_btn .active {
+  color: #fff;
+  background: rgba(83, 167, 233, 0.8);
+}
+.calender_banner {
+  width: 95%;
+  margin: 0 auto;
+}
+.address_html {
+  display: block;
+  margin: 15px auto;
+  padding-bottom: 15px;
+  width: 95%;
+}
+.map_text {
+  border-radius: 5px;
+  width: 230px;
+  position: absolute;
+  z-index: 999;
+  top: 30%;
+}
+.map_text .map_position {
+  height: 60px;
+  display: block;
+  width: 100%;
+}
+.map_text .position_ico {
+  height: 30px;
+  display: block;
+  margin: 0 auto;
+}
+.map_text p {
+  margin: 0;
+  color: #000;
+  background-color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-sizing: border-box;
+  padding: 0 10px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 16px;
+}
+.erweima_title {
+  text-align: center;
+  margin: 60px 0 50px  0;
+}
+.erweima_p {
+  margin-top: 20px;
+  color: #000;
+  text-align: center;
+}
+.erweima_h5 {
+  display: block;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
 }
 /*# sourceMappingURL=main.css.map */

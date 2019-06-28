@@ -9,6 +9,14 @@ body {
   background-color: #ffffff;
 }
 
+.mui-bar:before {
+  height: 0
+}
+
+.mui-bar:after {
+  height: 0
+}
+
 input {
   margin-bottom: 0 !important;
 }
@@ -110,8 +118,9 @@ input {
     }
   }
 }
+
 .register_login {
-  padding: 0 30px;
+  padding: 0 5%;
   .login_content {
     //同意条款
     .agree {
@@ -136,13 +145,13 @@ input {
       height: 57px;
       img {
         display: block;
-        margin: 21px 17px 20px 17px;
+        margin:21px 0px 20px 10px;
         width: 16px;
         height: 16px;
         float: left;
       }
       .input-wrapper {
-        margin-left: 50px;
+        margin-left: 35px;
         position: relative;
 
         > input {
@@ -197,7 +206,7 @@ input {
 
 //完善信息
 .information {
-  padding: 0 30px;
+  padding: 0 5%;
   margin: 30px auto 20px auto;
   .w25 {
     width: 25% !important;
@@ -332,28 +341,31 @@ input {
   h1 {
     position: relative;
     left: -5px;
-    color: #4a4d55;
+    color: #000;
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 500
   }
   ul {
+    border-left: 1px solid #e3e3e3;
     padding: 0;
     list-style-type: none;
-    border-left: solid 1px #cccdd3;
     li {
-      margin-left: -5px;
+      margin-left: -6px;
+      position: relative;
+      em {
+        background: #fff;
+        top: 13px;
+        border: 2px solid #ff3548;
+        //background-color: #f65d5d;
+        position: absolute;
+        display: block;
+        width: 11px;
+        height: 11px;
+        font-size: 12px;
+        border-radius: 100%;
+      }
       .top {
         overflow: hidden;
-        em {
-          margin-top: 5px;
-          background-color: #f65d5d;
-          float: left;
-          display: block;
-          width: 10px;
-          height: 10px;
-          font-size: 12px;
-          border-radius: 100%;
-        }
         span {
           margin-left: 10%;
           float: left;
@@ -363,7 +375,7 @@ input {
         overflow: hidden;
         p {
           float: left;
-          margin-left: 13%;
+          margin-left: 10%;
         }
       }
     }
@@ -372,7 +384,7 @@ input {
 
 //行使轨迹
 .address_top {
-  background-color: #fab136;
+  background-color: #ffa800;
   box-sizing: border-box;
   //车牌号
   //p{
@@ -409,39 +421,56 @@ input {
       margin: 0;
       color: #fff;
       font-weight: normal;
-      font-size: large;
+      font-size: 22px;
     }
     .left {
-      width: 30%;
+      width: 40%;
       float: left;
-      background-color: #f48f21;
+      background-color: #f07b12;
     }
     .center {
       width: 40%;
       float: left;
       background-color: #f07b12;
-      p{
+      p {
         text-align: right;
         font-size: 16px;
         line-height: 15px;
-        margin: 0;
+        margin: 0 10px 0 0;
         padding-top: 12px;
         height: 55px;
         color: #fff;
         width: 35%;
-
         float: left;
       }
-      h1{
+      h1 {
         text-align: center;
         float: left;
         width: 65%;
       }
     }
     .right {
-      width: 30%;
+      //background-color: #ffa800;
+      background: url("../img/top_bg.png") 0 0 no-repeat;
+      width: 60%;
       float: left;
-      background-color: #f48f21;
+      em {
+        font-style: normal;
+      }
+      span {
+        text-align: right;
+        font-size: 16px;
+        line-height: 15px;
+        margin: 0 15px 0 0;
+        padding-top: 12px;
+        height: 55px;
+        color: #fff;
+        width: 40%;
+        float: left;
+      }
+      h1 {
+        text-align: left;
+      }
     }
   }
 }
@@ -456,8 +485,37 @@ input {
   bottom: 0;
 }
 
-.mui-bar-tab .mui-tab-item.mui-active {
-  color: #f07503;
+//实时位置
+.mui-bar-tab .mui-tab-item .mui-icon1 {
+  background: url("../img/ico1.png") no-repeat;
+  background-size: 85%;
+}
+
+.mui-bar-tab .mui-active .mui-icon1 {
+  background: url("../img/ico1_active.png") no-repeat !important;
+  background-size: 85% !important;
+}
+
+//刷卡记录
+.mui-bar-tab .mui-tab-item .mui-icon2 {
+  background: url("../img/ico2.png") no-repeat;
+  background-size: 85%;
+}
+
+.mui-bar-tab .mui-active .mui-icon2 {
+  background: url("../img/ico2_active.png") no-repeat !important;
+  background-size: 85% !important;
+}
+
+//福利商城
+.mui-bar-tab .mui-tab-item .mui-icon3 {
+  background: url("../img/ico3.png") no-repeat;
+  background-size: 85%;
+}
+
+.mui-bar-tab .mui-active .mui-icon3 {
+  background: url("../img/ico3_active.png") no-repeat !important;
+  background-size: 85% !important;
 }
 
 .mui-bar-tab .mui-tab-item {
@@ -482,45 +540,6 @@ input {
   }
 }
 
-.map_height {
-  width: 100%;
-  overflow: hidden;
-  position: relative;
-
-}
-.map_btn {
-  z-index: 999;
-  font-size: 14px;
-  position: fixed;
-  color: #fff;
-  top: 65px;
-  right: 10px;
-  height: 30px;
-  line-height: 30px;
-  display: block;
-  .tab{
-    padding:0 10px;
-    float: left;
-    background: #c1c1c1;
-  }
-  .active{
-    background: #F07B12;
-  }
-}
-.map_position {
-  position: absolute;
-  left: 10px;
-  bottom: 10px;
-  background-color: #fff;
-  z-index: 999;
-  text-align: center;
-  line-height: 35px;
-  img {
-    display: block;
-    width: 35px;
-    height: 35px;
-  }
-}
 //绑定页面
 .share_pic {
   position: fixed;
@@ -538,15 +557,16 @@ input {
     margin-bottom: 10px;
   }
 }
+
 .binding_btn {
   margin-top: 30px;
   text-align: center;
-  p{
+  p {
     font-size: 16px;
     color: #333;
     width: 85%;
     display: inline-block;
-    text-align:left ;
+    text-align: left;
     margin: 20px auto 0 auto;
   }
   button {
@@ -560,3 +580,288 @@ input {
     margin: 10px auto 0 auto;
   }
 }
+
+/*新增*/
+.ifram {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.map_none {
+  //background: #ccc;
+  background: url("../img/map_bg.png") 0 0 no-repeat;
+  background-size: cover;
+  .map_title {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    color: #fff;
+    font-size: 20px;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+//返回顶部
+.backtop {
+  background-color: #fff;
+  text-align: center;
+  width: 40px;
+  height: 40px;
+  position: fixed;
+  bottom: 65px;
+  right: 10px;
+  border: solid 1px #cccccc;
+  border-radius: 8px;
+  img {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    margin-top: 7px;
+  }
+}
+
+.address_fix {
+  width: 30px;
+  height: 30px;
+  position: fixed;
+  z-index: 999;
+  bottom: 65px;
+  left: 50%;
+  margin-left: -15px;
+  img {
+    width: 30px;
+    height: 30px;
+    display: block;
+  }
+}
+
+.address__banner {
+  width: 100%;
+  background: #fdfdfd;
+  .mui-slider {
+    height: 130px;
+    width: 95%;
+    margin: 0 auto;
+    img{
+      display: block;
+      height: 130px;
+    }
+  }
+}
+
+.address_name {
+  display: flex;
+  //margin: 0 auto;
+  //overflow: hidden;
+  flex-direction: column;
+  align-items: center;
+  flex-wrap: wrap;
+  //text-align: center;
+  height: 35px;
+  justify-content: center;
+  font-size: 16px;
+  .box {
+    overflow: hidden;
+    img {
+      float: left;
+      display: inline-block;
+      width: 25px;
+      height: 25px;
+    }
+    span {
+      height: 25px;
+      line-height: 25px;
+      margin-left: 10px;
+      float: left;
+    }
+    //放大按钮
+    #setFullMap{
+      padding: 0 10px;
+      height: 30px;
+      color: #FFF;
+      line-height: 30px;
+      border-radius: 5px;
+      border:none;
+      background: rgba(83,167,233,0.8);
+      //position: absolute;
+      //top: 15px;
+      //left: 10px;
+      //z-index: 999;
+    }
+  }
+}
+.fix_btn {
+  position: fixed;
+  left: 10px;
+  bottom: 75px;
+  z-index: 99999;
+  text-align: center;
+  line-height: 35px;
+  display: none;
+  width: 35px;
+  height: 35px;
+}
+.map_box {
+  width: 95%;
+  margin: 0 auto;
+  height: 330px;
+  position: relative;
+    .map_reset {
+      position: absolute;
+      left: 10px;
+      bottom: 25px;
+      z-index: 1;
+      text-align: center;
+      line-height: 35px;
+      display: block;
+      width: 35px;
+      height: 35px;
+    }
+  .address_map{
+    background: #333333;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+
+  //放大关闭按钮
+  #closeFullMap {
+    padding: 0;
+    display: none;
+    position: fixed;
+    right:15px;
+    top: 15px;
+    z-index: 10000;
+  }
+  .map_btn {
+    z-index: 999;
+    font-size: 14px;
+    position: absolute;
+    color: rgba(83,167,233,1);
+    top: 15px;
+    right: 10px;
+    height: 30px;
+    line-height: 30px;
+    display: block;
+    .tab1{
+      padding: 0 15px;
+      float: left;
+      background: rgba(255,255,255,0.8);
+      border-radius:15px 0 0 15px;
+    }
+    .tab2{
+      border-radius: 0 15px 15px 0;
+      padding: 0 15px;
+      float: left;
+      background: rgba(255,255,255,0.8);
+    }
+    .active {
+      color: #fff;
+      background: rgba(83,167,233,0.8);
+    }
+  }
+}
+.calender_banner{
+  width: 95%;
+  margin: 0 auto;
+}
+//.address_map{
+//  width: 95%;
+//  margin: 0 auto;
+//  height: 330px;
+//  background: #333333;
+//  .map{
+//    width: 100%;
+//    overflow: hidden;
+//    position: relative;
+//  }
+//  .map_btn {
+//    z-index: 999;
+//    font-size: 14px;
+//    position: absolute;
+//    color: #fff;
+//    top: 65px;
+//    right: 10px;
+//    height: 30px;
+//    line-height: 30px;
+//    display: block;
+//    .tab{
+//      padding:0 10px;
+//      float: left;
+//      background: #c1c1c1;
+//    }
+//    .active{
+//      background: #F07B12;
+//    }
+//  }
+//  .map_position {
+//    position: absolute;
+//    left: 10px;
+//    bottom: 25px;
+//    z-index: 1;
+//    text-align: center;
+//    line-height: 35px;
+//    img {
+//      display: block;
+//      width: 35px;
+//      height: 35px;
+//    }
+//  }
+//}
+.address_html {
+  display: block;
+  margin: 15px auto;
+  padding-bottom: 15px;
+  width: 95%;
+}
+.map_text{
+  border-radius:5px;
+  width: 230px;
+  position: absolute;
+  z-index: 999;
+  top: 30%;
+  .map_position{
+    height: 60px;
+    display: block;
+    width: 100%;
+  }
+  .position_ico{
+    height: 30px;
+    display: block;
+    margin: 0 auto;
+  }
+  p{
+    margin: 0;
+    color: #000;
+    background-color: #fff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-sizing: border-box;
+    padding: 0 10px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 16px;
+  }
+}
+//二维码
+.erweima_title{
+  text-align: center;
+  margin: 60px 0 50px  0;
+}
+.erweima_p{
+  margin-top: 20px;
+  color: #000;
+  text-align: center;
+}
+.erweima_h5{
+  display: block;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+}
+
+
+

@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\css\base.less" />
+    <None Include="wwwroot\css\main.css.map" />
+    <None Include="wwwroot\css\main.less" />
+    <None Include="wwwroot\css\tools\global.css.map" />
+    <None Include="wwwroot\css\tools\global.less" />
+    <None Include="wwwroot\css\tools\reset.css.map" />
+    <None Include="wwwroot\css\tools\reset.less" />
     <None Include="wwwroot\lib\jquery\dist\jquery.js" />
     <None Include="wwwroot\lib\jquery\dist\jquery.min.js" />
     <None Include="wwwroot\lib\jquery\dist\jquery.min.map" />
