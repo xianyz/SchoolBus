@@ -146,5 +146,16 @@ namespace SchoolBusWXWeb.Repository
                 , fbirthdate = @fbirthdate, ftrialdate = @ftrialdate, fstatus = @fstatus where pkid = @pkid";
             return await ExecuteEntityAsync(sql, card);
         }
+
+        /// <summary>
+        /// 插入发送短信验证码信息
+        /// </summary>
+        /// <param name="sms"></param>
+        /// <returns></returns>
+        public async Task<int> InsertSMSCodeAsync(tsms sms)
+        {
+            const string sql= "insert INTO public.tsms(pkid,fphone,fvcode,fsendtime,finvalidtime,ftype)values(@pkid,@fphone,@fvcode,@fsendtime,@finvalidtime,@ftype)";
+            return await ExecuteEntityAsync(sql, sms);
+        }
     }
 }

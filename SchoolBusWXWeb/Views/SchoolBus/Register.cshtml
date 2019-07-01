@@ -35,7 +35,7 @@
         <img src="~/img/pic1.jpg" />
     </div>
     <div class="register_login">
-        <form id="frm" name="frm" method="post" asp-action="Register" autocomplete="off">
+        <form id="frm" name="frm" method="post" asp-action="Register" autocomplete="off" asp-antiforgery="true">
             <div class="login_content">
                 <div class="input">
                     <img src="~/img/login-icon1.png" />
@@ -73,9 +73,10 @@
                 </div>
                 <div style="border: none" class="input">
                     <div class="input-wrapper" onclick="$(this).find('input').focus()">
-                        <button style="width: 45%; float: right" id="generateCode" click="sendSmsCode()" type="button" class="check_code">
+                        <button style="width: 45%; float: right" id="generateCode" onclick="sendSmsCode()" type="button" class="check_code">
                             获取验证码
                         </button>
+                        @*<input type="button" id="generateCode" onclick="sendSmsCode()" value="获取验证码" style="width: 45%; float: right" class="check_code"/>*@
                     </div>
                 </div>
                 <div class="agree mui-input-row mui-checkbox mui-left">
@@ -717,8 +718,7 @@
     <script src="@(this.Context.Request.Scheme)://res2.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
 
     <script>
-
-        //与学生关系选择
+        // 与学生关系选择
         $(function () {
             $("#relationshipname").click(function () {
                 var picker = new mui.PopPicker();
@@ -749,9 +749,9 @@
                 })
             });
         });
-
+        // 注册
         $('#frm').submit(function () {
-            if ($(this).valid()) {
+            if ($('#checkbox').is(':checked') && $(this).valid()) {
                 $.ajax({
                     url: this.action,
                     type: this.method,
@@ -769,49 +769,74 @@
             }
             return false;
         });
-    </script>
-    <script type="text/javascript">
 
-        // 获取验证码
-        //sendSmsCode: function () {
-        //    $.ajax({
-        //        type: "POST",
-        //        url: "/webService/sendSmsCode",
-        //        data: {
-        //            // 手机号
-        //            phoneNum: vue.phoneNum,
-        //            // 验证码类型（0：注册）
-        //            verificationCodeType: 0
-        //        },
-        //        success: function (data) {
-        //            if (data.code === 201) {
-        //                settime()
-        //            } else {
-        //                alert(data.msg);
-        //            }
-        //        }
-        //    });
-        //},
-
-
-        //倒计时
+        // 倒计时
         var countdown = 60;
         var _generate_code = $("#generateCode");
         function settime() {
             if (countdown === 0) {
                 _generate_code.attr("disabled", false);
-                vue.codePrompt = "获取验证码";
+                _generate_code.text("获取验证码");
                 countdown = 60;
                 return false;
             } else {
                 _generate_code.attr("disabled", true);
-                vue.codePrompt = "重新发送(" + countdown + ")";
+                _generate_code.text("重新发送(" + countdown + ")");
                 countdown--;
             }
             setTimeout(function () {
                 settime();
             }, 1000);
         }
+        // 发短信
+        function sendSmsCode() {
+            var phone = $("#phoneNum").val();
+            if (phone != "") {
+                _generate_code.attr("disabled", true);
+                getAjax("/SchoolBus/SendSmsCode", { phoneNum: phone, verificationCodeType: 0 }, function (data) {
+                    if (data.status == 1) {
+                        settime();
+                    } else {
+                        alert(data.msg);
+                    }
+                }, function () { _generate_code.attr("disabled", false); });
+            } else {
+                alert("请输入手机号");
+            }
+        }
+        // 通用ajax+防止csrf
+        function getAjax(url, parm, callBack, cmBack) {
+            var form = $("#frm");
+            var token = $('input[name="__RequestVerificationToken"]', form).val();
+            parm.__RequestVerificationToken = token;
+            $.ajax({
+                type: 'post',
+                url: url,
+                data: parm,
+                //async: false,
+                success: function (msg) {
+                    callBack(msg);
+                },
+                error: function (result) {
+                },
+                complete: function (XMLHttpRequest, textStatus) {
+                    cmBack();
+                }
+            });
+        }
+
+        //getAjax("/TeYue/SaveAndTJ",  { id: aid, title: tit, contents: content }, function (data) {
+        //    if (data.result) {
+        //        window.location.href = "/TeYue/ArIndex?type=1";
+        //    } else {
+        //        alert("保存并且提交失败");
+        //    }
+        //}, function () {
+        //    $('#save').removeAttr("disabled");
+        //    $('#tijiao').removeAttr("disabled");
+        //});
+
+
 
         function popoverClick(d) {
             $(d).show();

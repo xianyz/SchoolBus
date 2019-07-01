@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SchoolBusWXWeb.Models;
 using SchoolBusWXWeb.Models.PmsData;
 using SchoolBusWXWeb.Models.SchollBusModels;
 using SchoolBusWXWeb.Models.ViewData;
 using SchoolBusWXWeb.Repository;
+using SchoolBusWXWeb.Utilities;
 
 namespace SchoolBusWXWeb.Business
 {
@@ -43,25 +45,25 @@ namespace SchoolBusWXWeb.Business
             #endregion
 
             #region 验证码校验
-            //DateTime date = DateTime.Now;
-            //DateTime beforedate = date.AddMinutes(-10);
-            //var codeList = await _schoolBusRepository.GetSmsListBySendTimeAsync(user.phoneNum, 0, beforedate, date);
-            //if (codeList.Count > 0)
-            //{
-            //    var codeM = codeList.FirstOrDefault(c => c.fvcode == user.verificationCode);
-            //    if (codeM == null)
-            //    {
-            //        return new RegisVD { msg = "验证码错误，请重新输入" };
-            //    }
-            //    if (date > codeM.finvalidtime)
-            //    {
-            //        return new RegisVD { msg = "验证码超时" };
-            //    }
-            //}
-            //else
-            //{
-            //    return new RegisVD { msg = "验证码超时" };
-            //}
+            DateTime date = DateTime.Now;
+            DateTime beforedate = date.AddMinutes(-10);
+            var codeList = await _schoolBusRepository.GetSmsListBySendTimeAsync(user.phoneNum, 0, beforedate, date);
+            if (codeList.Count > 0)
+            {
+                var codeM = codeList.FirstOrDefault(c => c.fvcode == user.verificationCode);
+                if (codeM == null)
+                {
+                    return new RegisVD { msg = "验证码错误，请重新输入" };
+                }
+                if (date > codeM.finvalidtime)
+                {
+                    return new RegisVD { msg = "验证码超时" };
+                }
+            }
+            else
+            {
+                return new RegisVD { msg = "验证码超时" };
+            }
             #endregion
 
             #region 微信号校验和注册操作
@@ -148,9 +150,13 @@ namespace SchoolBusWXWeb.Business
             #endregion
         }
 
+        /// <summary>
+        /// 发送短信验证码
+        /// </summary>
+        /// <param name="sms"></param>
+        /// <returns></returns>
         public async Task<SmsVD> SendSmsCodeAsync(SmsModel sms)
         {
-            var sendsms = new SmsVD();
             DateTime date = DateTime.Now;
             DateTime beforedate = date.AddMinutes(-10);
             DateTime before1Mdate = date.AddMinutes(-1);
@@ -171,8 +177,33 @@ namespace SchoolBusWXWeb.Business
             // 生成6位随机数验证码
             Random ran = new Random();
             string code = ran.Next(100000, 999999).ToString();
-            return sendsms;
-        }
+#if DEBUG
+            var smsresult = new AliSmsModel { Code = "OK" };
+#else
+            var smsresult = Tools.SendSms(sms.phoneNum, code);
+#endif
 
+            switch (smsresult.Code)
+            {
+                case "scfaile":
+                    return new SmsVD { msg = smsresult.Message };
+                case "OK":
+                    {
+                        tsms tsms = new tsms
+                        {
+                            fphone = sms.phoneNum,
+                            fvcode = code,
+                            fsendtime = date,
+                            finvalidtime = invaliddate,
+                            ftype = sms.verificationCodeType
+                        };
+                        await _schoolBusRepository.InsertSMSCodeAsync(tsms);
+                        return new SmsVD { status = 1, msg = "发送成功" };
+                    }
+                default:
+                    return new SmsVD { msg = "发送失败" };
+            }
+
+        }
     }
 }

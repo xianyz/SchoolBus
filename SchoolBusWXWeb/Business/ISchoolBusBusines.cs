@@ -14,5 +14,11 @@ namespace SchoolBusWXWeb.Business
         /// <param name="user"></param>
         /// <returns></returns>
         Task<RegisVD> DoRegisterAsync(RegisterModel user);
+        /// <summary>
+        /// 发送验证码
+        /// </summary>
+        /// <param name="sms"></param>
+        /// <returns></returns>
+        Task<SmsVD> SendSmsCodeAsync(SmsModel sms);
     }
 }

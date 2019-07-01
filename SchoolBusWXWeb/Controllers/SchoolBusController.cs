@@ -23,7 +23,6 @@ namespace SchoolBusWXWeb.Controllers
         [HttpGet]
         public IActionResult Register()
         {
-            Tools.SendSms();
             return View();
         }
 
@@ -49,5 +48,21 @@ namespace SchoolBusWXWeb.Controllers
         }
         #endregion
 
+        #region 获取验证码
+        [HttpPost]
+        public async Task<IActionResult> SendSmsCode(SmsModel sms)
+        {
+            var smsVD = new SmsVD();
+            if (ModelState.IsValid)
+            {
+                smsVD = await _schoolBusBusines.SendSmsCodeAsync(sms);
+            }
+            else
+            {
+                smsVD.msg = GetModelStateError();
+            }
+            return Json(smsVD);
+        }
+        #endregion
     }
 }

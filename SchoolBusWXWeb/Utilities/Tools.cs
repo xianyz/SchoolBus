@@ -33,7 +33,6 @@ namespace SchoolBusWXWeb.Utilities
     {
         private static ILogger _toollogger;
         private static SiteConfig _settings;
-        //const string domain = "dysmsapi.aliyuncs.com";
         private static readonly string[] ImageExtensions = { ".jpg", ".png", ".gif", ".jpeg", ".bmp" };
 
         public static IApplicationBuilder SetUtilsProviderConfiguration(this IApplicationBuilder serviceProvider, IConfiguration configuration, ILoggerFactory loggerFactory)
@@ -61,11 +60,11 @@ namespace SchoolBusWXWeb.Utilities
                     {
                         // 上传策略，参见
                         // https://developer.qiniu.com/kodo/manual/put-policy
-                        var mac = new Mac(_settings.AccessKey, _settings.SecretKey);
+                        var mac = new Mac(_settings.QiniuOption.AccessKey, _settings.QiniuOption.SecretKey);
                         // 如果需要设置为"覆盖"上传(如果云端已有同名文件则覆盖)，请使用 SCOPE = "BUCKET:KEY" putPolicy.Scope = bucket + ":" + saveKey;
                         var putPolicy = new PutPolicy
                         {
-                            Scope = _settings.Bucketfirst + ":" + imgInfo.SaveKey
+                            Scope = _settings.QiniuOption.Bucketfirst + ":" + imgInfo.SaveKey
                         };
                         putPolicy.SetExpires(3600); // 上传策略有效期(对应于生成的凭证的有效期)
 
@@ -95,11 +94,11 @@ namespace SchoolBusWXWeb.Utilities
         /// <returns></returns>
         public static Token GetUploadToken()
         {
-            var mac = new Mac(_settings.AccessKey, _settings.SecretKey);
+            var mac = new Mac(_settings.QiniuOption.AccessKey, _settings.QiniuOption.SecretKey);
             var auth = new Auth(mac);
             var putPolicy = new PutPolicy
             {
-                Scope = _settings.Bucketfirst
+                Scope = _settings.QiniuOption.Bucketfirst
             };
             // 上传策略有效期(对应于生成的凭证的有效期)
             putPolicy.SetExpires(3600);
@@ -215,7 +214,7 @@ namespace SchoolBusWXWeb.Utilities
             var res = false;
             try
             {
-                var mac = new Mac(_settings.AccessKey, _settings.SecretKey);
+                var mac = new Mac(_settings.QiniuOption.AccessKey, _settings.QiniuOption.SecretKey);
                 var putPolicy = new PutPolicy
                 {
                     Scope = bucket + ":" + saveKey
@@ -252,7 +251,7 @@ namespace SchoolBusWXWeb.Utilities
                     var stream = await HttpClientHelper.HttpGetStreamAsync(t.Oldsrc);
                     if (stream != null)
                     {
-                        b = await UploadStream(_settings.Bucketfirst, stream, t.Newsrc);
+                        b = await UploadStream(_settings.QiniuOption.Bucketfirst, stream, t.Newsrc);
                         if (!b) _toollogger.LogError("[QN]上传图片:" + t.Newsrc + " 失败.原图地址:" + t.Oldsrc);
                     }
                     else
@@ -288,7 +287,7 @@ namespace SchoolBusWXWeb.Utilities
         public static async Task<bool> Down(string oldsrc, string newsrc)
         {
             var stream = await HttpClientHelper.HttpGetStreamAsync(oldsrc);
-            var b = await UploadStream(_settings.Bucketfirst, stream, newsrc);
+            var b = await UploadStream(_settings.QiniuOption.Bucketfirst, stream, newsrc);
             return b;
         }
 
@@ -368,7 +367,7 @@ namespace SchoolBusWXWeb.Utilities
             httpContextAccessor.HttpContext.Response.Headers.Add("RedirectUrl", url);
         }
 
-        
+
         #region List和datatable相互转换
 
         /// <summary>
@@ -472,47 +471,41 @@ namespace SchoolBusWXWeb.Utilities
 
         #region 阿里云发信息
 
-        public static void SendSms()
+        /// <summary>
+        /// 发短信
+        /// </summary>
+        /// <param name="phoneNumber">手机号</param>
+        /// <param name="msg">内容</param>
+        public static AliSmsModel SendSms(string phoneNumber, string msg)
         {
-            // TODO 产品名称:云通信短信API产品,开发者无需替换
-            string product = "Dysmsapi";
-            // TODO 产品域名,开发者无需替换
-            string domain = "dysmsapi.aliyuncs.com";
-
-            // TODO 此处需要替换成开发者自己的AK(在阿里云访问控制台寻找)
-            string accessKeyId = "LTAIaRZMdaL3RTIO";
-            string accessKeySecret = "lemLqKcTrafC1slqfwbnPH4KsEMLmQ";
-
-            IClientProfile profile = DefaultProfile.GetProfile("cn-hangzhou", accessKeyId, accessKeySecret);
-            //DefaultProfile.AddEndpoint("cn-hangzhou", "cn-hangzhou", product, domain);
+            IClientProfile profile = DefaultProfile.GetProfile(_settings.AliOption.RegionId, _settings.AliOption.AccessKeyId, _settings.AliOption.AccessKeySecret);
             DefaultAcsClient client = new DefaultAcsClient(profile);
             CommonRequest request = new CommonRequest
             {
                 Method = MethodType.POST,
-                Domain = "dysmsapi.aliyuncs.com",
-                Version = "2017-05-25",
-                Action = "SendSms",
-                //Protocol = ProtocolType.HTTP
+                Domain = _settings.AliOption.Domain,
+                Version = _settings.AliOption.Version,
+                Action = _settings.AliOption.Action
+                //,Protocol = ProtocolType.HTTP
             };
-            request.AddQueryParameters("PhoneNumbers", "15504031220");
-            request.AddQueryParameters("SignName", "鲸卫士校车联盟");
-            request.AddQueryParameters("TemplateCode", "SMS_159773773");
-            request.AddQueryParameters("TemplateParam", "{\"code\":\"123789\"}");
-            request.AddQueryParameters("OutId", "yourOutId");
+            request.AddQueryParameters("PhoneNumbers", phoneNumber);
+            request.AddQueryParameters("SignName", _settings.AliOption.SignName);
+            request.AddQueryParameters("TemplateCode", _settings.AliOption.TemplateCode);
+            request.AddQueryParameters("TemplateParam", "{\"code\":\"" + msg + "\"}");
+            request.AddQueryParameters("OutId", _settings.AliOption.OutId);
             try
             {
                 CommonResponse response = client.GetCommonResponse(request);
-                Console.WriteLine(System.Text.Encoding.Default.GetString(response.HttpResponse.Content));
+                return JsonConvert.DeserializeObject<AliSmsModel>(Encoding.Default.GetString(response.HttpResponse.Content));
             }
-            catch (ServerException e)
+            catch (ServerException)
             {
-                Console.WriteLine(e);
+                return new AliSmsModel { Code = "scfaile", Message = "发短信服务器异常,请稍后重试" };
             }
-            catch (ClientException e)
+            catch (ClientException)
             {
-                Console.WriteLine(e);
+                return new AliSmsModel { Code = "scfaile", Message = "发短信客户端异常,请稍后重试" };
             }
-
         }
         #endregion
     }
