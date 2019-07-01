@@ -7,6 +7,7 @@ using Qiniu.IO.Model;
 using Qiniu.Util;
 using SchoolBusWXWeb.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
@@ -20,6 +21,11 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Aliyun.Acs.Core;
+using Aliyun.Acs.Core.Exceptions;
+using Aliyun.Acs.Core.Http;
+using Aliyun.Acs.Core.Profile;
+using Newtonsoft.Json;
 
 namespace SchoolBusWXWeb.Utilities
 {
@@ -27,11 +33,10 @@ namespace SchoolBusWXWeb.Utilities
     {
         private static ILogger _toollogger;
         private static SiteConfig _settings;
-
+        //const string domain = "dysmsapi.aliyuncs.com";
         private static readonly string[] ImageExtensions = { ".jpg", ".png", ".gif", ".jpeg", ".bmp" };
 
-        public static IApplicationBuilder SetUtilsProviderConfiguration(this IApplicationBuilder serviceProvider,
-            IConfiguration configuration, ILoggerFactory loggerFactory)
+        public static IApplicationBuilder SetUtilsProviderConfiguration(this IApplicationBuilder serviceProvider, IConfiguration configuration, ILoggerFactory loggerFactory)
         {
             _settings = configuration.GetSection("SiteConfig").Get<SiteConfig>();
             _toollogger = loggerFactory.CreateLogger("Tools");
@@ -39,7 +44,7 @@ namespace SchoolBusWXWeb.Utilities
         }
 
         /// <summary>
-        ///     上传图片到七牛
+        ///  上传图片到七牛
         /// </summary>
         /// <param name="imgInfo"></param>
         /// <returns></returns>
@@ -85,7 +90,7 @@ namespace SchoolBusWXWeb.Utilities
         }
 
         /// <summary>
-        ///     获取七牛Token
+        /// 获取七牛Token
         /// </summary>
         /// <returns></returns>
         public static Token GetUploadToken()
@@ -107,7 +112,7 @@ namespace SchoolBusWXWeb.Utilities
 
 
         /// <summary>
-        ///     生成验证码图片
+        /// 生成验证码图片
         /// </summary>
         public static byte[] CreateCheckCodeImage()
         {
@@ -174,7 +179,7 @@ namespace SchoolBusWXWeb.Utilities
         }
 
         /// <summary>
-        ///     生成验证码字符串
+        /// 生成验证码字符串
         /// </summary>
         /// <param name="numberOfChars"></param>
         /// <returns></returns>
@@ -199,13 +204,13 @@ namespace SchoolBusWXWeb.Utilities
         }
 
         /// <summary>
-        ///     上传图片到七牛
+        /// 上传图片到七牛
         /// </summary>
         /// <param name="bucket"></param>
         /// <param name="fileStream"></param>
         /// <param name="saveKey"></param>
         /// <returns></returns>
-        public static async Task<bool> UploadStream(string bucket, Stream fileStream, string saveKey)
+        private static async Task<bool> UploadStream(string bucket, Stream fileStream, string saveKey)
         {
             var res = false;
             try
@@ -232,7 +237,7 @@ namespace SchoolBusWXWeb.Utilities
 
 
         /// <summary>
-        ///     批量下载图片上传到七牛 参考c#并发编程实例 2.6节
+        /// 批量下载图片上传到七牛 参考c#并发编程实例 2.6节
         /// </summary>
         /// <param name="srclist"></param>
         /// <returns></returns>
@@ -266,7 +271,7 @@ namespace SchoolBusWXWeb.Utilities
         }
 
         /// <summary>
-        ///     SHA1加密方法
+        ///  SHA1加密方法
         /// </summary>
         /// <param name="str">需要加密的字符串</param>
         /// <returns></returns>
@@ -320,7 +325,7 @@ namespace SchoolBusWXWeb.Utilities
         }
 
         /// <summary>
-        ///  替换Html标签 最快 https://www.cnblogs.com/jaxu/p/3682042.html
+        /// 替换Html标签 最快 https://www.cnblogs.com/jaxu/p/3682042.html
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
@@ -351,7 +356,7 @@ namespace SchoolBusWXWeb.Utilities
         }
 
         /// <summary>
-        ///     Ajax重定向 ajax请求不能用Redirect,使用下面方法.如果想使用,表单提交前检查用onsubmit="return checkpm();"
+        ///  Ajax重定向 ajax请求不能用Redirect,使用下面方法.如果想使用,表单提交前检查用onsubmit="return checkpm();"
         /// </summary>
         /// <param name="httpContextAccessor"></param>
         /// <param name="url"></param>
@@ -367,7 +372,7 @@ namespace SchoolBusWXWeb.Utilities
         #region List和datatable相互转换
 
         /// <summary>
-        ///     Convert a List{T} to a DataTable.
+        /// Convert a List{T} to a DataTable.
         /// </summary>
         public static DataTable ToDataTable<T>(List<T> items)
         {
@@ -394,31 +399,24 @@ namespace SchoolBusWXWeb.Utilities
         }
 
         /// <summary>
-        ///     Determine of specified type is nullable
+        /// Determine of specified type is nullable
         /// </summary>
-        public static bool IsNullable(Type t)
+        private static bool IsNullable(Type t)
         {
             return !t.IsValueType || t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
 
         /// <summary>
-        ///     Return underlying type if type is Nullable otherwise return the type
+        /// Return underlying type if type is Nullable otherwise return the type
         /// </summary>
-        public static Type GetCoreType(Type t)
+        private static Type GetCoreType(Type t)
         {
-            if (t != null && IsNullable(t))
-            {
-                if (!t.IsValueType)
-                    return t;
-                return Nullable.GetUnderlyingType(t);
-            }
-
-            return t;
+            if (t == null || !IsNullable(t)) return t;
+            return !t.IsValueType ? t : Nullable.GetUnderlyingType(t);
         }
 
-        //*************************************************
         /// <summary>
-        ///     List转Datatable
+        /// List转Datatable
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="table"></param>
@@ -434,7 +432,7 @@ namespace SchoolBusWXWeb.Utilities
             return ConvertTo<T>(rows);
         }
 
-        public static IList<T> ConvertTo<T>(IList<DataRow> rows)
+        private static IList<T> ConvertTo<T>(IList<DataRow> rows)
         {
             IList<T> list = null;
 
@@ -446,7 +444,7 @@ namespace SchoolBusWXWeb.Utilities
             return list;
         }
 
-        public static T CreateItem<T>(DataRow row)
+        private static T CreateItem<T>(DataRow row)
         {
             var obj = default(T);
             if (row == null) return obj;
@@ -471,5 +469,55 @@ namespace SchoolBusWXWeb.Utilities
         }
 
         #endregion
+
+        #region 阿里云发信息
+
+        public static void SendSms()
+        {
+            // TODO 产品名称:云通信短信API产品,开发者无需替换
+            string product = "Dysmsapi";
+            // TODO 产品域名,开发者无需替换
+            string domain = "dysmsapi.aliyuncs.com";
+
+            // TODO 此处需要替换成开发者自己的AK(在阿里云访问控制台寻找)
+            string accessKeyId = "LTAIaRZMdaL3RTIO";
+            string accessKeySecret = "lemLqKcTrafC1slqfwbnPH4KsEMLmQ";
+
+            IClientProfile profile = DefaultProfile.GetProfile("cn-hangzhou", accessKeyId, accessKeySecret);
+            //DefaultProfile.AddEndpoint("cn-hangzhou", "cn-hangzhou", product, domain);
+            DefaultAcsClient client = new DefaultAcsClient(profile);
+            CommonRequest request = new CommonRequest
+            {
+                Method = MethodType.POST,
+                Domain = "dysmsapi.aliyuncs.com",
+                Version = "2017-05-25",
+                Action = "SendSms",
+                //Protocol = ProtocolType.HTTP
+            };
+            request.AddQueryParameters("PhoneNumbers", "15504031220");
+            request.AddQueryParameters("SignName", "鲸卫士校车联盟");
+            request.AddQueryParameters("TemplateCode", "SMS_159773773");
+            request.AddQueryParameters("TemplateParam", "{\"code\":\"123789\"}");
+            request.AddQueryParameters("OutId", "yourOutId");
+            try
+            {
+                CommonResponse response = client.GetCommonResponse(request);
+                Console.WriteLine(System.Text.Encoding.Default.GetString(response.HttpResponse.Content));
+            }
+            catch (ServerException e)
+            {
+                Console.WriteLine(e);
+            }
+            catch (ClientException e)
+            {
+                Console.WriteLine(e);
+            }
+
+        }
+        #endregion
+    }
+    public enum SMSResult
+    {
+        Success = 0, Error, ExistFailPhone, TamplateError, ParamError, SignNameError
     }
 }

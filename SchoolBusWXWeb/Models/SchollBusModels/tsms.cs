@@ -27,12 +27,12 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         [BindNever]
         public DateTime fsendtime { get; set; }=DateTime.Now;
         /// <summary>
-        /// 验证短信时间
+        /// 验证短信时间郭琦时间 是fsendtime+10分钟时间
         /// </summary>
         [BindNever]
         public DateTime finvalidtime { get; set; } = DateTime.Now;
         /// <summary>
-        /// 状态 0:发送后未验证
+        /// 状态 0：注册，1：登录，2：修改
         /// </summary>
         public int ftype { get;set;}
     }

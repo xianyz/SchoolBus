@@ -42,7 +42,7 @@
                     <div class="input-wrapper" onclick="$(this).find('input').focus()">
                         <span style="width: 10%">卡号</span>
                         @*3603631297*@
-                        <input type="text" asp-for="cardNum" value="@Model.cardNum" maxlength="10" class="input" style="width: 50%; float: right" />
+                        <input type="text" asp-for="cardNum" value="@(Model?.cardNum)" maxlength="10" class="input" style="width: 50%; float: right" />
                         <span asp-validation-for="cardNum" style="width: 40%;color: red;"></span>
                     </div>
                 </div>
@@ -51,7 +51,7 @@
                     <div class="input-wrapper" id="relationshipname">
                         <span style="width: 10%">与学生关系</span>
                         <!--placeholder="选择与学生的关系">-->
-                        <input type="text" asp-for="relationship" value="@Model.relationship" class="input" style="width: 20%; float: right" />
+                        <input type="text" asp-for="relationship" value="@(Model?.relationship)" class="input" style="width: 20%; float: right" />
                         <span asp-validation-for="relationship" style="width: 60%;color: red"></span>
                     </div>
                 </div>
@@ -59,7 +59,7 @@
                     <img src="~/img/login-icon2.png" />
                     <div class="input-wrapper" onclick="$(this).find('input').focus()">
                         <span style="width: 1%">手机号码</span>
-                        <input type="text" asp-for="phoneNum" value="@Model.phoneNum" maxlength="11" class="input" style="width: 45%; float: right" />
+                        <input type="text" asp-for="phoneNum" value="@(Model?.phoneNum)" maxlength="11" class="input" style="width: 45%; float: right" />
                         <span asp-validation-for="phoneNum" style="width: 54%;color: red"></span>
                     </div>
                 </div>

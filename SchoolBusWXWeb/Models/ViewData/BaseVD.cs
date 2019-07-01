@@ -2,11 +2,10 @@
 {
     public class BaseVD
     {
-        public int status { get;set;}
+        public int status { get; set; }
         public string msg { get; set; }
     }
-    public class RegisVD: BaseVD
-    {
+    public class RegisVD : BaseVD { }
 
-    }
+    public class SmsVD : BaseVD { }
 }

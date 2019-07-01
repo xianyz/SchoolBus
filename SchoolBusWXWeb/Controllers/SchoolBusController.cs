@@ -3,6 +3,7 @@ using SchoolBusWXWeb.Business;
 using SchoolBusWXWeb.Models.PmsData;
 using SchoolBusWXWeb.Models.ViewData;
 using System.Threading.Tasks;
+using SchoolBusWXWeb.Utilities;
 
 namespace SchoolBusWXWeb.Controllers
 {
@@ -13,16 +14,17 @@ namespace SchoolBusWXWeb.Controllers
         {
             _schoolBusBusines = schoolBusBusines;
         }
+
+        #region 注册
         /// <summary>
         /// https://localhost:5001/schoolbus/Register
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Register(string pkid = "2c9ab45969dc19990169dd5bb9ea08b5")
+        public IActionResult Register()
         {
-            if (string.IsNullOrEmpty(pkid)) return View();
-            var data = await _schoolBusBusines.GetTwxuserAsync(pkid);
-            return View(new RegisterModel());
+            Tools.SendSms();
+            return View();
         }
 
         [HttpPost]
@@ -33,7 +35,7 @@ namespace SchoolBusWXWeb.Controllers
             {
 #if DEBUG
                 user.wxid = "oBcNx1lHzHxIpKm5m64XX99zTMGs";
-                user.userName="测试昵称";
+                user.userName = "测试昵称";
 #else
                 //user.wxid=UserInfoe.openid;
 #endif
@@ -45,5 +47,7 @@ namespace SchoolBusWXWeb.Controllers
             }
             return Json(res);
         }
+        #endregion
+
     }
 }

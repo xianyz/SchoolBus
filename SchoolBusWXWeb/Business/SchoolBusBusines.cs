@@ -17,20 +17,12 @@ namespace SchoolBusWXWeb.Business
             _schoolBusRepository = schoolBusRepository;
         }
 
-        public async Task<twxuser> GetTwxuserAsync(string pkid)
-        {
-            try
-            {
-                return await _schoolBusRepository.GetTwxuserBypkidAsync(pkid);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-        }
 
-
+        /// <summary>
+        /// 用户注册
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         public async Task<RegisVD> DoRegisterAsync(RegisterModel user)
         {
             var regis = new RegisVD();
@@ -51,9 +43,9 @@ namespace SchoolBusWXWeb.Business
             #endregion
 
             #region 验证码校验
-            //DateTime st = DateTime.Now;
-            //DateTime et = st.AddMinutes(-10);
-            //var codeList = await _schoolBusRepository.GetSmsListBySendTimeAsync(user.phoneNum, 0, st, et);
+            //DateTime date = DateTime.Now;
+            //DateTime beforedate = date.AddMinutes(-10);
+            //var codeList = await _schoolBusRepository.GetSmsListBySendTimeAsync(user.phoneNum, 0, beforedate, date);
             //if (codeList.Count > 0)
             //{
             //    var codeM = codeList.FirstOrDefault(c => c.fvcode == user.verificationCode);
@@ -61,7 +53,7 @@ namespace SchoolBusWXWeb.Business
             //    {
             //        return new RegisVD { msg = "验证码错误，请重新输入" };
             //    }
-            //    if (st > codeM.finvalidtime)
+            //    if (date > codeM.finvalidtime)
             //    {
             //        return new RegisVD { msg = "验证码超时" };
             //    }
@@ -128,11 +120,11 @@ namespace SchoolBusWXWeb.Business
                     return new RegisVD { msg = "更新所有绑定老卡用户卡片信息" };
                 }
                 #region 更新已有用户信息
-                userRecord.pkid= userRecord.pkid.TrimEnd();
+                userRecord.pkid = userRecord.pkid.TrimEnd();
                 userRecord.fk_card_id = cardRecord.pkid;
                 userRecord.frelationship = user.relationship;
                 userRecord.fphone = user.phoneNum;
-                var s2= await _schoolBusRepository.UpdateWxUserAsync(userRecord);
+                var s2 = await _schoolBusRepository.UpdateWxUserAsync(userRecord);
                 if (s2 == 0)
                 {
                     return new RegisVD { msg = "更新已有用户信息失败" };
@@ -151,9 +143,36 @@ namespace SchoolBusWXWeb.Business
             }
             // 维护卡片信息状态
             cardRecord.fstatus = 1;
-            var s3= await _schoolBusRepository.UpdateTCardAsync(cardRecord);
+            var s3 = await _schoolBusRepository.UpdateTCardAsync(cardRecord);
             return s3 == 0 ? new RegisVD { msg = "维护卡片信息失败" } : regis;
             #endregion
         }
+
+        public async Task<SmsVD> SendSmsCodeAsync(SmsModel sms)
+        {
+            var sendsms = new SmsVD();
+            DateTime date = DateTime.Now;
+            DateTime beforedate = date.AddMinutes(-10);
+            DateTime before1Mdate = date.AddMinutes(-1);
+            DateTime invaliddate = date.AddMinutes(10); // 失效时间为10分钟
+            // 获取十分钟内已发送验证码列表
+            var codeList = await _schoolBusRepository.GetSmsListBySendTimeAsync(sms.phoneNum, sms.verificationCodeType, beforedate, date);
+            // 验证发送次数
+            if (codeList.Count >= 5)
+            {
+                return new SmsVD { msg = "短时间发送短信过多" };
+            }
+            // 发送间隔1分钟判断
+            if (codeList.Any() && codeList.First().fsendtime > before1Mdate)
+            {
+                return new SmsVD { msg = "验证码已失效" };
+            }
+
+            // 生成6位随机数验证码
+            Random ran = new Random();
+            string code = ran.Next(100000, 999999).ToString();
+            return sendsms;
+        }
+
     }
 }
