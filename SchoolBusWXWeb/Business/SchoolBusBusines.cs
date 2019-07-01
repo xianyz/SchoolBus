@@ -21,7 +21,7 @@ namespace SchoolBusWXWeb.Business
 
 
         /// <summary>
-        /// 用户注册
+        /// TODO 用户注册
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
@@ -151,7 +151,7 @@ namespace SchoolBusWXWeb.Business
         }
 
         /// <summary>
-        /// 发送短信验证码
+        /// TODO 发送短信验证码
         /// </summary>
         /// <param name="sms"></param>
         /// <returns></returns>
@@ -205,5 +205,7 @@ namespace SchoolBusWXWeb.Business
             }
 
         }
+
+        
     }
 }

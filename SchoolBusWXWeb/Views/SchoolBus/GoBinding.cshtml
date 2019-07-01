@@ -1,0 +1,36 @@
+﻿@{
+    Layout = null;
+}
+
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <link href="~/lib/mui/css/mui.min.css" rel="stylesheet" />
+    <link href="~/font/iconfont.css" rel="stylesheet" />
+    <link href="~/css/main.css" rel="stylesheet" />
+    <link href="~/lib/mui/css/mui.picker.min.css" rel="stylesheet" />
+    <title>绑定成功</title>
+</head>
+<body>
+    <div class="binding_pic">
+        <img src="~/img/binding_pic.png" />
+        <h4>绑定成功</h4>
+    </div>
+    <div class="binding_btn">
+        <p>首次绑定卡家长,需要完善卡信息</p>
+        <button id="doInfo" type="button" class="mui-btn-success mui-btn">继续完善卡信息</button>
+    </div>
+    <script src="~/lib/jquery/jquery.2.1.4.min.js"></script>
+    <script src="~/js/tools.js"></script>
+    <script>
+        $('#doInfo').on('click', function () {
+            //跳转完善信息页
+            window.location.href = "/goCardInfo?wxid=" + localStorage.getItem("wxid");
+        });
+    </script>
+</body>
+</html>

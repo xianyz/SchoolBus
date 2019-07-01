@@ -3,7 +3,6 @@ using SchoolBusWXWeb.Business;
 using SchoolBusWXWeb.Models.PmsData;
 using SchoolBusWXWeb.Models.ViewData;
 using System.Threading.Tasks;
-using SchoolBusWXWeb.Utilities;
 
 namespace SchoolBusWXWeb.Controllers
 {
@@ -62,6 +61,14 @@ namespace SchoolBusWXWeb.Controllers
                 smsVD.msg = GetModelStateError();
             }
             return Json(smsVD);
+        }
+        #endregion
+
+        #region 绑定成功提示页面
+        [HttpGet]
+        public IActionResult GoBinding()
+        {
+            return View();
         }
         #endregion
     }
