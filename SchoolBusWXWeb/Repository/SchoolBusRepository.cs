@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using SchoolBusWXWeb.Models.PmsData;
+using SchoolBusWXWeb.Models.ViewData;
 
 namespace SchoolBusWXWeb.Repository
 {
@@ -59,7 +61,7 @@ namespace SchoolBusWXWeb.Repository
         /// <returns></returns>
         public async Task<tcard> GetCardByCodeAsync(string fcode)
         {
-            const string sql = "SELECT tcard.pkid, tcard.fcode, tcard.fstatus,tcard.fname,tcard.ftrialdate, tdevice.fplatenumber,tschool.fname AS fschoolname FROM tcard LEFT JOIN tdevice ON tcard.fk_device_id = tdevice.pkid LEFT JOIN tschool ON tcard.fk_school_id = tschool.pkid WHERE tcard.fcode = @fcode";
+            const string sql = "SELECT tcard.pkid, tcard.fcode, tcard.fstatus,tcard.fname,tcard.ftrialdate,tcard.fboardingaddress,tdevice.fplatenumber,tschool.fname AS fschoolname FROM tcard LEFT JOIN tdevice ON tcard.fk_device_id = tdevice.pkid LEFT JOIN tschool ON tcard.fk_school_id = tschool.pkid WHERE tcard.fcode = @fcode";
             var p = new DynamicParameters();
             p.Add("@fcode", fcode.TrimEnd());
             return await GetEntityAsync<tcard>(sql, p);
@@ -136,6 +138,18 @@ namespace SchoolBusWXWeb.Repository
         }
 
         /// <summary>
+        /// 获取配置信息列表
+        /// </summary>
+        /// <param name="fcodes"></param>
+        /// <returns></returns>
+        public async Task<List<tconfig>> GetSchoolConfigListAsync(string fcodes)
+        {
+            string sql = "select * from public.tconfig where fcode in (" + fcodes + ")";
+            var em = await GetAllEntityAsync<tconfig>(sql);
+            return em.ToList();
+        }
+
+        /// <summary>
         /// 更新卡片信息
         /// </summary>
         /// <param name="card"></param>
@@ -154,8 +168,44 @@ namespace SchoolBusWXWeb.Repository
         /// <returns></returns>
         public async Task<int> InsertSMSCodeAsync(tsms sms)
         {
-            const string sql= "insert INTO public.tsms(pkid,fphone,fvcode,fsendtime,finvalidtime,ftype)values(@pkid,@fphone,@fvcode,@fsendtime,@finvalidtime,@ftype)";
+            const string sql = "insert INTO public.tsms(pkid,fphone,fvcode,fsendtime,finvalidtime,ftype)values(@pkid,@fphone,@fvcode,@fsendtime,@finvalidtime,@ftype)";
             return await ExecuteEntityAsync(sql, sms);
+        }
+
+        /// <summary>
+        /// 根据微信openid获取用户和绑定卡号详细信息
+        /// </summary>
+        /// <param name="wxopenid"></param>
+        /// <returns></returns>
+        public async Task<UserAndCardModel> GetUserAndCardByOpenidAsync(string wxopenid)
+        {
+            const string sql = @"select twxuser.pkid as wxpkid,twxuser.fphone,twxuser.frelationship,
+            tcard.pkid, tcard.fcode, tcard.fstatus,tcard.fname,tcard.fbirthdate,tcard.fboardingaddress,
+            tdevice.fplatenumber,tschool.fname AS fschoolname from public.twxuser
+            left join public.tcard on twxuser.fk_card_id=tcard.pkid
+            left join public.tdevice ON tcard.fk_device_id = tdevice.pkid
+            left join public.tschool ON tcard.fk_school_id = tschool.pkid
+            where twxuser.fwxid=@fwxid";
+            var p = new DynamicParameters();
+            p.Add("@fwxid", wxopenid.TrimEnd());
+            return await GetEntityAsync<UserAndCardModel>(sql, p);
+        }
+
+        /// <summary>
+        /// 根据车牌号获取托运的学校
+        /// </summary>
+        /// <param name="platenumber"></param>
+        /// <returns></returns>
+        public async Task<List<SchoolBaseInfo>> GetSchoolListByPlatenumber(string platenumber)
+        {
+            const string sql = @"SELECT tschool.ftype, tschool.pkid AS value,tschool.fname AS text FROM tschool 
+                                INNER JOIN tcompany_school ON tschool.pkid = tcompany_school.fk_school_id
+                                INNER JOIN tdevice ON tcompany_school.fk_company_id = tdevice.fk_company_id
+                                WHERE tdevice.fplatenumber = @fplatenumber ORDER BY text";
+            var p = new DynamicParameters();
+            p.Add("@fplatenumber", platenumber);
+            var em= await GetAllEntityAsync<SchoolBaseInfo>(sql, p);
+            return em.ToList();
         }
     }
 }

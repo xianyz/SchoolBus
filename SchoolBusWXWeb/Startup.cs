@@ -107,7 +107,7 @@ namespace SchoolBusWXWeb
 
             app.UseMvc(routes =>
             {
-                routes.MapRoute("default", "{controller=SchoolBus}/{action=Register}/{id?}");
+                routes.MapRoute("default", "{controller=SchoolBus}/{action=GoCardInfo}/{id?}");
             });
         }
         /// <summary>

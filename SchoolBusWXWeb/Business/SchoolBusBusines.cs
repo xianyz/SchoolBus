@@ -4,20 +4,28 @@ using SchoolBusWXWeb.Models.SchollBusModels;
 using SchoolBusWXWeb.Models.ViewData;
 using SchoolBusWXWeb.Repository;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
 namespace SchoolBusWXWeb.Business
 {
     public class SchoolBusBusines : ISchoolBusBusines
     {
+        private readonly SiteConfig _option;
         private readonly ISchoolBusRepository _schoolBusRepository;
-        public SchoolBusBusines(ISchoolBusRepository schoolBusRepository)
+        public SchoolBusBusines(ISchoolBusRepository schoolBusRepository, IOptions<SiteConfig> option)
         {
+            _option = option.Value;
             _schoolBusRepository = schoolBusRepository;
         }
 
-
+        /// <summary>
+        /// TODO 根据主键获取用户信息
+        /// </summary>
+        /// <param name="pkid"></param>
+        /// <returns></returns>
         public async Task<twxuser> GetTwxuserAsync(string pkid)
         {
             try
@@ -209,6 +217,38 @@ namespace SchoolBusWXWeb.Business
 
         }
 
+        /// <summary>
+        /// TODO 完善信息
+        /// </summary>
+        /// <param name="wxid"></param>
+        /// <returns></returns>
+        public async Task<UserAndCardModel> GetCardInfoByCodeAsync(string wxid)
+        {
+            var data = await _schoolBusRepository.GetUserAndCardByOpenidAsync(wxid);
+            var configList = await _schoolBusRepository.GetSchoolConfigListAsync("'002','003'");
+            data.wxshareTitle = configList.FirstOrDefault(x => x.fcode == "002")?.fvalue;
+            data.wxshareDescription = configList.FirstOrDefault(x => x.fcode == "003")?.fvalue;
+            data.wxLink = _option.WxShareOption.URL + "/index?type=0&cardNum=" + data.fcode;
+            data.wximgUrl = _option.WxShareOption.URL + "/common/resource/img/pic1.jpg";
+            return data;
+        }
 
+        /// <summary>
+        /// 根据车牌号获取托运的学校
+        /// </summary>
+        /// <param name="platenumber"></param>
+        /// <returns></returns>
+        public async Task<SchoolVD> GetSchoolListByPlatenumber(string platenumber)
+        {
+            var result= await _schoolBusRepository.GetSchoolListByPlatenumber(platenumber);
+            var ftypelist=result.GroupBy<>
+            var svd = new SchoolVD()
+            {
+                status = 1,
+                msg = "成功",
+                data = ""
+            };
+            return svd;
+        }
     }
 }

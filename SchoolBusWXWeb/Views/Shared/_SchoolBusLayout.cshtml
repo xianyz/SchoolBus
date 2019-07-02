@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <link href="~/lib/mui/css/mui.min.css" rel="stylesheet" />
+    <link href="~/font/iconfont.css" rel="stylesheet" />
+    <link href="~/css/main.css" rel="stylesheet" />
+    <link href="~/lib/mui/css/mui.picker.min.css" rel="stylesheet" />
+    <title>@ViewBag.Title</title>
+    @RenderSection("Css", false)
+</head>
+<body>
+    @RenderBody()
+<script src="~/lib/jquery/jquery.2.1.4.min.js"></script>
+    <script src="~/js/tools.js"></script>
+    <script src="~/lib/mui/js/mui.min.js"></script>
+    <script src="~/lib/mui/js/mui.picker.all.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+    <script src="~/js/base.js"></script>
+    <script src="@(this.Context.Request.Scheme)://res2.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

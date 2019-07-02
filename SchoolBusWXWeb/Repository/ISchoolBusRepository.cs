@@ -1,8 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using SchoolBusWXWeb.Models.PmsData;
 using SchoolBusWXWeb.Models.SchollBusModels;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using SchoolBusWXWeb.Models.ViewData;
+
 
 namespace SchoolBusWXWeb.Repository
 {
@@ -17,7 +19,10 @@ namespace SchoolBusWXWeb.Repository
         Task<int> UpdateUserCardAsync(string oldcard, string newcard);
         Task<int> UpdateWxUserAsync(twxuser user);
         Task<tconfig> GetSchoolConfigAsync(string fcode);
+        Task<List<tconfig>> GetSchoolConfigListAsync(string fcodes);
         Task<int> UpdateTCardAsync(tcard card);
         Task<int> InsertSMSCodeAsync(tsms sms);
+        Task<UserAndCardModel> GetUserAndCardByOpenidAsync(string wxopenid);
+        Task<List<SchoolBaseInfo>> GetSchoolListByPlatenumber(string platenumber);
     }
 }

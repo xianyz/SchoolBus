@@ -1,0 +1,310 @@
+﻿@{
+    Layout = "~/Views/Shared/_SchoolBusLayout.cshtml";
+    ViewBag.Title = "完善信息";
+}
+@using SchoolBusWXWeb.Models.PmsData
+@model UserAndCardModel
+<div class="register_pic">
+    <img src="~/img/pic1.jpg" />
+</div>
+<div class="information">
+    <div class="box">
+        <h1 class="title">您的信息</h1>
+        <div class="erweima">
+            <span class="w25">卡号</span>
+            <input disabled="disabled" type="text" asp-for="fcode" value="@(Model?.fcode)" maxlength="10"/>
+            <span asp-validation-for="fcode" style="color: red;"></span>
+        </div>
+        <div class="erweima" onclick="$(this).find('input').focus()">
+            <span class="w25">手机号码</span>
+            <input disabled="disabled" type="text" asp-for="fphone" value="@(Model?.fphone)" maxlength="11"/>
+            <span asp-validation-for="fphone" style="color: red"></span>
+            <button type="button" class="yanzhengma" onclick="modifyPhoneNum">修改</button>
+        </div>
+        <div class="erweima1" onclick="$(this).find('input').focus()">
+            <span class="w25">验证码</span>
+            <input type="text" asp-for="verificationCode" maxlength="6" />
+            <span asp-validation-for="verificationCode" style="color: red"></span>
+            <button id="generateCode" onclick="sendSmsCode()" type="button" class="yanzhengma">获取验证码</button>
+        </div>
+        <div class="input" id="relationshipname">
+            <span>与学生关系</span>
+            <input type="text" asp-for="frelationship" value="@(Model?.frelationship)" readonly="readonly"/>
+            <span asp-validation-for="frelationship" style="color: red"></span>
+        </div>
+    </div>
+    <div class="box">
+        <h1 class="title">乘车信息</h1>
+        <div class="input" onclick="$(this).find('input').focus()">
+            <span style="width: 30%">车牌号<span style="width:10px;color: red;float:right">*</span></span>
+            <input type="text" asp-for="fplatenumber" value="@(Model?.fplatenumber)" maxlength="10" />
+            <span asp-validation-for="fplatenumber" style="color: red"></span>
+        </div>
+        <div class="input" onclick="$(this).find('input').focus()">
+            <span style="width: 30%">学生姓名<span style="width:10px;color: red;float:right">*</span></span>
+            <input type="text" asp-for="fname" value="@(Model?.fname)" maxlength="10" />
+            <span asp-validation-for="fname" style="color: red"></span>
+        </div>
+        <div class="input" id="dateSelect2">
+            <span style="width: 30%">所在学校<span style="width:10px;color: red;float:right">*</span></span>
+            <input type="text" asp-for="fschoolname" value="@(Model?.fschoolname)" maxlength="50" readonly="readonly" />
+            <span asp-validation-for="fschoolname" style="color: red"></span>
+        </div>
+        <div class="input" onclick="$(this).find('input').focus()">
+            <span style="width: 30%">上车位置</span>
+            <input type="text" asp-for="fboardingaddress" value="@(Model?.fboardingaddress)" maxlength="50" />
+        </div>
+        <div class="input" id="dateSelect">
+            <span style="width: 30%">出生年月</span>
+            <input type="text" asp-for="fbirthdate" value="@(Model?.fbirthdate)" readonly="readonly" />
+        </div>
+    </div>
+    <button type="button" onclick="saveCardInfo()" class=" btn mui-btn mui-btn-warning">保存信息</button>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(function () {
+            // 选择出生日期
+            $("#dateSelect").click(function () {
+                var dtPicker = new mui.DtPicker({
+                    type: 'date',
+                    beginDate: new Date(1999, 01, 01),  // 设置开始日期
+                    endDate: new Date()                 // 设置结束日期
+                });
+                dtPicker.show(function (selectItems) {
+                    var y = selectItems.y.text;  //获取选择的年
+                    var m = selectItems.m.text;  //获取选择的月
+                    var d = selectItems.d.text;  //获取选择的日
+                    var date = y + "-" + m + "-" + d;
+                    $("#dateSelect").find('input').val(date);
+                })
+            });
+
+            // 选择学校
+            $("#dateSelect2").click(function () {
+                if (vue.plateNumber === '') {
+                    alert("请先填写车牌号");
+                    return;
+                }
+                setPicker();
+            });
+
+            function setPicker() {
+                var picker = new mui.PopPicker({
+                    layer: 2
+                });
+                picker.setData([{
+                    value: '1',
+                    text: '小学',
+                    children: vue.primarySchoolList
+                }, {
+                    value: '2',
+                    text: '初中',
+                    children: vue.juniorMiddleSchoolList
+                }, {
+                    value: '3',
+                    text: '高中',
+                    children: vue.highSchoolList
+                }]);
+
+                picker.pickers[0].setSelectedIndex(0);
+                picker.show(function (selectItems) {
+                    $("#dateSelect2").find('input').val(selectItems[1].text);
+                    vue.schoolName = selectItems[1].text;
+                })
+            }
+        })
+    </script>
+    <script type="text/javascript">
+
+        var vue = new Vue({
+            el: '#vue',
+            data: {
+                wxid: '',//微信ID
+                cardNum: '2340434214',//卡号
+                phoneNum: '',//手机号
+                verificationCode: '',//验证码
+                relationship: '',//与学生关系
+                plateNumber: '',//车牌号
+                boardingAddress: '',//上车位置
+                stuName: '',//学生姓名
+                stuSex: 1,//性别(默认男)
+                birthdate: '',//出生年月
+                schoolName: '',//所在学校
+                primarySchoolList: [],//小学学校列表
+                juniorMiddleSchoolList: [],//初中学校列表
+                highSchoolList: [],//高中学校列表
+                disabled: true,
+                codePrompt: '获取验证码'
+            },
+            watch: {
+                plateNumber(val) {//普通的watch监听
+                    console.log("plateNumber: " + val);
+                    // 学校列表赋值
+                    getSchoolList(1);
+                    getSchoolList(2);
+                    getSchoolList(3);
+                }
+            },
+            methods: {
+                // 根据卡号获取卡片信息
+                getCardInfoByNum: function () {
+                    $.ajax({
+                        type: "POST",
+                        url: "/webService/getCardInfoByNum",
+                        data: {
+                            cardNum: vue.cardNum
+                        },
+                        success: function (data) {
+                            //                        console.log(data);
+                            // 默认赋值
+                            if (data.code === 1) {
+                                if (data.data !== null) {
+                                    vue.plateNumber = data.data.fplatenumber;
+                                    if (data.data.fboardingaddress !== '') {
+                                        vue.boardingAddress = $.trim(data.data.fboardingaddress);
+                                    }
+                                    vue.stuName = data.data.fname;
+                                    vue.stuSex = data.data.fsex;
+                                    if (data.data.fbirthdate !== '') {
+                                        vue.birthdate = data.data.fbirthdate;
+                                    }
+                                    vue.schoolName = data.data.fschoolname;
+                                    $("#dateSelect").find('input').val(data.data.fbirthdate);
+                                    $("#dateSelect2").find('input').val(data.data.fschoolname);
+                                }
+                            }
+                        }
+                    })
+                },
+
+                //修改手机号
+                modifyPhoneNum: function () {
+                    vue.disabled = false;
+                },
+
+                //获取验证码
+                sendSmsCode: function () {
+                    $.ajax({
+                        type: "POST",
+                        url: "/webService/sendSmsCode",
+                        data: {
+                            // 手机号
+                            phoneNum: vue.phoneNum,
+                            // 验证码类型（2：修改）
+                            verificationCodeType: 2
+                        },
+                        success: function (data) {
+                            //                        console.log(data);
+                            if (data.code === 201) {
+                                settime();
+                                //                            alert(data.msg);
+                            } else {
+                                alert(data.msg);
+                            }
+                        }
+                    });
+
+                },
+
+                //保存卡片信息
+                saveCardInfo: function () {
+                    $.ajax({
+                        type: "POST",
+                        url: "/webService/saveCardInfo",
+                        data: {
+                            // 微信ID
+                            wxid: vue.wxid,
+                            // 手机号
+                            phoneNum: vue.phoneNum,
+                            // 验证码
+                            verificationCode: vue.verificationCode,
+                            // 与学生关系
+                            relationship: vue.relationship,
+                            // 车牌号
+                            plateNumber: vue.plateNumber,
+                            // 上车位置
+                            boardingAddress: vue.boardingAddress,
+                            // 学生姓名
+                            stuName: vue.stuName,
+                            // 性别
+                            stuSex: vue.stuSex,
+                            // 出生年月
+                            birthdate: vue.birthdate,
+                            // 所在学校
+                            schoolName: vue.schoolName
+
+                        },
+                        success: function (data) {
+
+                            if (data.code === 1) {
+                                // 个人信息本地存储
+                                localStorage.setItem("wxid", vue.wxid);
+                                alert(data.msg);
+                                // 关闭窗口
+                                //                            wx.closeWindow();
+                                window.location.href = "/goAddress?openId=" + vue.wxid + "&showType=1";
+                            } else {
+                                alert(data.msg);
+                            }
+
+                        }
+                    });
+
+                }
+
+            }
+        });
+
+        // 获取学校列表并赋值
+        function getSchoolList(schoolType) {
+            $.ajax({
+                type: "GET",
+                url: "/webService/getSchoolList",
+                data: {
+                    // 学校类型
+                    schoolType: schoolType,
+                    plateNumber: vue.plateNumber
+                },
+                success: function (data) {
+                    //                console.log(data.data);
+                    if (data.code === 1) {
+
+                        if (schoolType === 1) {
+                            vue.primarySchoolList = data.data;
+                        }
+                        if (schoolType === 2) {
+                            vue.juniorMiddleSchoolList = data.data;
+                        }
+                        if (schoolType === 3) {
+                            vue.highSchoolList = data.data;
+                        }
+
+                    } else {
+                        alert(data.msg);
+                    }
+                }
+            });
+        }
+
+        //验证码发送倒计时
+        var countdown = 60;
+        var _generate_code = $("#generateCode");
+        function settime() {
+            if (countdown === 0) {
+                _generate_code.attr("disabled", false);
+                vue.codePrompt = "获取验证码";
+                countdown = 60;
+                return false;
+            } else {
+                _generate_code.attr("disabled", true);
+                vue.codePrompt = "重新发送(" + countdown + ")";
+                countdown--;
+            }
+            setTimeout(function () {
+                settime();
+            }, 1000);
+        }
+    </script>
+}

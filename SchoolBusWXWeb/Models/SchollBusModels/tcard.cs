@@ -32,7 +32,7 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         [StringLength(20)]
         public string fpwd { get; set; }
         /// <summary>
-        /// 状态 目前0,1,2
+        /// 状态 1:微信已经注册 2:挂失 3:注销 默认:0
         /// </summary>
         public int fstatus { get; set; }
         
@@ -47,7 +47,7 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
             set => _fk_device_id = value;
         }
         /// <summary>
-        /// 姓名
+        /// 学生姓名
         /// </summary>
         [StringLength(50)]
         public string fname { get; set; }

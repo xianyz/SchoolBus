@@ -25,6 +25,11 @@ namespace SchoolBusWXWeb.Models
         /// 阿里云配置
         /// </summary>
         public AliOption AliOption { get; set; }
+
+        /// <summary>
+        /// 微信分享配置
+        /// </summary>
+        public WxShareOption WxShareOption { get;set;}
     }
     public class QiniuOption
     {
@@ -70,5 +75,10 @@ namespace SchoolBusWXWeb.Models
         public string TemplateCode { get; set; }
         public string OutId { get; set; }
         public string Version { get;set;}
+    }
+
+    public class WxShareOption
+    {
+        public string URL { get;set;}
     }
 }
