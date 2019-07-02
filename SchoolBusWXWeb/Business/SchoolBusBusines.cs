@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using SchoolBusWXWeb.Models;
+﻿using SchoolBusWXWeb.Models;
 using SchoolBusWXWeb.Models.PmsData;
 using SchoolBusWXWeb.Models.SchollBusModels;
 using SchoolBusWXWeb.Models.ViewData;
 using SchoolBusWXWeb.Repository;
-using SchoolBusWXWeb.Utilities;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SchoolBusWXWeb.Business
 {
@@ -47,7 +45,6 @@ namespace SchoolBusWXWeb.Business
             {
                 return new RegisVD { msg = "卡号错误，请重新输入" };
             }
-            cardRecord.pkid = cardRecord.pkid.TrimEnd();
             switch (cardRecord.fstatus)
             {
                 case 2:

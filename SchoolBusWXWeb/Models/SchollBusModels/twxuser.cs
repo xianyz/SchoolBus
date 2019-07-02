@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable InconsistentNaming
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace SchoolBusWXWeb.Models.SchollBusModels
 {
@@ -15,7 +15,7 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         [StringLength(36)]
         public string pkid
         {
-            get => _pkid.TrimEnd();
+            get => string.IsNullOrEmpty(_pkid) ? Guid.NewGuid().ToString("N") : _pkid.TrimEnd();
             set => _pkid = !string.IsNullOrEmpty(value) ? value : Guid.NewGuid().ToString("N");
         }
 
