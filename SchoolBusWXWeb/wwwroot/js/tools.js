@@ -46,6 +46,42 @@
     }
 })();
 
+// 倒计时
+var countdown = 60;
+var _generate_code = $("#generateCode");
+function settime() {
+    if (countdown === 0) {
+        _generate_code.attr("disabled", false);
+        _generate_code.text("获取验证码");
+        countdown = 60;
+        return false;
+    } else {
+        _generate_code.attr("disabled", true);
+        _generate_code.text("重新发送(" + countdown + ")");
+        countdown--;
+    }
+    setTimeout(function () {
+        settime();
+    }, 1000);
+}
+
+// 发短信
+function sendSmsCode(codetype) {
+    var phone = $("#phoneNum").val();
+    if (phone != "") {
+        _generate_code.attr("disabled", true);
+        getAjax("/SchoolBus/SendSmsCode", { phoneNum: phone, verificationCodeType: codetype }, function (data) {
+            if (data.status == 1) {
+                settime();
+            } else {
+                alert(data.msg);
+            }
+        }, function () { _generate_code.attr("disabled", false); });
+    } else {
+        alert("请输入手机号");
+    }
+}
+
 // 通用ajax+防止csrf
 function getAjax(url, parm, callBack, cmBack) {
     var form = $("#frm");
