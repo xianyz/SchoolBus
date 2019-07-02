@@ -83,7 +83,7 @@
                     var d = selectItems.d.text;  //获取选择的日
                     var date = y + "-" + m + "-" + d;
                     $("#dateSelect").find('input').val(date);
-                })
+                });
             });
             // 选择学校
             $("#dateSelect2").click(function () {
@@ -99,7 +99,7 @@
                 picker.pickers[0].setSelectedIndex(0);
                 picker.show(function (selectItems) {
                     $("#fschoolname").val(selectItems[1].text);
-                })
+                });
             }
         });
 
@@ -109,10 +109,10 @@
                 type: "GET",
                 url: "/SchoolBus/GetSchoolListByNum",
                 data: {
-                    platenumber: platenumber,
+                    platenumber: platenumber
                 },
                 success: function (data) {
-                    if (data.status == 1) {
+                    if (data.status === 1) {
                         schoolList = data.data;
                     } else {
                         alert(data.msg);

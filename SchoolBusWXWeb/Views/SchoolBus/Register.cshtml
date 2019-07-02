@@ -707,8 +707,8 @@
                         type: this.method,
                         data: $(this).serialize(),
                         success: function (result) {
-                            if (result.status == 1) {
-                                window.location.href = "/SchoolBus/GoBinding"
+                            if (result.status === 1) {
+                                window.location.href = "/SchoolBus/GoBinding";
                             } else {
                                 alert(result.msg);
                             }
