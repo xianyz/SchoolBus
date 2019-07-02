@@ -38,7 +38,6 @@ namespace SchoolBusWXWeb.Business
         /// <returns></returns>
         public async Task<RegisVD> DoRegisterAsync(RegisterModel user)
         {
-            var regis = new RegisVD();
             #region 卡号校验
             var cardRecord = await _schoolBusRepository.GetCardByCodeAsync(user.cardNum);
             if (cardRecord == null)
@@ -90,14 +89,9 @@ namespace SchoolBusWXWeb.Business
                     fstatus = 0
                 };
                 var res = await _schoolBusRepository.InsertWxUserAsync(wxuser);
-                if (res > 0)
+                if (res == 0)
                 {
-                    regis.status = 1;
-                    regis.msg = "注册成功";
-                }
-                else
-                {
-                    regis.msg = "注册失败,请稍后尝试";
+                    return new RegisVD { msg = "注册失败,请稍后尝试" };
                 }
             }
             else
@@ -146,18 +140,17 @@ namespace SchoolBusWXWeb.Business
             #endregion
 
             #region 卡片信息维护
-            if (cardRecord.ftrialdate != null)
+            if (cardRecord.ftrialdate == null)
             {
                 DateTime triald = Convert.ToDateTime(cardRecord.ftrialdate);
                 var trialdateRecord = await _schoolBusRepository.GetSchoolConfigAsync("001"); // 首次注册试用期（天）
                 int.TryParse(trialdateRecord.fvalue, out int tt);
                 cardRecord.ftrialdate = triald.AddYears(tt);  // 卡片试用期赋值
             }
-            // 维护卡片信息状态
-            cardRecord.fstatus = 1;
+            cardRecord.fstatus = 1;   // 维护卡片信息状态 
             var s3 = await _schoolBusRepository.UpdateTCardAsync(cardRecord);
-            return s3 == 0 ? new RegisVD { msg = "维护卡片信息失败" } : regis;
             #endregion
+            return s3 == 0 ? new RegisVD { msg = "维护卡片信息失败" } : new RegisVD { status = 1, msg = "注册成功" };
         }
 
         /// <summary>
@@ -216,6 +209,6 @@ namespace SchoolBusWXWeb.Business
 
         }
 
-        
+
     }
 }
