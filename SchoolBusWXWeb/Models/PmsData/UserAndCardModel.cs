@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using SchoolBusWXWeb.Models.ViewData;
+
+// ReSharper disable UnusedMember.Global
+// ReSharper disable InconsistentNaming
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace SchoolBusWXWeb.Models.PmsData
 {
@@ -87,5 +90,6 @@ namespace SchoolBusWXWeb.Models.PmsData
         /// 微信分享描述
         /// </summary>
         public string wxshareDescription { get; set; }
+
     }
 }

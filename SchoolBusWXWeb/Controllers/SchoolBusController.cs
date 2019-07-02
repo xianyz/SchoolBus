@@ -22,7 +22,7 @@ namespace SchoolBusWXWeb.Controllers
         [HttpGet]
         public async Task<IActionResult> Register()
         {
-            //var data = await _schoolBusBusines.GetTwxuserAsync("2c9ab45969dc19990169dd5bb9ea08b5");
+            var data = await _schoolBusBusines.GetTwxuserAsync("2c9ab45969dc19990169dd5bb9ea08b5");
             return View();
         }
 
@@ -87,14 +87,13 @@ namespace SchoolBusWXWeb.Controllers
         }
         #endregion
 
-        #region 根据车牌号获取托运的学校
+        #region 根据车牌号获取托运的学校 "辽A00002"
         [HttpGet]
-        public async Task<IActionResult> GetSchoolListByNum(string platenumber= "辽A00002")
+        public async Task<IActionResult> GetSchoolListByNum(string platenumber)
         {
             var result = await _schoolBusBusines.GetSchoolListByPlatenumber(platenumber);
             return Json(result);
         }
-
         #endregion
     }
 }

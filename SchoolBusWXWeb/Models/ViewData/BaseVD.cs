@@ -1,5 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+// ReSharper disable InconsistentNaming
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace SchoolBusWXWeb.Models.ViewData
 {
@@ -14,25 +15,32 @@ namespace SchoolBusWXWeb.Models.ViewData
 
     public class SchoolVD : BaseVD
     {
-        public List<SchoolTypeList> data { get; set; }
+        public List<SchoolMode> data { get;set;}
     }
-
     public class SchoolBaseInfo
     {
         public int ftype { get; set; }
         public string text { get; set; }
         public string value { get; set; }
-       
+
     }
 
-    public class SchoolTypeList
+
+
+    public class SchoolMode
     {
-        public int ftype { get; set; }
-        public List<SchoolValueText> schoolValues { get; set; }
+        public string value { get; set; }
+        public string text { get; set; }
+        public List<SchoolValueText> children { get; set; }
     }
     public class SchoolValueText
     {
+        private string _value;
+        public string value
+        {
+            get => string.IsNullOrEmpty(_value) ? "" : _value.TrimEnd();
+            set => _value = !string.IsNullOrEmpty(value) ? value : "";
+        }
         public string text { get; set; }
-        public string value { get; set; }
     }
 }

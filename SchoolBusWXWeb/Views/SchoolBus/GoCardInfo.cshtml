@@ -12,13 +12,13 @@
         <h1 class="title">您的信息</h1>
         <div class="erweima">
             <span class="w25">卡号</span>
-            <input disabled="disabled" type="text" asp-for="fcode" value="@(Model?.fcode)" maxlength="10"/>
+            <input disabled="disabled" type="text" asp-for="fcode" value="@(Model?.fcode)" maxlength="10" />
             <span asp-validation-for="fcode" style="color: red;"></span>
         </div>
         <div class="erweima" onclick="$(this).find('input').focus()">
             <span class="w25">手机号码</span>
-            <input disabled="disabled" type="text" asp-for="fphone" value="@(Model?.fphone)" maxlength="11"/>
             <span asp-validation-for="fphone" style="color: red"></span>
+            <input disabled="disabled" type="text" asp-for="fphone" value="@(Model?.fphone)" maxlength="11" />
             <button type="button" class="yanzhengma" onclick="modifyPhoneNum">修改</button>
         </div>
         <div class="erweima1" onclick="$(this).find('input').focus()">
@@ -29,7 +29,7 @@
         </div>
         <div class="input" id="relationshipname">
             <span>与学生关系</span>
-            <input type="text" asp-for="frelationship" value="@(Model?.frelationship)" readonly="readonly"/>
+            <input type="text" asp-for="frelationship" value="@(Model?.frelationship)" readonly="readonly" />
             <span asp-validation-for="frelationship" style="color: red"></span>
         </div>
     </div>
@@ -64,7 +64,10 @@
 
 @section Scripts{
     <script type="text/javascript">
-        $(function () {
+        var schoolList = [];
+        var platenumber = $("#fplatenumber").val();
+        $(document).ready(function () {
+            getSchoolList();
             // 选择出生日期
             $("#dateSelect").click(function () {
                 var dtPicker = new mui.DtPicker({
@@ -83,204 +86,35 @@
 
             // 选择学校
             $("#dateSelect2").click(function () {
-                if (vue.plateNumber === '') {
+                if ( platenumber=== '') {
                     alert("请先填写车牌号");
                     return;
                 }
                 setPicker();
             });
-
             function setPicker() {
                 var picker = new mui.PopPicker({
                     layer: 2
                 });
-                picker.setData([{
-                    value: '1',
-                    text: '小学',
-                    children: vue.primarySchoolList
-                }, {
-                    value: '2',
-                    text: '初中',
-                    children: vue.juniorMiddleSchoolList
-                }, {
-                    value: '3',
-                    text: '高中',
-                    children: vue.highSchoolList
-                }]);
-
+                picker.setData(schoolList);
                 picker.pickers[0].setSelectedIndex(0);
                 picker.show(function (selectItems) {
-                    $("#dateSelect2").find('input').val(selectItems[1].text);
-                    vue.schoolName = selectItems[1].text;
+                    $("#fschoolname").val(selectItems[1].text);
                 })
-            }
-        })
-    </script>
-    <script type="text/javascript">
-
-        var vue = new Vue({
-            el: '#vue',
-            data: {
-                wxid: '',//微信ID
-                cardNum: '2340434214',//卡号
-                phoneNum: '',//手机号
-                verificationCode: '',//验证码
-                relationship: '',//与学生关系
-                plateNumber: '',//车牌号
-                boardingAddress: '',//上车位置
-                stuName: '',//学生姓名
-                stuSex: 1,//性别(默认男)
-                birthdate: '',//出生年月
-                schoolName: '',//所在学校
-                primarySchoolList: [],//小学学校列表
-                juniorMiddleSchoolList: [],//初中学校列表
-                highSchoolList: [],//高中学校列表
-                disabled: true,
-                codePrompt: '获取验证码'
-            },
-            watch: {
-                plateNumber(val) {//普通的watch监听
-                    console.log("plateNumber: " + val);
-                    // 学校列表赋值
-                    getSchoolList(1);
-                    getSchoolList(2);
-                    getSchoolList(3);
-                }
-            },
-            methods: {
-                // 根据卡号获取卡片信息
-                getCardInfoByNum: function () {
-                    $.ajax({
-                        type: "POST",
-                        url: "/webService/getCardInfoByNum",
-                        data: {
-                            cardNum: vue.cardNum
-                        },
-                        success: function (data) {
-                            //                        console.log(data);
-                            // 默认赋值
-                            if (data.code === 1) {
-                                if (data.data !== null) {
-                                    vue.plateNumber = data.data.fplatenumber;
-                                    if (data.data.fboardingaddress !== '') {
-                                        vue.boardingAddress = $.trim(data.data.fboardingaddress);
-                                    }
-                                    vue.stuName = data.data.fname;
-                                    vue.stuSex = data.data.fsex;
-                                    if (data.data.fbirthdate !== '') {
-                                        vue.birthdate = data.data.fbirthdate;
-                                    }
-                                    vue.schoolName = data.data.fschoolname;
-                                    $("#dateSelect").find('input').val(data.data.fbirthdate);
-                                    $("#dateSelect2").find('input').val(data.data.fschoolname);
-                                }
-                            }
-                        }
-                    })
-                },
-
-                //修改手机号
-                modifyPhoneNum: function () {
-                    vue.disabled = false;
-                },
-
-                //获取验证码
-                sendSmsCode: function () {
-                    $.ajax({
-                        type: "POST",
-                        url: "/webService/sendSmsCode",
-                        data: {
-                            // 手机号
-                            phoneNum: vue.phoneNum,
-                            // 验证码类型（2：修改）
-                            verificationCodeType: 2
-                        },
-                        success: function (data) {
-                            //                        console.log(data);
-                            if (data.code === 201) {
-                                settime();
-                                //                            alert(data.msg);
-                            } else {
-                                alert(data.msg);
-                            }
-                        }
-                    });
-
-                },
-
-                //保存卡片信息
-                saveCardInfo: function () {
-                    $.ajax({
-                        type: "POST",
-                        url: "/webService/saveCardInfo",
-                        data: {
-                            // 微信ID
-                            wxid: vue.wxid,
-                            // 手机号
-                            phoneNum: vue.phoneNum,
-                            // 验证码
-                            verificationCode: vue.verificationCode,
-                            // 与学生关系
-                            relationship: vue.relationship,
-                            // 车牌号
-                            plateNumber: vue.plateNumber,
-                            // 上车位置
-                            boardingAddress: vue.boardingAddress,
-                            // 学生姓名
-                            stuName: vue.stuName,
-                            // 性别
-                            stuSex: vue.stuSex,
-                            // 出生年月
-                            birthdate: vue.birthdate,
-                            // 所在学校
-                            schoolName: vue.schoolName
-
-                        },
-                        success: function (data) {
-
-                            if (data.code === 1) {
-                                // 个人信息本地存储
-                                localStorage.setItem("wxid", vue.wxid);
-                                alert(data.msg);
-                                // 关闭窗口
-                                //                            wx.closeWindow();
-                                window.location.href = "/goAddress?openId=" + vue.wxid + "&showType=1";
-                            } else {
-                                alert(data.msg);
-                            }
-
-                        }
-                    });
-
-                }
-
             }
         });
 
         // 获取学校列表并赋值
-        function getSchoolList(schoolType) {
+        function getSchoolList() {
             $.ajax({
                 type: "GET",
-                url: "/webService/getSchoolList",
+                url: "/SchoolBus/GetSchoolListByNum",
                 data: {
-                    // 学校类型
-                    schoolType: schoolType,
-                    plateNumber: vue.plateNumber
+                    platenumber: platenumber,
                 },
                 success: function (data) {
-                    //                console.log(data.data);
-                    if (data.code === 1) {
-
-                        if (schoolType === 1) {
-                            vue.primarySchoolList = data.data;
-                        }
-                        if (schoolType === 2) {
-                            vue.juniorMiddleSchoolList = data.data;
-                        }
-                        if (schoolType === 3) {
-                            vue.highSchoolList = data.data;
-                        }
-
+                    if (data.status == 1) {
+                        schoolList = data.data;
                     } else {
                         alert(data.msg);
                     }
@@ -306,5 +140,148 @@
                 settime();
             }, 1000);
         }
+    </script>
+    <script type="text/javascript">
+
+        //var vue = new Vue({
+        //    el: '#vue',
+        //    data: {
+        //        wxid: '',//微信ID
+        //        cardNum: '2340434214',//卡号
+        //        phoneNum: '',//手机号
+        //        verificationCode: '',//验证码
+        //        relationship: '',//与学生关系
+        //        plateNumber: '',//车牌号
+        //        boardingAddress: '',//上车位置
+        //        stuName: '',//学生姓名
+        //        stuSex: 1,//性别(默认男)
+        //        birthdate: '',//出生年月
+        //        schoolName: '',//所在学校
+        //        primarySchoolList: [],//小学学校列表
+        //        juniorMiddleSchoolList: [],//初中学校列表
+        //        highSchoolList: [],//高中学校列表
+        //        disabled: true,
+        //        codePrompt: '获取验证码'
+        //    },
+        //    watch: {
+        //        plateNumber(val) {//普通的watch监听
+        //            console.log("plateNumber: " + val);
+        //            // 学校列表赋值
+        //            getSchoolList(1);
+        //            getSchoolList(2);
+        //            getSchoolList(3);
+        //        }
+        //    },
+        //    methods: {
+        //        // 根据卡号获取卡片信息
+        //        getCardInfoByNum: function () {
+        //            $.ajax({
+        //                type: "POST",
+        //                url: "/webService/getCardInfoByNum",
+        //                data: {
+        //                    cardNum: vue.cardNum
+        //                },
+        //                success: function (data) {
+        //                    //                        console.log(data);
+        //                    // 默认赋值
+        //                    if (data.code === 1) {
+        //                        if (data.data !== null) {
+        //                            vue.plateNumber = data.data.fplatenumber;
+        //                            if (data.data.fboardingaddress !== '') {
+        //                                vue.boardingAddress = $.trim(data.data.fboardingaddress);
+        //                            }
+        //                            vue.stuName = data.data.fname;
+        //                            vue.stuSex = data.data.fsex;
+        //                            if (data.data.fbirthdate !== '') {
+        //                                vue.birthdate = data.data.fbirthdate;
+        //                            }
+        //                            vue.schoolName = data.data.fschoolname;
+        //                            $("#dateSelect").find('input').val(data.data.fbirthdate);
+        //                            $("#dateSelect2").find('input').val(data.data.fschoolname);
+        //                        }
+        //                    }
+        //                }
+        //            })
+        //        },
+
+        //        //修改手机号
+        //        modifyPhoneNum: function () {
+        //            vue.disabled = false;
+        //        },
+
+        //        //获取验证码
+        //        sendSmsCode: function () {
+        //            $.ajax({
+        //                type: "POST",
+        //                url: "/webService/sendSmsCode",
+        //                data: {
+        //                    // 手机号
+        //                    phoneNum: vue.phoneNum,
+        //                    // 验证码类型（2：修改）
+        //                    verificationCodeType: 2
+        //                },
+        //                success: function (data) {
+        //                    //                        console.log(data);
+        //                    if (data.code === 201) {
+        //                        settime();
+        //                        //                            alert(data.msg);
+        //                    } else {
+        //                        alert(data.msg);
+        //                    }
+        //                }
+        //            });
+
+        //        },
+
+        //        //保存卡片信息
+        //        saveCardInfo: function () {
+        //            $.ajax({
+        //                type: "POST",
+        //                url: "/webService/saveCardInfo",
+        //                data: {
+        //                    // 微信ID
+        //                    wxid: vue.wxid,
+        //                    // 手机号
+        //                    phoneNum: vue.phoneNum,
+        //                    // 验证码
+        //                    verificationCode: vue.verificationCode,
+        //                    // 与学生关系
+        //                    relationship: vue.relationship,
+        //                    // 车牌号
+        //                    plateNumber: vue.plateNumber,
+        //                    // 上车位置
+        //                    boardingAddress: vue.boardingAddress,
+        //                    // 学生姓名
+        //                    stuName: vue.stuName,
+        //                    // 性别
+        //                    stuSex: vue.stuSex,
+        //                    // 出生年月
+        //                    birthdate: vue.birthdate,
+        //                    // 所在学校
+        //                    schoolName: vue.schoolName
+
+        //                },
+        //                success: function (data) {
+
+        //                    if (data.code === 1) {
+        //                        // 个人信息本地存储
+        //                        localStorage.setItem("wxid", vue.wxid);
+        //                        alert(data.msg);
+        //                        // 关闭窗口
+        //                        //                            wx.closeWindow();
+        //                        window.location.href = "/goAddress?openId=" + vue.wxid + "&showType=1";
+        //                    } else {
+        //                        alert(data.msg);
+        //                    }
+
+        //                }
+        //            });
+
+        //        }
+
+        //    }
+        //});
+
+
     </script>
 }

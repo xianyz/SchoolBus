@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+
+// ReSharper disable SwitchStatementMissingSomeCases
 
 namespace SchoolBusWXWeb.Business
 {
@@ -225,6 +228,7 @@ namespace SchoolBusWXWeb.Business
         public async Task<UserAndCardModel> GetCardInfoByCodeAsync(string wxid)
         {
             var data = await _schoolBusRepository.GetUserAndCardByOpenidAsync(wxid);
+            if (data == null) return new UserAndCardModel();
             var configList = await _schoolBusRepository.GetSchoolConfigListAsync("'002','003'");
             data.wxshareTitle = configList.FirstOrDefault(x => x.fcode == "002")?.fvalue;
             data.wxshareDescription = configList.FirstOrDefault(x => x.fcode == "003")?.fvalue;
@@ -234,21 +238,49 @@ namespace SchoolBusWXWeb.Business
         }
 
         /// <summary>
-        /// 根据车牌号获取托运的学校
+        /// TODO 根据车牌号获取托运的学校
         /// </summary>
         /// <param name="platenumber"></param>
         /// <returns></returns>
         public async Task<SchoolVD> GetSchoolListByPlatenumber(string platenumber)
         {
-            var result= await _schoolBusRepository.GetSchoolListByPlatenumber(platenumber);
-            var ftypelist=result.GroupBy<>
+            var result = await _schoolBusRepository.GetSchoolListByPlatenumber(platenumber);
+            var schoolModes = new List<SchoolMode>();
+            result.Select(p => new { p.ftype }).Distinct().ToList().ForEach(x =>
+            {
+                var schoolMode = new SchoolMode { value = x.ftype.ToString() };
+                var typeList = new List<SchoolValueText>();
+                result.Where(y => y.ftype == x.ftype).ToList().ForEach(z =>
+                {
+                    typeList.Add(new SchoolValueText
+                    {
+                        text = z.text,
+                        value = z.value
+                    });
+                });
+                switch (x.ftype)
+                {
+                    case 1:
+                        schoolMode.text = "小学";
+                        break;
+                    case 2:
+                        schoolMode.text = "中学";
+                        break;
+                    case 3:
+                        schoolMode.text = "高中";
+                        break;
+                }
+                schoolMode.children = typeList;
+                schoolModes.Add(schoolMode);
+            });
             var svd = new SchoolVD()
             {
                 status = 1,
                 msg = "成功",
-                data = ""
+                data = schoolModes
             };
             return svd;
         }
+
     }
 }
