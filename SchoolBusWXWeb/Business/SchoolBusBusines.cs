@@ -1,4 +1,5 @@
-﻿using SchoolBusWXWeb.Models;
+﻿using Microsoft.Extensions.Options;
+using SchoolBusWXWeb.Models;
 using SchoolBusWXWeb.Models.PmsData;
 using SchoolBusWXWeb.Models.SchollBusModels;
 using SchoolBusWXWeb.Models.ViewData;
@@ -7,8 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 // ReSharper disable SwitchStatementMissingSomeCases
 
