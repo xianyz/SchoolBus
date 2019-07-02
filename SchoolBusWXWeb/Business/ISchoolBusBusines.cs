@@ -7,7 +7,7 @@ namespace SchoolBusWXWeb.Business
 {
     public interface ISchoolBusBusines
     {
-
+        Task<twxuser> GetTwxuserAsync(string pkid);
         /// <summary>
         /// 用户注册
         /// </summary>

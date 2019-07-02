@@ -20,6 +20,19 @@ namespace SchoolBusWXWeb.Business
         }
 
 
+        public async Task<twxuser> GetTwxuserAsync(string pkid)
+        {
+            try
+            {
+                return await _schoolBusRepository.GetTwxuserBypkidAsync(pkid);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         /// <summary>
         /// TODO 用户注册
         /// </summary>
@@ -122,7 +135,7 @@ namespace SchoolBusWXWeb.Business
                     return new RegisVD { msg = "更新所有绑定老卡用户卡片信息" };
                 }
                 #region 更新已有用户信息
-                userRecord.pkid = userRecord.pkid.TrimEnd();
+                userRecord.pkid = userRecord.pkid;
                 userRecord.fk_card_id = cardRecord.pkid;
                 userRecord.frelationship = user.relationship;
                 userRecord.fphone = user.phoneNum;

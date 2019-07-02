@@ -20,8 +20,9 @@ namespace SchoolBusWXWeb.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult Register()
+        public async Task<IActionResult> Register()
         {
+            var data = await _schoolBusBusines.GetTwxuserAsync("2c9ab45969dc19990169dd5bb9ea08b5");
             return View();
         }
 

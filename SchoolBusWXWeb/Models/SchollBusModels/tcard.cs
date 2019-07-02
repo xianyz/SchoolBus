@@ -1,15 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace SchoolBusWXWeb.Models.SchollBusModels
 {
+    [Table("public.tcard")]
     public class tcard
     {
+        private string _pkid;
         [Key]
-        public string pkid { get; set; } = Guid.NewGuid().ToString("N");
+        [StringLength(36)]
+        public string pkid
+        {
+            get => _pkid.TrimEnd();
+            set => _pkid = !string.IsNullOrEmpty(value) ? value : Guid.NewGuid().ToString("N");
+        }
+      
         /// <summary>
         /// 卡号
         /// </summary>
@@ -29,10 +38,17 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         /// 状态 目前0,1,2
         /// </summary>
         public int fstatus { get; set; }
+        
+        private string _fk_device_id;
         /// <summary>
         /// 设备id 外键 tdevice 表主键
         /// </summary>
-        public string fk_device_id { get; set; }
+        [StringLength(36)]
+        public string fk_device_id
+        {
+            get => _fk_device_id.TrimEnd();
+            set => _fk_device_id = value;
+        }
         /// <summary>
         /// 姓名
         /// </summary>
@@ -46,10 +62,16 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         /// 生日
         /// </summary>
         public DateTime fbirthdate { get; set; }
+        public string _fk_school_id { get; set; }
         /// <summary>
         /// 学校id 外键 tschool 表主键
         /// </summary>
-        public string fk_school_id { get; set; }
+        [StringLength(36)]
+        public string fk_school_id
+        {
+            get => _fk_school_id.TrimEnd();
+            set => _fk_school_id = value;
+        }
         /// <summary>
         /// 上车地址
         /// </summary>
@@ -60,14 +82,17 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         /// </summary>
         [StringLength(200)]
         public string fremark { get; set; }
-        /// <summary>
-        /// 试用到期时间
-        /// </summary>
-        public DateTime? ftrialdate { get; set; }
+
         /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime fcreatetime { get; set; }
+        
+        /// <summary>
+        /// 试用到期时间
+        /// </summary>
+        public DateTime? ftrialdate { get; set; }
+       
 
         #region 其他表字段信息
         /// <summary>

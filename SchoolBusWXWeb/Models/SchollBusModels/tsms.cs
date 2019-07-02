@@ -1,13 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SchoolBusWXWeb.Models.SchollBusModels
 {
+    [Table("public.tsms")]
     public class tsms
     {
+        private string _pkid;
         [Key]
-        public string pkid { get; set; } = Guid.NewGuid().ToString("N");
+        [StringLength(36)]
+        public string pkid
+        {
+            get => _pkid.TrimEnd();
+            set => _pkid = !string.IsNullOrEmpty(value) ? value : Guid.NewGuid().ToString("N");
+        }
         /// <summary>
         /// 电话
         /// </summary>
@@ -24,13 +31,11 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         /// <summary>
         /// 发送短信时间
         /// </summary>
-        [BindNever]
-        public DateTime fsendtime { get; set; }=DateTime.Now;
+        public DateTime fsendtime { get; set; }
         /// <summary>
         /// 验证短信时间郭琦时间 是fsendtime+10分钟时间
         /// </summary>
-        [BindNever]
-        public DateTime finvalidtime { get; set; } = DateTime.Now;
+        public DateTime finvalidtime { get; set; }
         /// <summary>
         /// 状态 0：注册，1：登录，2：修改
         /// </summary>
