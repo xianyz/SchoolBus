@@ -73,7 +73,7 @@ namespace SchoolBusWXWeb.Controllers
         }
         #endregion
 
-        #region 完善信息
+        #region 完善信息并保存
         [HttpGet]
         public async Task<IActionResult> GoCardInfo()
         {
@@ -85,6 +85,7 @@ namespace SchoolBusWXWeb.Controllers
             var result = await _schoolBusBusines.GetCardInfoByCodeAsync(wxid);
             return View(result);
         }
+
         #endregion
 
         #region 根据车牌号获取托运的学校 "辽A00002"

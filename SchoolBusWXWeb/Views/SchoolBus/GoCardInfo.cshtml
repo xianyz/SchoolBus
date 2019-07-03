@@ -60,7 +60,7 @@
                 <input type="text" asp-for="fbirthdate" value="@(Model?.fbirthdate)" readonly="readonly" />
             </div>
         </div>
-        <button type="button" onclick="saveCardInfo()" class=" btn mui-btn mui-btn-warning">保存信息</button>
+        <button type="button" class=" btn mui-btn mui-btn-warning">保存信息</button>
     </form>
 </div>
 
@@ -108,9 +108,7 @@
             $.ajax({
                 type: "GET",
                 url: "/SchoolBus/GetSchoolListByNum",
-                data: {
-                    platenumber: platenumber
-                },
+                data: { platenumber: platenumber },
                 success: function (data) {
                     if (data.status === 1) {
                         schoolList = data.data;
@@ -123,7 +121,6 @@
         // 修改按钮
         function modifyPhoneNum() {
             $("#vcoded").show();
-            $("#fcode").attr("disabled", false);
             $("#phoneNum").attr("disabled", false);
         }
     </script>
