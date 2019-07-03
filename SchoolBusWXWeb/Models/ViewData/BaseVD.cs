@@ -9,14 +9,18 @@ namespace SchoolBusWXWeb.Models.ViewData
         public int status { get; set; }
         public string msg { get; set; }
     }
+    
     public class RegisVD : BaseVD { }
 
+    public class SaveCardInfoVD : BaseVD { }
+    
     public class SmsVD : BaseVD { }
 
     public class SchoolVD : BaseVD
     {
         public List<SchoolMode> data { get;set;}
-    }
+    } 
+    
     public class SchoolBaseInfo
     {
         public int ftype { get; set; }
@@ -25,14 +29,13 @@ namespace SchoolBusWXWeb.Models.ViewData
 
     }
 
-
-
     public class SchoolMode
     {
         public string value { get; set; }
         public string text { get; set; }
         public List<SchoolValueText> children { get; set; }
     }
+    
     public class SchoolValueText
     {
         private string _value;

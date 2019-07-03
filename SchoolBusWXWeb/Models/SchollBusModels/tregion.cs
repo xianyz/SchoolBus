@@ -9,10 +9,15 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
     [Table("public.tregion")]
     public  class tregion
     {
+       
         [Key]
         [StringLength(36)]
-        public string pkid { get; set; }
-
+        public string pkid
+        {
+            get => string.IsNullOrEmpty(_pkid) ? Guid.NewGuid().ToString("N") : _pkid.TrimEnd();
+            set => _pkid = !string.IsNullOrEmpty(value) ? value : Guid.NewGuid().ToString("N");
+        }
+        private string _pkid;
         [Required]
         [StringLength(20)]
         public string fcode { get; set; }

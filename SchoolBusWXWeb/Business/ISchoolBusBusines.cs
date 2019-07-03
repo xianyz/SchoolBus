@@ -35,5 +35,12 @@ namespace SchoolBusWXWeb.Business
         /// <param name="platenumber"></param>
         /// <returns></returns>
         Task<SchoolVD> GetSchoolListByPlatenumber(string platenumber);
+
+        /// <summary>
+        /// 完善用户信息
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<SaveCardInfoVD> SavaCardAndUserInfoAsync(UserAndCardModel model);
     }
 }

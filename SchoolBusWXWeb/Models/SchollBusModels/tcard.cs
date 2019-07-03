@@ -8,7 +8,7 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
     [Table("public.tcard")]
     public class tcard
     {
-        private string _pkid;
+       
         [Key]
         [StringLength(36)]
         public string pkid
@@ -16,7 +16,8 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
             get => string.IsNullOrEmpty(_pkid) ? Guid.NewGuid().ToString("N") : _pkid.TrimEnd();
             set => _pkid = !string.IsNullOrEmpty(value) ? value : Guid.NewGuid().ToString("N");
         }
-      
+        private string _pkid;
+
         /// <summary>
         /// 卡号
         /// </summary>
@@ -37,16 +38,17 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         /// </summary>
         public int fstatus { get; set; }
         
-        private string _fk_device_id;
         /// <summary>
         /// 设备id 外键 tdevice 表主键
         /// </summary>
         [StringLength(36)]
         public string fk_device_id
         {
-            get => _fk_device_id.TrimEnd();
+            get => _fk_device_id?.TrimEnd();
             set => _fk_device_id = value;
         }
+        private string _fk_device_id;
+
         /// <summary>
         /// 学生姓名
         /// </summary>
@@ -60,16 +62,18 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         /// 生日
         /// </summary>
         public DateTime fbirthdate { get; set; }
-        public string _fk_school_id { get; set; }
+       
         /// <summary>
         /// 学校id 外键 tschool 表主键
         /// </summary>
         [StringLength(36)]
         public string fk_school_id
         {
-            get => _fk_school_id.TrimEnd();
+            get => _fk_school_id?.TrimEnd();
             set => _fk_school_id = value;
         }
+        private string _fk_school_id { get; set; }
+
         /// <summary>
         /// 上车地址
         /// </summary>

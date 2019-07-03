@@ -9,14 +9,24 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
     [Table("public.tcompany")]
     public class tcompany
     {
+        
         [Key]
         [StringLength(36)]
-        public string pkid { get; set; }
+        public string pkid
+        {
+            get => string.IsNullOrEmpty(_pkid) ? Guid.NewGuid().ToString("N") : _pkid.TrimEnd();
+            set => _pkid = !string.IsNullOrEmpty(value) ? value : Guid.NewGuid().ToString("N");
+        }
+        private string _pkid;
 
         [Required]
         [StringLength(36)]
-        public string fk_region_id { get; set; }
-
+        public string fk_region_id
+        {
+            get => _fk_region_id?.TrimEnd();
+            set => _fk_region_id = value;
+        }
+        private string _fk_region_id;
         [Required]
         [StringLength(20)]
         public string fcode { get; set; }

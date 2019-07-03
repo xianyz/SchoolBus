@@ -15,6 +15,7 @@ namespace SchoolBusWXWeb.Repository
     public class SchoolBusRepository : RepositoryBase, ISchoolBusRepository
     {
         public SchoolBusRepository(IOptions<SiteConfig> settings) : base(settings.Value.DefaultConnection) { }
+        
         /// <summary>
         /// 根据主键获取用户信息
         /// </summary>
@@ -166,7 +167,7 @@ namespace SchoolBusWXWeb.Repository
         /// </summary>
         /// <param name="sms"></param>
         /// <returns></returns>
-        public async Task<int> InsertSMSCodeAsync(tsms sms)
+        public async Task<int> InsertSmsCodeAsync(tsms sms)
         {
             const string sql = "insert INTO public.tsms(pkid,fphone,fvcode,fsendtime,finvalidtime,ftype)values(@pkid,@fphone,@fvcode,@fsendtime,@finvalidtime,@ftype)";
             return await ExecuteEntityAsync(sql, sms);
@@ -206,6 +207,47 @@ namespace SchoolBusWXWeb.Repository
             p.Add("@fplatenumber", platenumber);
             var em= await GetAllEntityAsync<SchoolBaseInfo>(sql, p);
             return em.ToList();
+        }
+
+        /// <summary>
+        /// 根据车牌号查询设备信息
+        /// </summary>
+        /// <param name="platenumber"></param>
+        /// <returns></returns>
+        public async Task<tdevice> GetDeviceByPlatenumber(string platenumber)
+        {
+            const string sql = "SELECT * FROM tdevice WHERE fstate = 0 AND fplatenumber =@fplatenumber";
+            var p = new DynamicParameters();
+            p.Add("@fplatenumber", platenumber);
+            return await GetEntityAsync<tdevice>(sql, p);
+        }
+
+        /// <summary>
+        /// 根据学校名称获取学校信息
+        /// </summary>
+        /// <param name="fname"></param>
+        /// <returns></returns>
+        public async Task<tschool> GetSchoolByName(string fname)
+        {
+            const string sql = "select * from tschool where fname=@fname";
+            var p = new DynamicParameters();
+            p.Add("@fname", fname);
+            return await GetEntityAsync<tschool>(sql, p);
+        }
+
+        /// <summary>
+        /// 校车公司跟服务学校关系 多对多关系
+        /// </summary>
+        /// <param name="companid"></param>
+        /// <param name="schoolid"></param>
+        /// <returns></returns>
+        public async Task<tcompany_school> GetCompanySchoolRel(string companid,string schoolid)
+        {
+            const string sql = "select * from tcompany_school where fk_company_id =@fk_company_id and fk_school_id =@fk_school_id";
+            var p = new DynamicParameters();
+            p.Add("@fk_company_id", companid.TrimEnd());
+            p.Add("@fk_school_id", schoolid.TrimEnd());
+            return await GetEntityAsync<tcompany_school>(sql, p);
         }
     }
 }

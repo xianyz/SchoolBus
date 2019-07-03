@@ -10,7 +10,7 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
     [Table("public.twxuser")]
     public class twxuser
     {
-        private string _pkid;
+       
         [Key]
         [StringLength(36)]
         public string pkid
@@ -18,6 +18,7 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
             get => string.IsNullOrEmpty(_pkid) ? Guid.NewGuid().ToString("N") : _pkid.TrimEnd();
             set => _pkid = !string.IsNullOrEmpty(value) ? value : Guid.NewGuid().ToString("N");
         }
+        private string _pkid;
 
         /// <summary>
         /// 微信openid
@@ -26,7 +27,7 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         [StringLength(50)]
         public string fwxid { get; set; }
 
-        private string _fk_card_id;
+        
         /// <summary>
         /// 卡片id   外键 tcard 表pkid字段
         /// </summary>
@@ -34,9 +35,11 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         [StringLength(36)]
         public string fk_card_id
         {
-            get => _fk_card_id.TrimEnd();
+            get => _fk_card_id?.TrimEnd();
             set => _fk_card_id = value;
         }
+        private string _fk_card_id;
+
         /// <summary>
         /// 微信昵称
         /// </summary>

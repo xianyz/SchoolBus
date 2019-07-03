@@ -64,24 +64,10 @@ namespace SchoolBusWXWeb.Business
             #endregion
 
             #region 验证码校验
-            DateTime date = DateTime.Now;
-            DateTime beforedate = date.AddMinutes(-10);
-            var codeList = await _schoolBusRepository.GetSmsListBySendTimeAsync(user.phoneNum, 0, beforedate, date);
-            if (codeList.Count > 0)
+            var isCode = await CheckCode(user.phoneNum, user.verificationCode, 0);
+            if (isCode.status != 1)
             {
-                var codeM = codeList.FirstOrDefault(c => c.fvcode == user.verificationCode);
-                if (codeM == null)
-                {
-                    return new RegisVD { msg = "验证码错误，请重新输入" };
-                }
-                if (date > codeM.finvalidtime)
-                {
-                    return new RegisVD { msg = "验证码超时" };
-                }
-            }
-            else
-            {
-                return new RegisVD { msg = "验证码超时" };
+                return new RegisVD { msg = isCode.msg };
             }
             #endregion
 
@@ -163,6 +149,83 @@ namespace SchoolBusWXWeb.Business
             return s3 == 0 ? new RegisVD { msg = "维护卡片信息失败" } : new RegisVD { status = 1, msg = "注册成功" };
         }
 
+
+        /// <summary>
+        /// TODO 完善用户信息
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<SaveCardInfoVD> SavaCardAndUserInfoAsync(UserAndCardModel model)
+        {
+            var userRecord = await _schoolBusRepository.GetTwxuserBytOpenidAsync(model.wxid);
+            if (userRecord != null)
+            {
+                #region 验证是否更换手机号
+                if (string.IsNullOrEmpty(model.verificationCode) && userRecord.fphone != model.fphone)
+                {
+                    return new SaveCardInfoVD { msg = "请填写验证码" };
+                }
+                var isCode = await CheckCode(model.fphone, model.verificationCode, 2);
+                if (isCode.status != 1)
+                {
+                    return new SaveCardInfoVD { msg = isCode.msg };
+                }
+                #endregion
+
+                #region 车牌号校验
+                var deviceRecord = await _schoolBusRepository.GetDeviceByPlatenumber(model.fplatenumber);
+                if (deviceRecord == null)
+                {
+                    return new SaveCardInfoVD { msg = "该车未绑定设备" };
+                }
+                #endregion
+
+                #region 校验车牌号和所在学校是否属于同一校车公司
+                var schoolRecord = await _schoolBusRepository.GetSchoolByName(model.fschoolname);
+                if (schoolRecord == null)
+                {
+                    return new SaveCardInfoVD { msg = "该学校不存在" };
+                }
+                var companySchoolRecord = await _schoolBusRepository.GetCompanySchoolRel(deviceRecord.fk_company_id, schoolRecord.pkid);
+                if (companySchoolRecord == null)
+                {
+                    return new SaveCardInfoVD { msg = "所输车牌号和学校不属于同一校车公司" };
+                }
+                #endregion
+
+                #region 更新完善用户和卡信息
+                // TODO 维护卡片信息
+                var cardRecord = await _schoolBusRepository.GetCardBypkidAsync(userRecord.fk_card_id);
+                if (cardRecord == null)
+                {
+                    return new SaveCardInfoVD { msg = "不存在此卡,请联系管理员" };
+                }
+                cardRecord.fname = model.fname;
+                cardRecord.fk_school_id = schoolRecord.pkid;
+                cardRecord.fk_device_id = deviceRecord.pkid;
+                cardRecord.fboardingaddress = model.fboardingaddress;
+                cardRecord.fbirthdate = model.fbirthdate;
+                var iscard = await _schoolBusRepository.UpdateTCardAsync(cardRecord);
+                if (iscard == 0)
+                {
+                    return new SaveCardInfoVD { msg = "维护卡片信息失败" };
+                }
+                // TODO 维护用户信息
+                userRecord.fphone = model.fphone;
+                userRecord.frelationship = model.frelationship;
+                var isuser = await _schoolBusRepository.UpdateWxUserAsync(userRecord);
+                if (isuser == 0)
+                {
+                    return new SaveCardInfoVD { msg = "维护用户信息失败" };
+                }
+                #endregion
+            }
+            else
+            {
+                return new SaveCardInfoVD { status = 2, msg = "当前用户还没有注册,请先注册后再完善信息" };
+            }
+            return new SaveCardInfoVD { status = 1, msg = "保存成功" };
+        }
         /// <summary>
         /// TODO 发送短信验证码
         /// </summary>
@@ -210,7 +273,7 @@ namespace SchoolBusWXWeb.Business
                             finvalidtime = invaliddate,
                             ftype = sms.verificationCodeType
                         };
-                        await _schoolBusRepository.InsertSMSCodeAsync(tsms);
+                        await _schoolBusRepository.InsertSmsCodeAsync(tsms);
                         return new SmsVD { status = 1, msg = "发送成功" };
                     }
                 default:
@@ -281,5 +344,35 @@ namespace SchoolBusWXWeb.Business
             return svd;
         }
 
+        /// <summary>
+        /// TODO 验证手机号和验证码
+        /// </summary>
+        /// <param name="phoneNum"></param>
+        /// <param name="verificationCode"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private async Task<BaseVD> CheckCode(string phoneNum, string verificationCode, int type)
+        {
+            DateTime date = DateTime.Now;
+            DateTime beforedate = date.AddMinutes(-10);
+            var codeList = await _schoolBusRepository.GetSmsListBySendTimeAsync(phoneNum, type, beforedate, date);
+            if (codeList.Count > 0)
+            {
+                var codeM = codeList.FirstOrDefault(c => c.fvcode == verificationCode);
+                if (codeM == null)
+                {
+                    return new BaseVD { msg = "验证码错误，请重新输入" };
+                }
+                if (date > codeM.finvalidtime)
+                {
+                    return new BaseVD { msg = "验证码超时" };
+                }
+            }
+            else
+            {
+                return new BaseVD { msg = "验证码超时" };
+            }
+            return new BaseVD { status = 1, msg = "ok" };
+        }
     }
 }

@@ -18,7 +18,11 @@ namespace SchoolBusWXWeb.Models.PmsData
         /// </summary>
         [BindNever]
         public string wxpkid { get; set; }
-
+        /// <summary>
+        /// wxopen id
+        /// </summary>
+        [BindNever]
+        public string wxid { get; set; }
         /// <summary>
         /// 绑定卡人手机号(家长手机号)
         /// </summary>

@@ -10,7 +10,7 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
     [Table("public.tconfig")]
     public class tconfig
     {
-        private string _pkid;
+       
         [Key]
         [StringLength(36)]
         public string pkid
@@ -18,6 +18,8 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
             get => string.IsNullOrEmpty(_pkid) ? Guid.NewGuid().ToString("N") : _pkid.TrimEnd();
             set => _pkid = !string.IsNullOrEmpty(value) ? value : Guid.NewGuid().ToString("N");
         }
+        private string _pkid;
+
         /// <summary>
         /// 编码 
         /// </summary>

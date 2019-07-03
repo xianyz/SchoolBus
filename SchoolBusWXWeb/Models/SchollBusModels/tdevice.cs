@@ -9,12 +9,26 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
     [Table("public.tdevice")]
     public class tdevice
     {
+       
         [Key]
         [StringLength(36)]
-        public string pkid { get; set; }
+        public string pkid
+        {
+            get => string.IsNullOrEmpty(_pkid) ? Guid.NewGuid().ToString("N") : _pkid.TrimEnd();
+            set => _pkid = !string.IsNullOrEmpty(value) ? value : Guid.NewGuid().ToString("N");
+        }
+        private string _pkid;
 
+        /// <summary>
+        /// 校车公司主键
+        /// </summary>
         [StringLength(36)]
-        public string fk_company_id { get; set; }
+        public string fk_company_id
+        {
+            get => _fk_company_id?.TrimEnd();
+            set => _fk_company_id = value;
+        }
+        private string _fk_company_id;
 
         [Required]
         [StringLength(20)]

@@ -93,7 +93,7 @@ namespace SchoolBusWXWeb.Controllers
             if (ModelState.IsValid)
             {
 #if DEBUG
-                userAndCard.wxpkid = "oBcNx1lHzHxIpKm5m64XX99zTMGs";
+                userAndCard.wxid = "oBcNx1lHzHxIpKm5m64XX99zTMGs";
 #else
                 //user.wxid=UserInfoe.openid;
 #endif
