@@ -33,7 +33,7 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         [StringLength(50)]
         public string fname { get; set; }
         /// <summary>
-        /// 值 如果 fcode=001 代表试用期是几天
+        /// 值 fcode=001 代表试用期是几天 002 003 是微信分享相关
         /// </summary>
         [StringLength(200)]
         public string fvalue { get;set;}

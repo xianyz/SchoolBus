@@ -57,7 +57,7 @@
             </div>
             <div class="input" id="dateSelect">
                 <span style="width: 30%">出生年月</span>
-                <input type="text" asp-for="fbirthdate" value="@(Model?.fbirthdate)" readonly="readonly" />
+                <input type="text" asp-for="fbirthdate" value="@(Model?.fbirthdate.ToString("yyyy-MM-dd"))" readonly="readonly" />
             </div>
         </div>
         <button type="submit" class=" btn mui-btn mui-btn-warning">保存信息</button>

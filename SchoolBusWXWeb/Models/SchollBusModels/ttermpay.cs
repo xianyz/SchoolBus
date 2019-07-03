@@ -21,7 +21,12 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
 
         [Required]
         [StringLength(36)]
-        public string fk_term_id { get; set; }
+        public string fk_term_id
+        {
+            get => _fk_term_id?.TrimEnd();
+            set => _fk_term_id = value;
+        }
+        private string _fk_term_id;
 
         [StringLength(50)]
         public string fcode { get; set; }

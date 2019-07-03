@@ -161,15 +161,22 @@ namespace SchoolBusWXWeb.Business
             if (userRecord != null)
             {
                 #region 验证是否更换手机号
-                if (string.IsNullOrEmpty(model.verificationCode) && userRecord.fphone != model.fphone)
+                if (string.IsNullOrEmpty(model.verificationCode))
                 {
-                    return new SaveCardInfoVD { msg = "请填写验证码" };
+                    if (userRecord.fphone != model.fphone)
+                    {
+                        return new SaveCardInfoVD { msg = "请填写验证码" };
+                    }
                 }
-                var isCode = await CheckCode(model.fphone, model.verificationCode, 2);
-                if (isCode.status != 1)
+                else
                 {
-                    return new SaveCardInfoVD { msg = isCode.msg };
+                    var isCode = await CheckCode(model.fphone, model.verificationCode, 2);
+                    if (isCode.status != 1)
+                    {
+                        return new SaveCardInfoVD { msg = isCode.msg };
+                    }
                 }
+
                 #endregion
 
                 #region 车牌号校验
@@ -203,7 +210,7 @@ namespace SchoolBusWXWeb.Business
                 cardRecord.fname = model.fname;
                 cardRecord.fk_school_id = schoolRecord.pkid;
                 cardRecord.fk_device_id = deviceRecord.pkid;
-                cardRecord.fboardingaddress = model.fboardingaddress;
+                cardRecord.fboardingaddress = model.fboardingaddress.Trim();
                 cardRecord.fbirthdate = model.fbirthdate;
                 var iscard = await _schoolBusRepository.UpdateTCardAsync(cardRecord);
                 if (iscard == 0)

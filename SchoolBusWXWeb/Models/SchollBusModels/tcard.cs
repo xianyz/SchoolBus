@@ -8,7 +8,7 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
     [Table("public.tcard")]
     public class tcard
     {
-       
+
         [Key]
         [StringLength(36)]
         public string pkid
@@ -37,7 +37,7 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         /// 状态 1:微信已经注册 2:挂失 3:注销 默认:0
         /// </summary>
         public int fstatus { get; set; }
-        
+
         /// <summary>
         /// 设备id 外键 tdevice 表主键
         /// </summary>
@@ -62,7 +62,7 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         /// 生日
         /// </summary>
         public DateTime fbirthdate { get; set; }
-       
+
         /// <summary>
         /// 学校id 外键 tschool 表主键
         /// </summary>
@@ -72,13 +72,18 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
             get => _fk_school_id?.TrimEnd();
             set => _fk_school_id = value;
         }
-        private string _fk_school_id { get; set; }
+        private string _fk_school_id;
 
         /// <summary>
         /// 上车地址
         /// </summary>
         [StringLength(10)]
-        public string fboardingaddress { get; set; }
+        public string fboardingaddress
+        {
+            get => _fboardingaddress?.TrimEnd();
+            set => _fboardingaddress = value;
+        }
+        private string _fboardingaddress = "";
         /// <summary>
         /// 备注
         /// </summary>
@@ -89,24 +94,24 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         /// 创建时间
         /// </summary>
         public DateTime fcreatetime { get; set; }
-        
+
         /// <summary>
         /// 试用到期时间
         /// </summary>
         public DateTime? ftrialdate { get; set; }
-       
+
 
         #region 其他表字段信息
         /// <summary>
         /// 车牌号
         /// </summary>
         [StringLength(10)]
-        public string fplatenumber { get;set;}
+        public string fplatenumber { get; set; }
         /// <summary>
         /// 学校名称
         /// </summary>
         [StringLength(50)]
-        public string fschoolname { get;set;}
+        public string fschoolname { get; set; }
         #endregion
     }
 }

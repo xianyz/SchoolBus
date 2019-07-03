@@ -80,7 +80,7 @@ namespace SchoolBusWXWeb.Controllers
 #if DEBUG
             const string wxid = "oBcNx1lHzHxIpKm5m64XX99zTMGs";
 #else
-            // string wxid =UserInfoe.openid;
+            //const string wxid =UserInfoe.openid;
 #endif
             var result = await _schoolBusBusines.GetCardInfoByCodeAsync(wxid);
             return View(result);
@@ -89,14 +89,15 @@ namespace SchoolBusWXWeb.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveCardInfo(UserAndCardModel userAndCard)
         {
-            var res = new RegisVD();
+            var res = new SaveCardInfoVD();
             if (ModelState.IsValid)
             {
 #if DEBUG
                 userAndCard.wxid = "oBcNx1lHzHxIpKm5m64XX99zTMGs";
 #else
-                //user.wxid=UserInfoe.openid;
+                //userAndCard.wxid=UserInfoe.openid;
 #endif
+                res = await _schoolBusBusines.SavaCardAndUserInfoAsync(userAndCard);
             }
             else
             {

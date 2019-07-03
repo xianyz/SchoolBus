@@ -83,8 +83,12 @@ namespace SchoolBusWXWeb.Models.PmsData
         /// 上车地址
         /// </summary>
         [DisplayFormat(ConvertEmptyStringToNull = false)]
-        public string fboardingaddress { get; set; }
-
+        public string fboardingaddress
+        {
+            get => _fboardingaddress?.TrimEnd();
+            set => _fboardingaddress = value;
+        }
+        private string _fboardingaddress="";
         /// <summary>
         /// 车牌号
         /// </summary>
