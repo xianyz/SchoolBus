@@ -42,7 +42,7 @@ namespace SchoolBusWXWeb.Models.PmsData
         /// 验证码
         /// </summary>
         [Required(ErrorMessage = "填写正确验证码")]
-        [StringLength(6, ErrorMessage = "手机号不能超过6个字符")]
+        [StringLength(6, ErrorMessage = "不能超过6个字符")]
         public string verificationCode { get; set; }
     }
 }

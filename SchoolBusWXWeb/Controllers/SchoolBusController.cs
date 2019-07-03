@@ -86,6 +86,24 @@ namespace SchoolBusWXWeb.Controllers
             return View(result);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> SaveCardInfo(UserAndCardModel userAndCard)
+        {
+            var res = new RegisVD();
+            if (ModelState.IsValid)
+            {
+#if DEBUG
+                userAndCard.wxpkid = "oBcNx1lHzHxIpKm5m64XX99zTMGs";
+#else
+                //user.wxid=UserInfoe.openid;
+#endif
+            }
+            else
+            {
+                res.msg = GetModelStateError();
+            }
+            return Json(res);
+        }
         #endregion
 
         #region 根据车牌号获取托运的学校 "辽A00002"

@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations;
 namespace SchoolBusWXWeb.Models.PmsData
 {
     /// <summary>
-    /// 完善信息页面 展示数据模型
+    /// 完善信息model
     /// </summary>
     public class UserAndCardModel
     {
@@ -30,9 +30,10 @@ namespace SchoolBusWXWeb.Models.PmsData
         /// <summary>
         /// 验证码
         /// </summary>
-        [Required(ErrorMessage = "填写正确验证码")]
-        [StringLength(6, ErrorMessage = "手机号不能超过6个字符")]
-        public string verificationCode { get; set; } = string.Empty;
+        //[Required(ErrorMessage = "填写正确验证码")]
+        [StringLength(6, ErrorMessage = "验证码不能超过6个字符")]
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
+        public string verificationCode { get; set; }
 
         /// <summary>
         /// 与学生关系
@@ -60,7 +61,7 @@ namespace SchoolBusWXWeb.Models.PmsData
         /// 卡状态 1:微信已经注册 2:挂失 3:注销 默认:0
         /// </summary>
         [BindNever]
-        public string fstatus { get; set; }
+        public int fstatus { get; set; }
 
         /// <summary>
         /// 学生姓名
