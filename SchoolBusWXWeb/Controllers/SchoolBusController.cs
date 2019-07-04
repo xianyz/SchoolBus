@@ -107,11 +107,31 @@ namespace SchoolBusWXWeb.Controllers
         }
         #endregion
 
+        #region 解绑
+        [HttpGet]
+        public IActionResult GoUntying()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DoUntying()
+        {
+#if DEBUG
+            const string wxid = "oBcNx1lHzHxIpKm5m64XX99zTMGs";
+#else
+            //const string wxid =UserInfoe.openid;
+#endif
+            var result = await _schoolBusBusines.UntringAsync(wxid);
+            return Json(result);
+        }
+        #endregion
+
         #region 根据车牌号获取托运的学校 "辽A00002"
         [HttpGet]
         public async Task<IActionResult> GetSchoolListByNum(string platenumber)
         {
-            var result = await _schoolBusBusines.GetSchoolListByPlatenumber(platenumber);
+            var result = await _schoolBusBusines.GetSchoolListByPlatenumberAsync(platenumber);
             return Json(result);
         }
         #endregion

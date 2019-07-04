@@ -23,7 +23,7 @@ namespace SchoolBusWXWeb.Business
         Task<SmsVD> SendSmsCodeAsync(SmsModel sms);
 
         /// <summary>
-        /// 完善信息数据
+        /// 获取用户和卡信息
         /// </summary>
         /// <param name="wxid"></param>
         /// <returns></returns>
@@ -34,7 +34,7 @@ namespace SchoolBusWXWeb.Business
         /// </summary>
         /// <param name="platenumber"></param>
         /// <returns></returns>
-        Task<SchoolVD> GetSchoolListByPlatenumber(string platenumber);
+        Task<SchoolVD> GetSchoolListByPlatenumberAsync(string platenumber);
 
         /// <summary>
         /// 完善用户信息
@@ -42,5 +42,12 @@ namespace SchoolBusWXWeb.Business
         /// <param name="model"></param>
         /// <returns></returns>
         Task<SaveCardInfoVD> SavaCardAndUserInfoAsync(UserAndCardModel model);
+
+        /// <summary>
+        /// 解绑
+        /// </summary>
+        /// <param name="wxid"></param>
+        /// <returns></returns>
+        Task<BaseVD> UntringAsync(string wxid);
     }
 }

@@ -67,8 +67,8 @@
 @section Scripts{
     <script>
         var schoolList = [];
-        var platenumber = $("#fplatenumber").val();
         $(document).ready(function () {
+            var platenumber = $("#fplatenumber").val();
             getSchoolList();
             // 选择出生日期
             $("#dateSelect").click(function () {
@@ -87,6 +87,7 @@
             });
             // 选择学校
             $("#dateSelect2").click(function () {
+                var platenumber = $("#fplatenumber").val();
                 if (platenumber === '') {
                     alert("请先填写车牌号");
                     return;
@@ -128,11 +129,11 @@
             return false;
         });
         // 获取学校列表并赋值
-        function getSchoolList() {
+        function getSchoolList(plater) {
             $.ajax({
                 type: "GET",
                 url: "/SchoolBus/GetSchoolListByNum",
-                data: { platenumber: platenumber },
+                data: { platenumber: plater },
                 success: function (data) {
                     if (data.status === 1) {
                         schoolList = data.data;

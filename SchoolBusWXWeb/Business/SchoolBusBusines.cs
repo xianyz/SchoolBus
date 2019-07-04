@@ -82,7 +82,7 @@ namespace SchoolBusWXWeb.Business
                     fk_card_id = cardRecord.pkid,
                     frelationship = user.relationship,
                     fphone = user.phoneNum,
-                    fstatus = 0
+                    fstate = 0
                 };
                 var res = await _schoolBusRepository.InsertWxUserAsync(wxuser);
                 if (res == 0)
@@ -149,7 +149,6 @@ namespace SchoolBusWXWeb.Business
             return s3 == 0 ? new RegisVD { msg = "维护卡片信息失败" } : new RegisVD { status = 1, msg = "注册成功" };
         }
 
-
         /// <summary>
         /// TODO 完善用户信息
         /// </summary>
@@ -180,7 +179,7 @@ namespace SchoolBusWXWeb.Business
                 #endregion
 
                 #region 车牌号校验
-                var deviceRecord = await _schoolBusRepository.GetDeviceByPlatenumber(model.fplatenumber);
+                var deviceRecord = await _schoolBusRepository.GetDeviceByPlatenumberAsync(model.fplatenumber);
                 if (deviceRecord == null)
                 {
                     return new SaveCardInfoVD { msg = "该车未绑定设备" };
@@ -188,12 +187,12 @@ namespace SchoolBusWXWeb.Business
                 #endregion
 
                 #region 校验车牌号和所在学校是否属于同一校车公司
-                var schoolRecord = await _schoolBusRepository.GetSchoolByName(model.fschoolname);
+                var schoolRecord = await _schoolBusRepository.GetSchoolByNameAsync(model.fschoolname);
                 if (schoolRecord == null)
                 {
                     return new SaveCardInfoVD { msg = "该学校不存在" };
                 }
-                var companySchoolRecord = await _schoolBusRepository.GetCompanySchoolRel(deviceRecord.fk_company_id, schoolRecord.pkid);
+                var companySchoolRecord = await _schoolBusRepository.GetCompanySchoolRelAsync(deviceRecord.fk_company_id, schoolRecord.pkid);
                 if (companySchoolRecord == null)
                 {
                     return new SaveCardInfoVD { msg = "所输车牌号和学校不属于同一校车公司" };
@@ -233,6 +232,7 @@ namespace SchoolBusWXWeb.Business
             }
             return new SaveCardInfoVD { status = 1, msg = "保存成功" };
         }
+
         /// <summary>
         /// TODO 发送短信验证码
         /// </summary>
@@ -290,7 +290,7 @@ namespace SchoolBusWXWeb.Business
         }
 
         /// <summary>
-        /// TODO 完善信息
+        /// TODO 获取用户和卡信息
         /// </summary>
         /// <param name="wxid"></param>
         /// <returns></returns>
@@ -311,9 +311,9 @@ namespace SchoolBusWXWeb.Business
         /// </summary>
         /// <param name="platenumber"></param>
         /// <returns></returns>
-        public async Task<SchoolVD> GetSchoolListByPlatenumber(string platenumber)
+        public async Task<SchoolVD> GetSchoolListByPlatenumberAsync(string platenumber)
         {
-            var result = await _schoolBusRepository.GetSchoolListByPlatenumber(platenumber);
+            var result = await _schoolBusRepository.GetSchoolListByPlatenumberAsync(platenumber);
             var schoolModes = new List<SchoolMode>();
             result.Select(p => new { p.ftype }).Distinct().ToList().ForEach(x =>
             {
@@ -349,6 +349,36 @@ namespace SchoolBusWXWeb.Business
                 data = schoolModes
             };
             return svd;
+        }
+
+        /// <summary>
+        /// TODO 解绑
+        /// </summary>
+        /// <param name="wxid"></param>
+        /// <returns></returns>
+        public async Task<BaseVD> UntringAsync(string wxid)
+        {
+            var userRecord = await _schoolBusRepository.GetTwxuserBytOpenidAsync(wxid);
+            if (userRecord == null) return new BaseVD {status = 1, msg = "解绑成功"};
+            var userCardRecord = await _schoolBusRepository.GetOtherUserByCardIdAsync(userRecord.fk_card_id, userRecord.pkid);
+            if (userCardRecord == null) // 如果该卡下没有绑定微信用户
+            {
+                var cardRecord = await _schoolBusRepository.GetCardBypkidAsync(userRecord.fk_card_id);
+                if (cardRecord != null)
+                {
+                    cardRecord.fname = null;
+                    cardRecord.fsex = 3;
+                    cardRecord.fstatus = 0;
+                    cardRecord.fk_school_id = null;
+                    cardRecord.fk_device_id = null;
+                    cardRecord.fboardingaddress = "";
+                    cardRecord.fbirthdate = null;
+                    await _schoolBusRepository.UpdateTCardAsync(cardRecord); // 清空卡片信息
+                }
+            }
+            // 删除当前绑定卡微信用户
+            await _schoolBusRepository.DeleteWxUserAsync(userRecord.pkid);
+            return new BaseVD { status = 1, msg = "解绑成功" };
         }
 
         /// <summary>

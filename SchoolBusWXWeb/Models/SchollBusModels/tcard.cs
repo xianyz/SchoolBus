@@ -55,13 +55,13 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         [StringLength(50)]
         public string fname { get; set; }
         /// <summary>
-        /// 性别 0:男 1:女
+        /// 性别 0:男 1:女 3:其他
         /// </summary>
         public int fsex { get; set; }
         /// <summary>
         /// 生日
         /// </summary>
-        public DateTime fbirthdate { get; set; }
+        public DateTime? fbirthdate { get; set; }
 
         /// <summary>
         /// 学校id 外键 tschool 表主键

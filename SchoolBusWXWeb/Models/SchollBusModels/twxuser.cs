@@ -62,7 +62,7 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         /// <summary>
         /// 状态
         /// </summary>
-        public int fstatus { get; set; }
+        public int fstate { get; set; }
         /// <summary>
         /// 备注
         /// </summary>

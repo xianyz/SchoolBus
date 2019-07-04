@@ -110,21 +110,21 @@ namespace SchoolBusWXWeb.Repository
         /// </summary>
         /// <param name="platenumber"></param>
         /// <returns></returns>
-        Task<List<SchoolBaseInfo>> GetSchoolListByPlatenumber(string platenumber);
+        Task<List<SchoolBaseInfo>> GetSchoolListByPlatenumberAsync(string platenumber);
 
         /// <summary>
         /// 根据车牌号查询设备信息
         /// </summary>
         /// <param name="platenumber"></param>
         /// <returns></returns>
-        Task<tdevice> GetDeviceByPlatenumber(string platenumber);
+        Task<tdevice> GetDeviceByPlatenumberAsync(string platenumber);
 
         /// <summary>
         /// 根据学校名称获取学校信息
         /// </summary>
         /// <param name="fname"></param>
         /// <returns></returns>
-        Task<tschool> GetSchoolByName(string fname);
+        Task<tschool> GetSchoolByNameAsync(string fname);
 
         /// <summary>
         /// 校车公司跟服务学校关系 多对多关系
@@ -132,6 +132,21 @@ namespace SchoolBusWXWeb.Repository
         /// <param name="companid"></param>
         /// <param name="schoolid"></param>
         /// <returns></returns>
-        Task<tcompany_school> GetCompanySchoolRel(string companid, string schoolid);
+        Task<tcompany_school> GetCompanySchoolRelAsync(string companid, string schoolid);
+
+        /// <summary>
+        /// 查询该卡片绑定其他微信用户信息(只要第一条)
+        /// </summary>
+        /// <param name="cardid"></param>
+        /// <param name="pkid"></param>
+        /// <returns></returns>
+        Task<twxuser> GetOtherUserByCardIdAsync(string cardid, string pkid);
+
+        /// <summary>
+        /// 删除微信绑定用户
+        /// </summary>
+        /// <param name="pkid"></param>
+        /// <returns></returns>
+        Task<int> DeleteWxUserAsync(string pkid);
     }
 }

@@ -95,7 +95,7 @@ namespace SchoolBusWXWeb.Repository
         /// <returns></returns>
         public async Task<int> InsertWxUserAsync(twxuser user)
         {
-            const string sql = "INSERT INTO public.twxuser(pkid,fwxid,fname,frelationship,fphone,fstatus,fremark,fcreatetime) VALUES(@pkid, @fwxid, @fname, @frelationship, @fphone, @fstatus, @fremark, @fcreatetime)";
+            const string sql = "INSERT INTO public.twxuser(pkid,fwxid,fk_card_id,fname,frelationship,fphone,fstate,fremark,fcreatetime) VALUES(@pkid, @fwxid,@fk_card_id, @fname, @frelationship, @fphone, @fstate, @fremark, @fcreatetime)";
             return await ExecuteEntityAsync(sql, user);
         }
 
@@ -197,7 +197,7 @@ namespace SchoolBusWXWeb.Repository
         /// </summary>
         /// <param name="platenumber"></param>
         /// <returns></returns>
-        public async Task<List<SchoolBaseInfo>> GetSchoolListByPlatenumber(string platenumber)
+        public async Task<List<SchoolBaseInfo>> GetSchoolListByPlatenumberAsync(string platenumber)
         {
             const string sql = @"SELECT tschool.ftype, tschool.pkid AS value,tschool.fname AS text FROM tschool 
                                 INNER JOIN tcompany_school ON tschool.pkid = tcompany_school.fk_school_id
@@ -214,7 +214,7 @@ namespace SchoolBusWXWeb.Repository
         /// </summary>
         /// <param name="platenumber"></param>
         /// <returns></returns>
-        public async Task<tdevice> GetDeviceByPlatenumber(string platenumber)
+        public async Task<tdevice> GetDeviceByPlatenumberAsync(string platenumber)
         {
             const string sql = "SELECT * FROM tdevice WHERE fstate = 0 AND fplatenumber =@fplatenumber";
             var p = new DynamicParameters();
@@ -227,7 +227,7 @@ namespace SchoolBusWXWeb.Repository
         /// </summary>
         /// <param name="fname"></param>
         /// <returns></returns>
-        public async Task<tschool> GetSchoolByName(string fname)
+        public async Task<tschool> GetSchoolByNameAsync(string fname)
         {
             const string sql = "select * from tschool where fname=@fname";
             var p = new DynamicParameters();
@@ -241,13 +241,41 @@ namespace SchoolBusWXWeb.Repository
         /// <param name="companid"></param>
         /// <param name="schoolid"></param>
         /// <returns></returns>
-        public async Task<tcompany_school> GetCompanySchoolRel(string companid,string schoolid)
+        public async Task<tcompany_school> GetCompanySchoolRelAsync(string companid,string schoolid)
         {
             const string sql = "select * from tcompany_school where fk_company_id =@fk_company_id and fk_school_id =@fk_school_id";
             var p = new DynamicParameters();
             p.Add("@fk_company_id", companid.TrimEnd());
             p.Add("@fk_school_id", schoolid.TrimEnd());
             return await GetEntityAsync<tcompany_school>(sql, p);
+        }
+
+        /// <summary>
+        /// 查询该卡片绑定其他微信用户信息(只要第一条)
+        /// </summary>
+        /// <param name="cardid"></param>
+        /// <param name="pkid"></param>
+        /// <returns></returns>
+        public async Task<twxuser> GetOtherUserByCardIdAsync(string cardid,string pkid)
+        {
+            const string sql = "select * from twxuser where fk_card_id = @fk_card_id and pkid <> @pkid";
+            var p = new DynamicParameters();
+            p.Add("@pkid", pkid.TrimEnd());
+            p.Add("@fk_card_id", cardid.TrimEnd());
+            return await GetEntityAsync<twxuser>(sql, p);
+        }
+
+        /// <summary>
+        /// 删除微信绑定用户
+        /// </summary>
+        /// <param name="pkid"></param>
+        /// <returns></returns>
+        public async Task<int> DeleteWxUserAsync(string pkid)
+        {
+            const string sql = "delete from twxuser where pkid=@pkid";
+            var p = new DynamicParameters();
+            p.Add("@pkid", pkid.TrimEnd());
+            return await ExecuteEntityAsync(sql, p);
         }
     }
 }
