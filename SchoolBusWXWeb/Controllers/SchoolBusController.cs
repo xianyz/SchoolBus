@@ -135,5 +135,15 @@ namespace SchoolBusWXWeb.Controllers
             return Json(result);
         }
         #endregion
+
+        #region 校车位置
+        [HttpGet]
+        public IActionResult GoAddress()
+        {
+            return View();
+        }
+
+
+        #endregion
     }
 }
