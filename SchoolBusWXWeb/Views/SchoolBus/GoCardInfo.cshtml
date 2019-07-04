@@ -30,7 +30,7 @@
             </div>
             <div class="input" id="relationshipname">
                 <span>与学生关系</span>
-                <input type="text" asp-for="frelationship" value="@(Model?.frelationship)" readonly="readonly" />
+                <input type="text" id="relationship" asp-for="frelationship" value="@(Model?.frelationship)" readonly="readonly" />
                 <span asp-validation-for="frelationship" style="color: red"></span>
             </div>
         </div>
