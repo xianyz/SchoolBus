@@ -112,7 +112,7 @@
     </a>
 </nav>
 @section Scripts{
-    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=dc057fdc90b12e88c567293b0ae3f4cb"></script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=dc057fdc90b12e88c567293b0ae3f4cb&plugin=AMap.Geocoder"></script>
     <script>
         var setFullMapBtn = $('#setFullMap');
         var addressMap = $('.address_map');
@@ -194,27 +194,83 @@
     </script>
 
     <script>
+        var province = "辽宁省";
+        var city = "沈阳市";
+        var district = "";
         var delayed = 10000;  // 间隔更新时间
-        var gps = [,];
-        var resLnglat = [116.397428, 39.90923];
+        var gps = [116.46706996,39.99188446];
+        var resLnglat = [123.507758, 41.694648];
+        var geocoder, marker;
+
         var map = new AMap.Map('container', {
             resizeEnable: true,    // 是否监控地图容器尺寸变化
             zoom: 15,              // 初始化地图层级
             center: resLnglat      // 初始化地图中心点
         });
+        map.on('complete', function(){
+            convertFrom();
+        });
 
+        // GPS坐标 -> 高德坐标
+        function convertFrom() {
+            AMap.convertFrom(gps, 'gps', function (status, result) {
+                if (result.info === 'ok') {
+                    resLnglat = result.locations[0];
+                    map.setCenter(resLnglat); // 地图中心点
+                    regeoCode();
+                }
+            });
+        }
+
+        // 根据经纬度标记自定义点
+        function regeoCode() {
+            if (!geocoder) {
+                geocoder = new AMap.Geocoder({ // 逆地理编码（坐标 -> 地址）
+                    city: "010",               // 城市设为北京，默认：“全国”
+                    radius: 1000               // 范围，默认：500
+                });
+            }
+            if (!marker) {                      // 点标记
+                marker = new AMap.Marker({
+                    content: '<img style="height: 30px" class="position_ico" src="/img/position_ico.png" />',
+                    offset: new AMap.Pixel(-9, -15)
+                });
+                map.add(marker);
+            }
+            geocoder.getAddress(resLnglat, function (status, result) {
+                if (status === 'complete' && result.regeocode) {
+                    $("#address_map").show();
+                    var address = result.regeocode.formattedAddress;
+                    logMapinfo();
+                    address = address.replace(province, "").replace(city, "");
+                    console.log(address);
+                    marker.setLabel({                        // 设置label标签
+                        offset: new AMap.Pixel(-106, -108),  // 修改label相对于maker的位置
+                        content: '<div class="map_text">' +
+                            '<a id="label" style="z-index: 99999;display: block;"  href="javascript:;"><img class="map_position" src="/img/map_position.jpg"></a>' +
+                            '<span style="width: 100%;background: #fff;display: block;height: 45px;padding: 0 5px;">' + address + '</span>' +
+                            '<img class="position_ico" src="/img/position_ico.png" />' +
+                            '</div>'
+                    });
+                    marker.setPosition(resLnglat); // 小车位置
+                    //setTimeout("clickeven()", 1000);
+                } else {
+                    $("#address_map").hide();
+                }
+            });
+        }
+
+        // 小屏地图定位按钮
         $("#map_reset").click(function () {
             map.setCenter(resLnglat);
         });
 
+        // 全屏地图定位按钮
         $('#fix_btn').click(function () {
             map.setCenter(resLnglat);
         });
 
-        //省市区字符串替换
-        var province = "辽宁省";
-        var city = "沈阳市";
-        var district = "";
+        // 省市区字符串替换
         function logMapinfo() {
             //获取当前位置省市区
             map.getCity(function (info) {
@@ -224,119 +280,20 @@
             });
         }
 
-        convertFrom();
-        var geocoder, marker;
-        function convertFrom() {
-            AMap.convertFrom(gps, 'gps', function (status, result) {
-                if (result.info === 'ok') {
-                    resLnglat = result.locations[0];
-                    // 设置中心点
-                    if (!marker) {
-                        map.setCenter(resLnglat);
-                    }
-
-                    // 定位
-                    /*AMap.plugin('AMap.Geolocation', function () {
-                     var geolocation = new AMap.Geolocation({
-                     showButton: false,//是否显示定位按钮
-                     enableHighAccuracy: true,//是否使用高精度定位，默认:true
-                     //                        timeout: 10000,          //超过10秒后停止定位，默认：5s
-                     buttonPosition: 'RB',    //定位按钮的停靠位置
-                     buttonOffset: new AMap.Pixel(10, 20),//定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
-                     zoomToAccuracy: false,   //定位成功后是否自动调整地图视野到定位点
-                     markerOptions: {
-                     'offset': new AMap.Pixel(-18, -36),
-                     'content': '<img src="https://a.amap.com/jsapi_demos/static/resource/img/user.png" style="width:36px;height:36px"/>'
-                     }
-                     });
-                     map.addControl(geolocation);
-                     geolocation.getCurrentPosition(function (status, result) {
-                     //                        console.log(result);
-                     });
-                     });*/
-
-                    // 标记
-                    regeoCode();
-
-                    function regeoCode() {
-                        if (!geocoder) {
-                            geocoder = new AMap.Geocoder({
-                                city: "010", //城市设为北京，默认：“全国”
-                                radius: 1000 //范围，默认：500
-                            });
-                        }
-
-                        if (!marker) {
-                            marker = new AMap.Marker({
-                                content: '<img style="height: 30px" class="position_ico" src="/common/resource/img/position_ico.png?v=20190606" />',
-                                offset: new AMap.Pixel(-9, -15)
-                            });
-                            map.add(marker);
-                        }
-
-                        marker.setPosition(resLnglat);
-
-                        geocoder.getAddress(resLnglat, function (status, result) {
-                            if (status === 'complete' && result.regeocode) {
-                                $("#address_map").show();
-                                $("#map_none").hide();
-                                var address = result.regeocode.formattedAddress;
-                                //                            var index = address.lastIndexOf("市");
-                                //                            address = address.substring(index + 1, address.length);
-                                //替换省市区
-                                logMapinfo();
-                                address = address.replace(province, "").replace(city, "");
-                                //                            console.log(result);
-                                // 设置label标签
-                                marker.setLabel({
-                                    //修改label相对于maker的位置
-                                    offset: new AMap.Pixel(-106, -108),
-                                    //                                content: '<p>' + address + '</p>'
-                                    content: '<div class="map_text">' +
-                                        '<a id="label" style="z-index: 99999;display: block;" onclick="goAdv()" href="javascript:;"><img onclick="goAdv()" class="map_position" src="/common/resource/img/map_position.jpg"></a>' +
-                                        '<span style="width: 100%;background: #fff;display: block;height: 45px;padding: 0 5px;">' + address + '</span>' +
-                                        '<img class="position_ico" src="/common/resource/img/position_ico.png?v=20190606" />' +
-                                        '</div>'
-                                });
-
-                                marker.on('click', goAdv);
-
-                                map.setCenter(resLnglat);
-
-                                setTimeout("clickeven()", 1000);
-                            } else {
-                                // 设置label标签
-                                /*marker.setLabel({
-                                 //修改label相对于maker的位置
-                                 offset: new AMap.Pixel(-50, 50),
-                                 content: '<p>' + 'GPS信号弱,未能获取位置信息' + '</p>'
-                                 });*/
-                                $("#address_map").hide();
-                                $("#map_none").show();
-                            }
-                        });
-                    }
-                }
-            });
-        }
-
+        // 地图上屏蔽点击事件，需要主动添加touchstart事件
         function clickeven() {
-            //地图上屏蔽点击事件，需要主动添加touchstart事件
             let btn = document.getElementById("label");
             btn.addEventListener(
-                "touchstart",
-                function (event) {
-                    goAdv()
+                "touchstart", function (event) {
+
                 },
                 false
             );
         }
 
-
-
         // 查看实时位置
         if ('1' === "1") {
-            setInterval(getRuntimePosition, delayed);
+            //setInterval(getRuntimePosition, delayed);
         }
 
         function getRuntimePosition() {
@@ -351,8 +308,8 @@
                     async: false,
                     success: function (data) {
                         if (data.code === 1) {
-                            //更新点标记位置及时间
-                            gps = [data.data.flng, data.data.flat];
+                           
+                            gps = [data.data.flng, data.data.flat];  // 更新点标记位置及时间
                             convertFrom();
                         }
                     }

@@ -138,8 +138,13 @@ namespace SchoolBusWXWeb.Controllers
 
         #region 校车位置
         [HttpGet]
-        public IActionResult GoAddress()
+        public async Task<IActionResult> GoAddress()
         {
+#if DEBUG
+            const string wxid = "oBcNx1lHzHxIpKm5m64XX99zTMGs";
+#else
+            //const string wxid =UserInfoe.openid;
+#endif
             return View();
         }
 
