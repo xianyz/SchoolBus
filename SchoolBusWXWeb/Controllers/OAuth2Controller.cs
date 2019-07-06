@@ -2,12 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Senparc.CO2NET.Extensions;
 using Senparc.Weixin;
-using Senparc.Weixin.MP.AdvancedAPIs;
-using System;
-using SchoolBusWXWeb.Filters;
 using Senparc.Weixin.Exceptions;
 using Senparc.Weixin.MP;
+using Senparc.Weixin.MP.AdvancedAPIs;
 using Senparc.Weixin.MP.AdvancedAPIs.OAuth;
+using System;
+using System.Threading.Tasks;
+
+// ReSharper disable InconsistentNaming
 
 namespace SchoolBusWXWeb.Controllers
 {
@@ -40,13 +42,13 @@ namespace SchoolBusWXWeb.Controllers
         /// <param name="state">自己服务器生成的随机数做验证用</param>
         /// <param name="returnUrl">用户最初尝试进入的页面</param>
         /// <returns></returns>
-        public ActionResult UserInfoCallback(string code, string state, string returnUrl)
+        public async Task<ActionResult> UserInfoCallback(string code, string state, string returnUrl)
         {
             if (string.IsNullOrEmpty(code))
             {
                 return Content("您拒绝了授权！");
             }
-            HttpContext.Session.SetString("State", state);
+            // HttpContext.Session.SetString("State", state);
             //if (state != HttpContext.Session.GetString("State"))
             //{
             //    //这里的state其实是会暴露给客户端的，验证能力很弱，这里只是演示一下，
@@ -58,7 +60,7 @@ namespace SchoolBusWXWeb.Controllers
             try
             {
                 // 通过，用code换取access_token
-                result = OAuthApi.GetAccessToken(appId, appSecret, code);
+                result = await OAuthApi.GetAccessTokenAsync(appId, appSecret, code);
             }
             catch (Exception ex)
             {
@@ -77,10 +79,14 @@ namespace SchoolBusWXWeb.Controllers
             //因为第一步选择的是OAuthScope.snsapi_userinfo，这里可以进一步获取用户详细信息
             try
             {
-                OAuthUserInfo userInfo = OAuthApi.GetUserInfo(result.access_token, result.openid);
-                if (string.IsNullOrEmpty(returnUrl)) return View(userInfo);
-                HttpContext.Session.SetString("Userinfo", userInfo.ToJson());
+                HttpContext.Session.SetString("OAuthAccessTokenResult", result.ToJson());
+                //HttpContext.Session.SetString("OpenId", result.openid);
                 return Redirect(returnUrl);
+
+                //OAuthUserInfo userInfo = OAuthApi.GetUserInfo(result.access_token, result.openid);
+                //if (string.IsNullOrEmpty(returnUrl)) return View(userInfo);
+                //HttpContext.Session.SetString("Userinfo", userInfo.ToJson());
+                //return Redirect(returnUrl);
             }
             catch (ErrorJsonResultException ex)
             {

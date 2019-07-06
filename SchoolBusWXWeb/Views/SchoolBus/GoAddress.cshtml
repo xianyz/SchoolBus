@@ -122,6 +122,7 @@
         <span class="mui-tab-label">福利商城</span>
     </a>
 </nav>
+
 @section Scripts{
     <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=dc057fdc90b12e88c567293b0ae3f4cb&plugin=AMap.Geocoder"></script>
     <script>
@@ -130,6 +131,13 @@
         var closeFullMap = $('#closeFullMap');
         var fix_btn = $('#fix_btn');
         var zhuangtai = true;
+        var province = "辽宁省";
+        var city = "沈阳市";
+        var district = "";
+        var delayed = 10000;  // 间隔更新时间
+        var gps = [@(Model?.flng), @(Model?.flat)];
+        var resLnglat = [123.507758, 41.694648];
+        var geocoder, marker;
 
         // 放大地图
         setFullMapBtn.on('click', function () {
@@ -200,19 +208,10 @@
         function showhideTag() {
             $(".address_fix").toggle();
         }
+
         intervalid = setInterval('showhideTag()', 500);
 
-    </script>
-
-    <script>
-        var province = "辽宁省";
-        var city = "沈阳市";
-        var district = "";
-        var delayed = 10000;  // 间隔更新时间
-        var gps = [@(Model?.flng), @(Model?.flat)];
-        var resLnglat = [123.507758, 41.694648];
-        var geocoder, marker;
-
+        // 高德地图
         var map = new AMap.Map('container', {
             resizeEnable: true,    // 是否监控地图容器尺寸变化
             zoom: 15,              // 初始化地图层级
@@ -307,6 +306,7 @@
             //setInterval(getRuntimePosition, delayed);
             console.log(1);
         }
+
 
         function getRuntimePosition() {
             if (@(Model?.showType) === "1") {

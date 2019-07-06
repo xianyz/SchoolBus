@@ -3,11 +3,23 @@ using SchoolBusWXWeb.Business;
 using SchoolBusWXWeb.Models.PmsData;
 using SchoolBusWXWeb.Models.ViewData;
 using System.Threading.Tasks;
+#if !DEBUG
+using Senparc.Weixin.MP.AdvancedAPIs;
+using Senparc.Weixin.MP.AdvancedAPIs.OAuth;
+#endif
 
 namespace SchoolBusWXWeb.Controllers
 {
-    public class SchoolBusController : ControllerEx // OAuthAndJsSdkController 
+#if DEBUG
+    public class SchoolBusController : ControllerEx 
     {
+        private const string Openid = "oBcNx1lHzHxIpKm5m64XX99zTMGs";
+        private const string Nickname = "测试昵称";
+#else
+    public class SchoolBusController : OAuthAndJsSdkController
+    {
+#endif
+
         private readonly ISchoolBusBusines _schoolBusBusines;
         public SchoolBusController(ISchoolBusBusines schoolBusBusines)
         {
@@ -20,9 +32,9 @@ namespace SchoolBusWXWeb.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Register()
+        public IActionResult Register()
         {
-            var data = await _schoolBusBusines.GetTwxuserAsync("2c9ab45969dc19990169dd5bb9ea08b5");
+            // var data = await _schoolBusBusines.GetTwxuserAsync("2c9ab45969dc19990169dd5bb9ea08b5");
             return View();
         }
 
@@ -33,10 +45,12 @@ namespace SchoolBusWXWeb.Controllers
             if (ModelState.IsValid)
             {
 #if DEBUG
-                user.wxid = "oBcNx1lHzHxIpKm5m64XX99zTMGs";
-                user.userName = "测试昵称";
+                user.wxid = Openid;
+                user.userName = Nickname;
 #else
-                //user.wxid=UserInfoe.openid;
+                OAuthUserInfo userInfo = OAuthApi.GetUserInfo(TokenResult.access_token, TokenResult.openid);
+                user.wxid = userInfo.openid;
+                user.userName = userInfo.nickname;
 #endif
                 res = await _schoolBusBusines.DoRegisterAsync(user);
             }
@@ -52,16 +66,16 @@ namespace SchoolBusWXWeb.Controllers
         [HttpPost]
         public async Task<IActionResult> SendSmsCode(SmsModel sms)
         {
-            var smsVD = new SmsVD();
+            var smsVd = new SmsVD();
             if (ModelState.IsValid)
             {
-                smsVD = await _schoolBusBusines.SendSmsCodeAsync(sms);
+                smsVd = await _schoolBusBusines.SendSmsCodeAsync(sms);
             }
             else
             {
-                smsVD.msg = GetModelStateError();
+                smsVd.msg = GetModelStateError();
             }
-            return Json(smsVD);
+            return Json(smsVd);
         }
         #endregion
 
@@ -78,9 +92,9 @@ namespace SchoolBusWXWeb.Controllers
         public async Task<IActionResult> GoCardInfo()
         {
 #if DEBUG
-            const string wxid = "oBcNx1lHzHxIpKm5m64XX99zTMGs";
+            const string wxid = Openid;
 #else
-            //const string wxid =UserInfoe.openid;
+            string wxid = TokenResult.openid;
 #endif
             var result = await _schoolBusBusines.GetCardInfoByCodeAsync(wxid);
             return View(result);
@@ -93,9 +107,9 @@ namespace SchoolBusWXWeb.Controllers
             if (ModelState.IsValid)
             {
 #if DEBUG
-                userAndCard.wxid = "oBcNx1lHzHxIpKm5m64XX99zTMGs";
+                userAndCard.wxid = Openid;
 #else
-                //userAndCard.wxid=UserInfoe.openid;
+                userAndCard.wxid = TokenResult.openid;
 #endif
                 res = await _schoolBusBusines.SavaCardAndUserInfoAsync(userAndCard);
             }
@@ -118,9 +132,9 @@ namespace SchoolBusWXWeb.Controllers
         public async Task<IActionResult> DoUntying()
         {
 #if DEBUG
-            const string wxid = "oBcNx1lHzHxIpKm5m64XX99zTMGs";
+            const string wxid = Openid;
 #else
-            //const string wxid =UserInfoe.openid;
+            string wxid = TokenResult.openid;
 #endif
             var result = await _schoolBusBusines.UntringAsync(wxid);
             return Json(result);
@@ -141,9 +155,9 @@ namespace SchoolBusWXWeb.Controllers
         public async Task<IActionResult> GoAddress(int showType, string cardLogId = "")
         {
 #if DEBUG
-            const string wxid = "oBcNx1lHzHxIpKm5m64XX99zTMGs";
+            const string wxid = Openid;
 #else
-            //const string wxid =UserInfoe.openid;
+            string wxid = TokenResult.openid;
 #endif
             var data = await _schoolBusBusines.GetUserCardInfoAsync(wxid, showType, cardLogId);
             return View(data);

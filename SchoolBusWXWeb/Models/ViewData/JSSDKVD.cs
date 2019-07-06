@@ -1,5 +1,6 @@
 ﻿using Senparc.Weixin.MP.Helpers;
 // ReSharper disable InconsistentNaming
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace SchoolBusWXWeb.Models.ViewData
 {

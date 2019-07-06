@@ -15,7 +15,7 @@ namespace SchoolBusWXWeb.Filters
 
         public override bool IsLogined(HttpContext httpContext)
         {
-            return httpContext.Session.GetString("Userinfo") != null;
+            return httpContext.Session.GetString("OAuthAccessTokenResult") != null;
         }
     }
 }
