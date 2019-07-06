@@ -12,7 +12,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 // ReSharper disable NotAccessedField.Local
-
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable ClassNeverInstantiated.Global
@@ -78,12 +77,19 @@ namespace SchoolBusWXWeb.StartupTask
 
                     _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(e =>
                     {
-                        Console.WriteLine($">> ### 接受消息 ###{Environment.NewLine}");
-                        Console.WriteLine($">> Topic = {e.ApplicationMessage.Topic}{Environment.NewLine}");
-                        Console.WriteLine($">> Payload = {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)}{Environment.NewLine}");
-                        Console.WriteLine($">> QoS = {e.ApplicationMessage.QualityOfServiceLevel}{Environment.NewLine}");
-                        Console.WriteLine($">> Retain = {e.ApplicationMessage.Retain}{Environment.NewLine}");
+                        var received = new MqttMessageReceived
+                        {
+                            Topic = e.ApplicationMessage.Topic,
+                            Payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload),
+                            QoS = e.ApplicationMessage.QualityOfServiceLevel,
+                            Retain = e.ApplicationMessage.Retain
+                        };
 
+                        Console.WriteLine($">> ### 接受消息 ###{Environment.NewLine}");
+                        Console.WriteLine($">> Topic = {received.Topic}{Environment.NewLine}");
+                        Console.WriteLine($">> Payload = {received.Payload}{Environment.NewLine}");
+                        Console.WriteLine($">> QoS = {received.QoS}{Environment.NewLine}");
+                        Console.WriteLine($">> Retain = {received.Retain}{Environment.NewLine}");
                     });
 
                     _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(async e =>
