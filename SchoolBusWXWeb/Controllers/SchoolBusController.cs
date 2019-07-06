@@ -138,14 +138,15 @@ namespace SchoolBusWXWeb.Controllers
 
         #region 校车位置
         [HttpGet]
-        public async Task<IActionResult> GoAddress()
+        public async Task<IActionResult> GoAddress(int showType, string cardLogId = "")
         {
 #if DEBUG
             const string wxid = "oBcNx1lHzHxIpKm5m64XX99zTMGs";
 #else
             //const string wxid =UserInfoe.openid;
 #endif
-            return View();
+            var data = await _schoolBusBusines.GetUserCardInfoAsync(wxid, showType, cardLogId);
+            return View(data);
         }
 
 

@@ -223,6 +223,19 @@ namespace SchoolBusWXWeb.Repository
         }
 
         /// <summary>
+        /// 根据主键查询设备信息
+        /// </summary>
+        /// <param name="pkid"></param>
+        /// <returns></returns>
+        public async Task<tdevice> GetDeviceByPkidAsync(string pkid)
+        {
+            const string sql = "SELECT * FROM tdevice WHERE fstate = 0 AND pkid =@pkid";
+            var p = new DynamicParameters();
+            p.Add("@pkid", pkid);
+            return await GetEntityAsync<tdevice>(sql, p);
+        }
+
+        /// <summary>
         /// 根据学校名称获取学校信息
         /// </summary>
         /// <param name="fname"></param>
@@ -276,6 +289,60 @@ namespace SchoolBusWXWeb.Repository
             var p = new DynamicParameters();
             p.Add("@pkid", pkid.TrimEnd());
             return await ExecuteEntityAsync(sql, p);
+        }
+
+        /// <summary>
+        /// 获取用户卡信息
+        /// </summary>
+        /// <param name="wxopenid"></param>
+        /// <returns></returns>
+        public async Task<StudentModel> GetUserCardInfoAsync(string wxopenid)
+        {
+            const string sql = @"SELECT tcard.fname AS student, tcard.fk_device_id,tcard.fcode,tcard.fstatus,tschool.fname AS school,CASE WHEN tcard.ftrialdate < now() THEN  0 ELSE 1 END AS fisovertime
+                                FROM twxuser INNER JOIN tcard ON twxuser.fk_card_id = tcard.pkid LEFT JOIN tschool ON tcard.fk_school_id = tschool.pkid 
+                                WHERE twxuser.fwxid =@fwxid";
+            var p = new DynamicParameters();
+            p.Add("@fwxid", wxopenid.TrimEnd());
+            return await GetEntityAsync<StudentModel>(sql, p);
+        }
+
+        /// <summary>
+        /// 根据主键获取打卡信息
+        /// </summary>
+        /// <param name="pkid"></param>
+        /// <returns></returns>
+        public async Task<tcardlog> GetCardLogBypkidAsync(string pkid)
+        {
+            const string sql = @"select * from tcardlog where pkid=@pkid";
+            var p = new DynamicParameters();
+            p.Add("@pkid", pkid);
+            return await GetEntityAsync<tcardlog>(sql, p);
+        }
+
+        /// <summary>
+        /// 获取该卡号最后一条打卡信息
+        /// </summary>
+        /// <param name="fcode"></param>
+        /// <returns></returns>
+        public async Task<tcardlog> GetLastCardLogAsync(string fcode)
+        {
+            const string sql = @"SELECT * FROM tcardlog WHERE fid = @fid ORDER BY fcreatetime DESC limit 1";
+            var p = new DynamicParameters();
+            p.Add("@fid", fcode);
+            return await GetEntityAsync<tcardlog>(sql, p);
+        }
+
+        /// <summary>
+        /// 获取该设备编码当天最后一条位置信息
+        /// </summary>
+        /// <param name="fcode">public.tdevice 表的 fcode 设备编码</param>
+        /// <returns></returns>
+        public async Task<tlocatelog> GetLastLocateLogAsync(string fcode)
+        {
+            const string sql = @"SELECT * FROM tlocatelog WHERE fcode = @fcode AND to_char( fcreatetime, 'yyyy-mm-dd' ) = to_char( now(), 'yyyy-mm-dd' ) ORDER BY fcreatetime DESC limit 1";
+            var p = new DynamicParameters();
+            p.Add("@fcode", fcode);
+            return await GetEntityAsync<tlocatelog>(sql, p);
         }
     }
 }

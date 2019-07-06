@@ -19,14 +19,26 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         }
         private string _pkid;
 
+        /// <summary>
+        /// public.tdevice 表的 fcode 设备编码
+        /// </summary>
         [Required]
         [StringLength(20)]
         public string fcode { get; set; }
 
+        /// <summary>
+        ///创建时间
+        /// </summary>
         public DateTime fcreatetime { get; set; }
 
+        /// <summary>
+        /// 经度
+        /// </summary>
         public decimal? flng { get; set; }
 
+        /// <summary>
+        /// 纬度
+        /// </summary>
         public decimal? flat { get; set; }
     }
 }

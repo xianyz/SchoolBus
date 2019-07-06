@@ -120,6 +120,13 @@ namespace SchoolBusWXWeb.Repository
         Task<tdevice> GetDeviceByPlatenumberAsync(string platenumber);
 
         /// <summary>
+        /// 根据主键查询设备信息
+        /// </summary>
+        /// <param name="pkid"></param>
+        /// <returns></returns>
+        Task<tdevice> GetDeviceByPkidAsync(string pkid);
+
+        /// <summary>
         /// 根据学校名称获取学校信息
         /// </summary>
         /// <param name="fname"></param>
@@ -148,5 +155,33 @@ namespace SchoolBusWXWeb.Repository
         /// <param name="pkid"></param>
         /// <returns></returns>
         Task<int> DeleteWxUserAsync(string pkid);
+
+        /// <summary>
+        /// 获取用户卡信息
+        /// </summary>
+        /// <param name="wxopenid"></param>
+        /// <returns></returns>
+        Task<StudentModel> GetUserCardInfoAsync(string wxopenid);
+
+        /// <summary>
+        /// 根据主键获取打卡信息
+        /// </summary>
+        /// <param name="pkid"></param>
+        /// <returns></returns>
+        Task<tcardlog> GetCardLogBypkidAsync(string pkid);
+
+        /// <summary>
+        /// 获取该卡号最后一条打卡信息
+        /// </summary>
+        /// <param name="fcode"></param>
+        /// <returns></returns>
+        Task<tcardlog> GetLastCardLogAsync(string fcode);
+
+        /// <summary>
+        /// 获取该设备编码当天最后一条位置信息
+        /// </summary>
+        /// <param name="fcode">public.tdevice 表的 fcode 设备编码</param>
+        /// <returns></returns>
+        Task<tlocatelog> GetLastLocateLogAsync(string fcode);
     }
 }

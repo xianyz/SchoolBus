@@ -2,6 +2,8 @@
     Layout = "~/Views/Shared/_SchoolBusLayout.cshtml";
     ViewBag.Title = "校车实时位置";
 }
+@using SchoolBusWXWeb.Models.ViewData
+@model AddressModel
 @section Css{
     <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
     <link href="~/css/tools/reset.css" rel="stylesheet" />
@@ -35,6 +37,9 @@
             margin-bottom: 50px
         }
     </style>
+}
+@{
+    string wz = Model.showType == 1 ? "刷卡" : "实时";
 }
 <img id="fix_btn" class="fix_btn" src="~/img/map_reset.png" style="display:none">
 <!-- 轮播图 -->
@@ -71,7 +76,7 @@
 <div class="address_name">
     <div class="box">
         <img src="~/img/address_name.png" />
-        <span>王同学</span>
+        <span>@(Model?.student)</span>
     </div>
     <div class="box">
         <button id="setFullMap">放大地图</button>
@@ -81,8 +86,16 @@
 <!-- 高德地图 -->
 <div class="map_box">
     <div class="map_btn">
-        <div id="cardLocation" class="tab1 active">刷卡位置</div>
-        <div id="realLocation" class="tab2">实时位置</div>
+        @if (Model.showType == 1)
+        {
+            <div id="realLocation" class="tab2 active">实时位置</div>
+            <div id="cardLocation" class="tab1">刷卡位置</div>
+        }
+        else
+        {
+            <div id="cardLocation" class="tab1 active">刷卡位置</div>
+            <div id="realLocation" class="tab2">实时位置</div>
+        }
     </div>
     <img class="map_reset" id="map_reset" src="~/img/map_reset.png">
 
@@ -100,7 +113,7 @@
 <nav class="mui-bar mui-bar-tab" id="nav">
     <a class="mui-tab-item mui-active">
         <span class="mui-icon mui-icon1"></span>
-        <span class="mui-tab-label">实时位置</span>
+        <span class="mui-tab-label">@(wz)位置</span>
     </a>
     <a class="mui-tab-item " id="calendar">
         <span class="mui-icon mui-icon2"></span>
@@ -148,17 +161,17 @@
 
         // 刷卡位置跳转
         $("#cardLocation").click(function () {
-            window.location.href = "/goAddress?openId=" + openId + "&showType=0&cardLogId=";
+            window.location.href = "/SchoolBus/GoAddress?showType=0&cardLogId="@(Model?.cardLogId);
         });
 
         // 实时位置跳转
         $("#realLocation").click(function () {
-            window.location.href = "/goAddress?openId=" + openId + "&showType=1";
+            window.location.href = "/SchoolBus/GoAddress?showType=1";
         });
 
         // 考勤查看跳转
         mui('body').on('tap', '#calendar', function () {
-            location.href = '/goCalendar?wxid=' + openId;
+            location.href = '/SchoolBus/GoCalendar?wxid=' + openId;
         });
 
         // 福利商城跳转
@@ -198,7 +211,7 @@
         var city = "沈阳市";
         var district = "";
         var delayed = 10000;  // 间隔更新时间
-        var gps = [116.46706996,39.99188446];
+        var gps = [@(Model?.flng), @(Model?.flat)];
         var resLnglat = [123.507758, 41.694648];
         var geocoder, marker;
 
@@ -207,7 +220,7 @@
             zoom: 15,              // 初始化地图层级
             center: resLnglat      // 初始化地图中心点
         });
-        map.on('complete', function(){
+        map.on('complete', function () {
             convertFrom();
         });
 
@@ -292,12 +305,12 @@
         }
 
         // 查看实时位置
-        if ('1' === "1") {
+        if (@(Model?.showType) === "1") {
             //setInterval(getRuntimePosition, delayed);
         }
 
         function getRuntimePosition() {
-            if ('1' === "1") {
+            if (@(Model?.showType) === "1") {
                 // 获取实时位置
                 $.ajax({
                     type: "GET",
@@ -308,7 +321,6 @@
                     async: false,
                     success: function (data) {
                         if (data.code === 1) {
-                           
                             gps = [data.data.flng, data.data.flat];  // 更新点标记位置及时间
                             convertFrom();
                         }
@@ -318,5 +330,4 @@
         }
 
     </script>
-
 }

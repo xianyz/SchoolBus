@@ -7,7 +7,10 @@ using SchoolBusWXWeb.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+
 
 // ReSharper disable SwitchStatementMissingSomeCases
 
@@ -302,7 +305,7 @@ namespace SchoolBusWXWeb.Business
             data.wxshareTitle = configList.FirstOrDefault(x => x.fcode == "002")?.fvalue;
             data.wxshareDescription = configList.FirstOrDefault(x => x.fcode == "003")?.fvalue;
             data.wxLink = _option.WxShareOption.URL + "/index?type=0&cardNum=" + data.fcode;
-            data.wximgUrl = _option.WxShareOption.URL + "/common/resource/img/pic1.jpg";
+            data.wximgUrl = _option.WxShareOption.URL + "/img/pic1.jpg";
             return data;
         }
 
@@ -359,7 +362,7 @@ namespace SchoolBusWXWeb.Business
         public async Task<BaseVD> UntringAsync(string wxid)
         {
             var userRecord = await _schoolBusRepository.GetTwxuserBytOpenidAsync(wxid);
-            if (userRecord == null) return new BaseVD {status = 1, msg = "解绑成功"};
+            if (userRecord == null) return new BaseVD { status = 1, msg = "解绑成功" };
             var userCardRecord = await _schoolBusRepository.GetOtherUserByCardIdAsync(userRecord.fk_card_id, userRecord.pkid);
             if (userCardRecord == null) // 如果该卡下没有绑定微信用户
             {
@@ -379,6 +382,80 @@ namespace SchoolBusWXWeb.Business
             // 删除当前绑定卡微信用户
             await _schoolBusRepository.DeleteWxUserAsync(userRecord.pkid);
             return new BaseVD { status = 1, msg = "解绑成功" };
+        }
+
+        /// <summary>
+        /// 获取用户卡信息
+        /// </summary>
+        /// <param name="wxid">微信openid</param>
+        /// <param name="showType">0:刷卡位置 1:实时位置</param>
+        /// <param name="cardLogId">刷卡位置 传入</param>
+        /// <returns></returns>
+        public async Task<AddressModel> GetUserCardInfoAsync(string wxid, int showType, string cardLogId = "")
+        {
+            var model = new AddressModel();
+            var usercard = await _schoolBusRepository.GetUserCardInfoAsync(wxid); // 根据openId查询已导入绑定卡片信息
+            if (usercard == null) return model;
+            switch (usercard.fstatus) // 校验卡片状态
+            {
+                case 2:
+                    model.status = 0;
+                    break;
+                case 3:
+                    model.status = 1;
+                    break;
+            }
+
+            if (!string.IsNullOrEmpty(usercard.fk_device_id))
+            {
+                #region 实时位置 OR 刷卡位置
+                model.showType = showType;
+                if (showType == 0)  // 刷卡位置
+                {
+                    var positionInfo = await _schoolBusRepository.GetCardLogBypkidAsync(cardLogId) ?? await _schoolBusRepository.GetLastCardLogAsync(usercard.fcode);
+
+                    if (positionInfo == null)
+                    {
+                        model.status = 4;
+                    }
+                    else
+                    {
+                        model.fcode = positionInfo.fcode;
+                        model.flng = positionInfo.flng;
+                        model.flat = positionInfo.flat;
+                        model.cardLogId = positionInfo.pkid;
+                    }
+                }
+                else  // 实时位置
+                {
+                    var deviceRecord = await _schoolBusRepository.GetDeviceByPkidAsync(usercard.fk_device_id);
+                    var positionInfo = await _schoolBusRepository.GetLastLocateLogAsync(deviceRecord.fcode);
+                    if (positionInfo == null)
+                    {
+                        model.status = 3;
+                    }
+                    else
+                    {
+                        model.fcode = positionInfo.fcode;
+                        model.flng = positionInfo.flng;
+                        model.flat = positionInfo.flat;
+                    }
+                }
+                #endregion
+
+                model.student = usercard.student;
+            }
+            else
+            {
+                model.status = 2;
+            }
+            model.wxshareTitle = showType == 0 ? "刷卡位置" : "实时位置";
+            model.wxshareDescription = "点击查看";
+            model.wxLink = showType == 0 ?
+                _option.WxShareOption.URL + "/SchoolBus/GoAddress?showType=" + showType + "&cardLogId=" + model.cardLogId :
+                _option.WxShareOption.URL + "/SchoolBus/GoAddress?showType=" + showType;
+            model.wximgUrl = _option.WxShareOption.URL + "/img/pic1.jpg";
+            return model;
         }
 
         /// <summary>
@@ -411,5 +488,7 @@ namespace SchoolBusWXWeb.Business
             }
             return new BaseVD { status = 1, msg = "ok" };
         }
+
     }
+
 }

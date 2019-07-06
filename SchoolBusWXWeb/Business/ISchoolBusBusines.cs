@@ -49,5 +49,14 @@ namespace SchoolBusWXWeb.Business
         /// <param name="wxid"></param>
         /// <returns></returns>
         Task<BaseVD> UntringAsync(string wxid);
+
+        /// <summary>
+        /// 获取用户卡信息
+        /// </summary>
+        /// <param name="wxid">微信openid</param>
+        /// <param name="showType">0:刷卡位置 1:实时位置</param>
+        /// <param name="cardLogId">刷卡位置 传入</param>
+        /// <returns></returns>
+        Task<AddressModel> GetUserCardInfoAsync(string wxid, int showType,string cardLogId="");
     }
 }
