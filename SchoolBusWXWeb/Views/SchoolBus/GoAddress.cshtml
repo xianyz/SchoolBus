@@ -1,6 +1,7 @@
 ﻿@{
+    string wz = Model.showType == 0 ? "刷卡" : "实时";
     Layout = "~/Views/Shared/_SchoolBusLayout.cshtml";
-    ViewBag.Title = "校车实时位置";
+    ViewBag.Title = "校车"+wz+"位置";
 }
 @using SchoolBusWXWeb.Models.ViewData
 @model AddressModel
@@ -37,9 +38,6 @@
             margin-bottom: 50px
         }
     </style>
-}
-@{
-    string wz = Model.showType == 1 ? "刷卡" : "实时";
 }
 <img id="fix_btn" class="fix_btn" src="~/img/map_reset.png" style="display:none">
 <!-- 轮播图 -->
@@ -88,8 +86,8 @@
     <div class="map_btn">
         @if (Model.showType == 1)
         {
-            <div id="realLocation" class="tab2 active">实时位置</div>
-            <div id="cardLocation" class="tab1">刷卡位置</div>
+            <div id="realLocation" class="tab1 active">实时位置</div>
+            <div id="cardLocation" class="tab2">刷卡位置</div>
         }
         else
         {
@@ -161,7 +159,7 @@
 
         // 刷卡位置跳转
         $("#cardLocation").click(function () {
-            window.location.href = "/SchoolBus/GoAddress?showType=0&cardLogId="@(Model?.cardLogId);
+            window.location.href = "/SchoolBus/GoAddress?showType=0&cardLogId=@(Model?.cardLogId)"
         });
 
         // 实时位置跳转
@@ -305,8 +303,9 @@
         }
 
         // 查看实时位置
-        if (@(Model?.showType) === "1") {
+        if (@(Model?.showType) === 1) {
             //setInterval(getRuntimePosition, delayed);
+            console.log(1);
         }
 
         function getRuntimePosition() {

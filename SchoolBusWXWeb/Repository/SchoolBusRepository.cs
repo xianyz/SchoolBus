@@ -15,7 +15,7 @@ namespace SchoolBusWXWeb.Repository
     public class SchoolBusRepository : RepositoryBase, ISchoolBusRepository
     {
         public SchoolBusRepository(IOptions<SiteConfig> settings) : base(settings.Value.DefaultConnection) { }
-        
+
         /// <summary>
         /// 根据主键获取用户信息
         /// </summary>
@@ -205,7 +205,7 @@ namespace SchoolBusWXWeb.Repository
                                 WHERE tdevice.fplatenumber = @fplatenumber ORDER BY text";
             var p = new DynamicParameters();
             p.Add("@fplatenumber", platenumber);
-            var em= await GetAllEntityAsync<SchoolBaseInfo>(sql, p);
+            var em = await GetAllEntityAsync<SchoolBaseInfo>(sql, p);
             return em.ToList();
         }
 
@@ -254,7 +254,7 @@ namespace SchoolBusWXWeb.Repository
         /// <param name="companid"></param>
         /// <param name="schoolid"></param>
         /// <returns></returns>
-        public async Task<tcompany_school> GetCompanySchoolRelAsync(string companid,string schoolid)
+        public async Task<tcompany_school> GetCompanySchoolRelAsync(string companid, string schoolid)
         {
             const string sql = "select * from tcompany_school where fk_company_id =@fk_company_id and fk_school_id =@fk_school_id";
             var p = new DynamicParameters();
@@ -269,7 +269,7 @@ namespace SchoolBusWXWeb.Repository
         /// <param name="cardid"></param>
         /// <param name="pkid"></param>
         /// <returns></returns>
-        public async Task<twxuser> GetOtherUserByCardIdAsync(string cardid,string pkid)
+        public async Task<twxuser> GetOtherUserByCardIdAsync(string cardid, string pkid)
         {
             const string sql = "select * from twxuser where fk_card_id = @fk_card_id and pkid <> @pkid";
             var p = new DynamicParameters();
@@ -339,7 +339,11 @@ namespace SchoolBusWXWeb.Repository
         /// <returns></returns>
         public async Task<tlocatelog> GetLastLocateLogAsync(string fcode)
         {
+#if DEBUG
+            const string sql = @"SELECT * FROM tlocatelog WHERE fcode = @fcode  ORDER BY fcreatetime DESC limit 1";
+#else
             const string sql = @"SELECT * FROM tlocatelog WHERE fcode = @fcode AND to_char( fcreatetime, 'yyyy-mm-dd' ) = to_char( now(), 'yyyy-mm-dd' ) ORDER BY fcreatetime DESC limit 1";
+#endif
             var p = new DynamicParameters();
             p.Add("@fcode", fcode);
             return await GetEntityAsync<tlocatelog>(sql, p);
