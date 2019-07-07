@@ -35,5 +35,14 @@ namespace SchoolBusWXWeb.Models.SchollBusModels
         public string fremark { get; set; }
 
         public DateTime fcreatetime { get; set; }
+
+        #region ÆäËû±í×Ö¶Î
+
+        /// <summary>
+        /// ttermpay.fcode
+        /// </summary>
+        [StringLength(50)]
+        public string cardNum { get;set;}
+        #endregion
     }
 }

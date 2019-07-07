@@ -348,5 +348,18 @@ namespace SchoolBusWXWeb.Repository
             p.Add("@fcode", fcode);
             return await GetEntityAsync<tlocatelog>(sql, p);
         }
+
+        /// <summary>
+        /// 根据卡号获取学期缴费情况
+        /// </summary>
+        /// <param name="fcode"></param>
+        /// <returns></returns>
+        public async Task<tterm> GetTermPayRecordByFCodeAsync(string fcode)
+        {
+            const string sql = @"SELECT ttermpay.fcode AS cardNum,tterm.* FROM ttermpay LEFT JOIN tterm ON ttermpay.fk_term_id = tterm.pkid WHERE ttermpay.fcode = @fcode ORDER BY tterm.fenddate DESC LIMIT 1";
+            var p = new DynamicParameters();
+            p.Add("@fcode", fcode);
+            return await GetEntityAsync<tterm>(sql, p);
+        }
     }
 }

@@ -7,23 +7,43 @@ using Senparc.Weixin.MP.Containers;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+#if !DEBUG
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using SchoolBusWXWeb.Filters;
+#endif
+using SchoolBusWXWeb.Business;
+using SchoolBusWXWeb.Models.ViewData;
+using Senparc.Weixin.MP.AdvancedAPIs.OAuth;
+// ReSharper disable UnassignedGetOnlyAutoProperty
 // ReSharper disable NotAccessedField.Local
 
 namespace SchoolBusWXWeb.Controllers
 {
+#if !DEBUG
+    [CustomOAuth(null, "/OAuth2/UserInfoCallback")]
+#endif
     public class HomeController : Controller
     {
         private static readonly string AppId = Config.SenparcWeixinSetting.WeixinAppId;//与微信公众账号后台的AppId设置保持一致，区分大小写。
-
         private readonly SiteConfig _option;
-        public HomeController(IOptions<SiteConfig> option)
+        private readonly ISchoolBusBusines _schoolBusBusines;
+        private OAuthAccessTokenResult TokenResult { get;set; }
+        public HomeController(IOptions<SiteConfig> option, ISchoolBusBusines schoolBusBusines)
         {
             _option = option.Value;
+            _schoolBusBusines = schoolBusBusines;
+#if !DEBUG
+          TokenResult = JsonConvert.DeserializeObject<OAuthAccessTokenResult>(HttpContext.Session.GetString("OAuthAccessTokenResult"));
+#endif
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index(int type)
         {
-
-            return View();
+#if DEBUG
+            TokenResult = new OAuthAccessTokenResult {openid = "oBcNx1lHzHxIpKm5m64XX99zTMGs"};
+#endif
+            var code = await _schoolBusBusines.GetUserCodeAsync(TokenResult.openid);
+            return View(new IndexModel { type = type, code = code });
         }
 
         public IActionResult Privacy()
@@ -58,7 +78,7 @@ namespace SchoolBusWXWeb.Controllers
 
         public async Task<IActionResult> ChangeAccessToken()
         {
-            var accessToken=await AccessTokenContainer.GetAccessTokenAsync(AppId);
+            var accessToken = await AccessTokenContainer.GetAccessTokenAsync(AppId);
             return Content(accessToken);
         }
     }

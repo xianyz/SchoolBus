@@ -104,4 +104,16 @@ namespace SchoolBusWXWeb.Models.ViewData
         /// </summary>
         public string wxshareDescription { get; set; }
     }
+
+    public class IndexModel
+    {
+        /// <summary>
+        /// 页面参数
+        /// </summary>
+        public int type { get;set;}
+        /// <summary>
+        /// 用户状态码
+        /// </summary>
+        public int code { get;set;}
+    }
 }

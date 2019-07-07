@@ -11,10 +11,11 @@ using Senparc.Weixin.MP.AdvancedAPIs.OAuth;
 namespace SchoolBusWXWeb.Controllers
 {
 #if DEBUG
-    public class SchoolBusController : ControllerEx 
+    public class SchoolBusController : ControllerEx
     {
         private const string Openid = "oBcNx1lHzHxIpKm5m64XX99zTMGs";
         private const string Nickname = "测试昵称";
+      
 #else
     public class SchoolBusController : OAuthAndJsSdkController
     {
@@ -25,7 +26,6 @@ namespace SchoolBusWXWeb.Controllers
         {
             _schoolBusBusines = schoolBusBusines;
         }
-
         #region 注册
         /// <summary>
         /// https://localhost:5001/schoolbus/Register
@@ -165,5 +165,6 @@ namespace SchoolBusWXWeb.Controllers
 
 
         #endregion
+
     }
 }

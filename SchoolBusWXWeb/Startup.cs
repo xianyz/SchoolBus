@@ -56,17 +56,19 @@ namespace SchoolBusWXWeb
             services.AddMemoryCache();                           // 使用本地缓存必须添加
             services.AddSession();                               // 使用Session
             #region 健康检擦服务
-            services.AddHealthChecks().AddNpgSql(Configuration["SiteConfig:DefaultConnection"], failureStatus: HealthStatus.Degraded);
-            services.AddHealthChecksUI();
+#if !DEBUG
+               services.AddHealthChecks().AddNpgSql(Configuration["SiteConfig:DefaultConnection"], failureStatus: HealthStatus.Degraded);
+              services.AddHealthChecksUI();
+#endif
             #endregion
             services.AddSenparcGlobalServices(Configuration)     // Senparc.CO2NET 全局注册
                     .AddSenparcWeixinServices(Configuration);    // Senparc.Weixin 注册
-            services.AddMvc(options=>
+            services.AddMvc(options =>
             {
                 // 会自动忽略不需要做CSRF验证的请求类型，例如HttpGet请求 Post请求就不需要添加[ValidateAntiForgeryToken]
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,7 +83,8 @@ namespace SchoolBusWXWeb
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseDeveloperExceptionPage();
+                //app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 //app.UseHsts();
             }
@@ -89,12 +92,14 @@ namespace SchoolBusWXWeb
             app.UseStaticFiles();
             app.UseCookiePolicy();
             #region 健康检查中间件 https://localhost:5001/healthchecks-ui
+#if !DEBUG 
             app.UseHealthChecks("/healthz", new HealthCheckOptions()
             {
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
             });
             app.UseHealthChecksUI();
+#endif
             #endregion
 
             #region 微信相关
@@ -107,7 +112,7 @@ namespace SchoolBusWXWeb
 
             app.UseMvc(routes =>
             {
-                routes.MapRoute("default", "{controller=SchoolBus}/{action=GoAddress}/{id?}");
+                routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
         }
         /// <summary>

@@ -12,7 +12,6 @@ namespace SchoolBusWXWeb.Filters
             _appId = Config.SenparcWeixinSetting.WeixinAppId;  // 如果微信的注册在app.UseMvc下面注册将会回 取不到
         }
 
-
         public override bool IsLogined(HttpContext httpContext)
         {
             return httpContext.Session.GetString("OAuthAccessTokenResult") != null;

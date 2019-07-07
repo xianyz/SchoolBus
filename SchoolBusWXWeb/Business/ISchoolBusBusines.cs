@@ -14,7 +14,7 @@ namespace SchoolBusWXWeb.Business
         /// <param name="user"></param>
         /// <returns></returns>
         Task<RegisVD> DoRegisterAsync(RegisterModel user);
-        
+
         /// <summary>
         /// 发送验证码
         /// </summary>
@@ -28,7 +28,7 @@ namespace SchoolBusWXWeb.Business
         /// <param name="wxid"></param>
         /// <returns></returns>
         Task<UserAndCardModel> GetCardInfoByCodeAsync(string wxid);
-        
+
         /// <summary>
         /// 根据车牌号获取托运的学校
         /// </summary>
@@ -57,6 +57,13 @@ namespace SchoolBusWXWeb.Business
         /// <param name="showType">0:刷卡位置 1:实时位置</param>
         /// <param name="cardLogId">刷卡位置 传入</param>
         /// <returns></returns>
-        Task<AddressModel> GetUserCardInfoAsync(string wxid, int showType,string cardLogId="");
+        Task<AddressModel> GetUserCardInfoAsync(string wxid, int showType, string cardLogId = "");
+
+        /// <summary>
+        /// 根据openid返回用户状态
+        /// </summary>
+        /// <param name="wxid"></param>
+        /// <returns></returns>
+        Task<int> GetUserCodeAsync(string wxid);
     }
 }

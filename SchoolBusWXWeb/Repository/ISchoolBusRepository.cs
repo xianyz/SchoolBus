@@ -183,5 +183,12 @@ namespace SchoolBusWXWeb.Repository
         /// <param name="fcode">public.tdevice 表的 fcode 设备编码</param>
         /// <returns></returns>
         Task<tlocatelog> GetLastLocateLogAsync(string fcode);
+
+        /// <summary>
+        /// 根据卡号获取学期缴费情况
+        /// </summary>
+        /// <param name="fcode"></param>
+        /// <returns></returns>
+        Task<tterm> GetTermPayRecordByFCodeAsync(string fcode);
     }
 }

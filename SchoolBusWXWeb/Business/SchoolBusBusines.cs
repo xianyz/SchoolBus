@@ -46,6 +46,44 @@ namespace SchoolBusWXWeb.Business
         }
 
         /// <summary>
+        /// 根据openid返回用户状态
+        /// </summary>
+        /// <param name="wxid"></param>
+        /// <returns></returns>
+        public async Task<int> GetUserCodeAsync(string wxid)
+        {
+            var userRecord = await _schoolBusRepository.GetTwxuserBytOpenidAsync(wxid);
+            if (userRecord == null)
+            {
+                return 1; //该微信没注册
+            }
+            var cardRecord = await _schoolBusRepository.GetCardBypkidAsync(userRecord.fk_card_id); // 用户绑定卡片信息
+            if (cardRecord == null)
+            {
+                return -1; //该微信所注册绑定的卡片已被删除
+            }
+            // 4:已注册并卡已挂失，跳转注册页重新绑定
+            // 5:已注册并卡已注销，跳转注册页重新绑定
+            if (cardRecord.fstatus != 1) return cardRecord.fstatus == 2 ? 4 : 5;
+
+            // 验证试用期是否到期
+            if (cardRecord.ftrialdate == null) return 3; //该微信已注册绑卡并且已成功绑定
+            var triadate = Convert.ToDateTime(cardRecord.ftrialdate);
+            var nowtdate = DateTime.Now;
+            // 学期缴费信息
+            if (string.IsNullOrEmpty(cardRecord.fcode) && triadate < nowtdate)
+            {
+                return 2; // 该微信已注册绑卡并且卡已到期
+            }
+            var termPayRecord = await _schoolBusRepository.GetTermPayRecordByFCodeAsync(cardRecord.fcode);
+            if (termPayRecord != null && triadate < nowtdate && termPayRecord.fenddate < nowtdate)
+            {
+                return 2;// 该微信已注册绑卡并且卡已到期
+            }
+            return 3; //该微信已注册绑卡并且已成功绑定
+        }
+
+        /// <summary>
         /// TODO 用户注册
         /// </summary>
         /// <param name="user"></param>
