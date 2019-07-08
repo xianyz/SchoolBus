@@ -549,7 +549,7 @@ namespace SchoolBusWXWeb.Business
             }
             var dayList = await _schoolBusRepository.GetDateCardLogAsync(data, dt); // pkid=cardLogId
             vD.dayList = dayList;
-           vD.status = 1;
+            vD.status = 1;
             return vD;
         }
 
@@ -583,7 +583,6 @@ namespace SchoolBusWXWeb.Business
             }
             return new BaseVD { status = 1, msg = "ok" };
         }
-
     }
 
 }
