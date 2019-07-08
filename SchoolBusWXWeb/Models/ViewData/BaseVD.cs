@@ -153,6 +153,6 @@ namespace SchoolBusWXWeb.Models.ViewData
 
         private DateTime fcreatetime { get; set; }
 
-        public string formatcreatetime => fcreatetime.ToString("yyyy-MM-dd");
+        public string formatcreatetime => fcreatetime.ToString("yyyy-MM-dd HH:mm:ss");
     }
 }
