@@ -6,8 +6,12 @@ using Senparc.Weixin;
 using Senparc.Weixin.MP.Containers;
 using System;
 using System.Diagnostics;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using SchoolBusWXWeb.Business;
+using SchoolBusWXWeb.Hubs;
+
 // ReSharper disable UnassignedGetOnlyAutoProperty
 // ReSharper disable NotAccessedField.Local
 
@@ -18,13 +22,17 @@ namespace SchoolBusWXWeb.Controllers
         private static readonly string AppId = Config.SenparcWeixinSetting.WeixinAppId;//与微信公众账号后台的AppId设置保持一致，区分大小写。
         private readonly SiteConfig _option;
         private readonly ISchoolBusBusines _schoolBusBusines;
-        public HomeController(IOptions<SiteConfig> option, ISchoolBusBusines schoolBusBusines)
+        private readonly IHubContext<ChatHub> _chatHub;
+        public HomeController(IOptions<SiteConfig> option, ISchoolBusBusines schoolBusBusines, IHubContext<ChatHub> chatHub)
         {
+            _chatHub = chatHub;
             _option = option.Value;
             _schoolBusBusines = schoolBusBusines;
         }
-        public IActionResult Index(int type)
+        public async Task<IActionResult> Index(int type)
         {
+            //await _chatHub.Clients.All.SendAsync("ReceiveMessage", $"刘哲", "你好");
+            await _chatHub.Clients.Group("onegroup").SendAsync("ReceiveMessage", $"刘哲", "你好");
             return View();
         }
 

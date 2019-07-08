@@ -11,6 +11,9 @@ using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
+using SchoolBusWXWeb.Hubs;
+
 // ReSharper disable NotAccessedField.Local
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
@@ -25,8 +28,10 @@ namespace SchoolBusWXWeb.StartupTask
         private readonly MqttOption _option;
         private readonly IServiceProvider _serviceProvider;
         private readonly IApplicationLifetime _appLifetime;
-        public MqttStartupFilter(IServiceProvider serviceProvider, IOptions<SiteConfig> option, IApplicationLifetime appLifetime)
+        private readonly IHubContext<ChatHub> _chatHub;
+        public MqttStartupFilter(IServiceProvider serviceProvider, IOptions<SiteConfig> option, IApplicationLifetime appLifetime, IHubContext<ChatHub> chatHub)
         {
+            _chatHub = chatHub;
             _serviceProvider = serviceProvider;
             _appLifetime = appLifetime;
             _option = option.Value.MqttOption;
@@ -84,7 +89,7 @@ namespace SchoolBusWXWeb.StartupTask
                             QoS = e.ApplicationMessage.QualityOfServiceLevel,
                             Retain = e.ApplicationMessage.Retain
                         };
-
+  
                         Console.WriteLine($">> ### 接受消息 ###{Environment.NewLine}");
                         Console.WriteLine($">> Topic = {received.Topic}{Environment.NewLine}");
                         Console.WriteLine($">> Payload = {received.Payload}{Environment.NewLine}");

@@ -1,13 +1,17 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Aliyun.Acs.Core;
+using Aliyun.Acs.Core.Exceptions;
+using Aliyun.Acs.Core.Http;
+using Aliyun.Acs.Core.Profile;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Qiniu.IO;
 using Qiniu.IO.Model;
 using Qiniu.Util;
 using SchoolBusWXWeb.Models;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
@@ -21,11 +25,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Aliyun.Acs.Core;
-using Aliyun.Acs.Core.Exceptions;
-using Aliyun.Acs.Core.Http;
-using Aliyun.Acs.Core.Profile;
-using Newtonsoft.Json;
 
 namespace SchoolBusWXWeb.Utilities
 {
@@ -509,8 +508,5 @@ namespace SchoolBusWXWeb.Utilities
         }
         #endregion
     }
-    public enum SMSResult
-    {
-        Success = 0, Error, ExistFailPhone, TamplateError, ParamError, SignNameError
-    }
+   
 }

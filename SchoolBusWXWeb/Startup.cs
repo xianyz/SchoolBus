@@ -10,6 +10,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SchoolBusWXWeb.Business;
+using SchoolBusWXWeb.Hubs;
 using SchoolBusWXWeb.Models;
 using SchoolBusWXWeb.Repository;
 using SchoolBusWXWeb.StartupTask;
@@ -63,6 +64,7 @@ namespace SchoolBusWXWeb
             #endregion
             services.AddSenparcGlobalServices(Configuration)     // Senparc.CO2NET 全局注册
                     .AddSenparcWeixinServices(Configuration);    // Senparc.Weixin 注册
+            services.AddSignalR();
             services.AddMvc(options =>
             {
                 // 会自动忽略不需要做CSRF验证的请求类型，例如HttpGet请求 Post请求就不需要添加[ValidateAntiForgeryToken]
@@ -109,10 +111,13 @@ namespace SchoolBusWXWeb
                 .UseSenparcWeixin(senparcWeixinSetting.Value, senparcSetting.Value)
                 .RegisterMpAccount(senparcWeixinSetting.Value, "【刘哲测试】公众号"); // 注册公众号(可注册多个)
             #endregion
-
+            app.UseSignalR(route =>
+            {
+                route.MapHub<ChatHub>("/chathub");
+            });
             app.UseMvc(routes =>
             {
-                routes.MapRoute("default", "{controller=SchoolBus}/{action=GoCalendar}/{id?}");
+                routes.MapRoute("default", "{controller=SchoolBus}/{action=GoAddress}/{id?}");
             });
         }
         /// <summary>
