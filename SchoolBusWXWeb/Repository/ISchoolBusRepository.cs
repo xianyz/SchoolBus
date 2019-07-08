@@ -213,6 +213,14 @@ namespace SchoolBusWXWeb.Repository
         /// <param name="year"></param>
         /// <param name="month"></param>
         /// <returns></returns>
-        Task<List<MonthCardLogModel>> GetCardLogTimesList(string cardNum, int year, int month);
+        Task<List<MonthCardLogModel>> GetCardLogTimesListAsync(string cardNum, int year, int month);
+
+        /// <summary>
+        /// 获取该卡号该天打卡信息
+        /// </summary>
+        /// <param name="cardNum"></param>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        Task<List<DayCardLogModel>> GetDateCardLogAsync(string cardNum, DateTime date);
     }
 }

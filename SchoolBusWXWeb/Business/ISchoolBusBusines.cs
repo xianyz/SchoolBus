@@ -1,4 +1,5 @@
-﻿using SchoolBusWXWeb.Models.PmsData;
+﻿using System;
+using SchoolBusWXWeb.Models.PmsData;
 using SchoolBusWXWeb.Models.SchollBusModels;
 using SchoolBusWXWeb.Models.ViewData;
 using System.Threading.Tasks;
@@ -79,5 +80,13 @@ namespace SchoolBusWXWeb.Business
         /// <param name="wxid"></param>
         /// <returns></returns>
         Task<string> GetCardNumAsync(string wxid);
+
+        /// <summary>
+        /// 获取当月打卡天数和每天打卡次数
+        /// </summary>
+        /// <param name="wxid"></param>
+        /// <param name="dt">时间精确到日</param>
+        /// <returns></returns>
+        Task<CalendarVD> GetAttendanceInfoAsync(string wxid, DateTime dt);
     }
 }

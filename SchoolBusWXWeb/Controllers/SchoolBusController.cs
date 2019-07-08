@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using SchoolBusWXWeb.Business;
 using SchoolBusWXWeb.Models.PmsData;
 using SchoolBusWXWeb.Models.ViewData;
@@ -204,6 +205,17 @@ namespace SchoolBusWXWeb.Controllers
             return View();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAttendanceInfo(DateTime dt)
+        {
+#if DEBUG
+            const string wxid = Openid;
+#else
+            string wxid = TokenResult.openid;
+#endif
+            var result = await _schoolBusBusines.GetAttendanceInfoAsync(wxid, dt);
+            return Json(result);
+        }
         #endregion
     }
 }

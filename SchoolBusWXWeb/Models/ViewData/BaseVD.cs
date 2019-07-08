@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+
+// ReSharper disable UnusedAutoPropertyAccessor.Local
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
@@ -57,7 +60,7 @@ namespace SchoolBusWXWeb.Models.ViewData
         /// <summary>
         /// 学生姓名
         /// </summary>
-        public string student { get;set;}
+        public string student { get; set; }
 
         /// <summary>
         /// 0:刷卡位置 1:实时位置
@@ -67,23 +70,23 @@ namespace SchoolBusWXWeb.Models.ViewData
         /// <summary>
         /// 刷卡位置:public.tcardlog 表 主键
         /// </summary>
-        public string cardLogId { get;set;}
+        public string cardLogId { get; set; }
 
         /// <summary>
         /// public.tdevice 表的 设备编码
         /// </summary>
-        public string fcode { get;set;}
+        public string fcode { get; set; }
 
         /// <summary>
         /// 纬度
         /// </summary>
-        public decimal? flat { get;set;}
+        public decimal? flat { get; set; }
 
         /// <summary>
         /// 经度
         /// </summary>
         public decimal? flng { get; set; }
-        
+
         /// <summary>
         /// 微信分享链接
         /// </summary>
@@ -110,11 +113,11 @@ namespace SchoolBusWXWeb.Models.ViewData
         /// <summary>
         /// 页面参数
         /// </summary>
-        public int type { get;set;}
+        public int type { get; set; }
         /// <summary>
         /// 用户状态码
         /// </summary>
-        public int code { get;set;}
+        public int code { get; set; }
     }
 
     public class MonthCardLogModel
@@ -122,24 +125,34 @@ namespace SchoolBusWXWeb.Models.ViewData
         /// <summary>
         /// 几号打卡
         /// </summary>
-        public int creatday { get;set;}
+        public int creatday { get; set; }
 
         /// <summary>
         /// 当天打卡次数
         /// </summary>
-        public int count { get;set;}
+        public int count { get; set; }
     }
 
-    public class MonthMarkAndDayCount
+    public class CalendarVD : BaseVD
+    {
+        public Dictionary<string, string> monthMark { get; } = new Dictionary<string, string>();
+        public List<DayCardLogModel> dayList { get; set; } = new List<DayCardLogModel>();
+    }
+
+    public class DayCardLogModel
     {
         /// <summary>
-        /// 日期 "2019-04-03"
+        /// cardLogId
         /// </summary>
-        public string date { get;set;}
+        public string pkid
+        {
+            get => string.IsNullOrEmpty(_pkid) ? Guid.NewGuid().ToString("N") : _pkid.TrimEnd();
+            set => _pkid = !string.IsNullOrEmpty(value) ? value : Guid.NewGuid().ToString("N");
+        }
+        private string _pkid;
 
-        /// <summary>
-        /// 日历标记 danger success
-        /// </summary>
-        public string mark { get;set;}
+        private DateTime fcreatetime { get; set; }
+
+        public string formatcreatetime => fcreatetime.ToString("yyyy-MM-dd");
     }
 }

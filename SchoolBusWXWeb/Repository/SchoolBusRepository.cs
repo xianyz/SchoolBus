@@ -397,7 +397,7 @@ namespace SchoolBusWXWeb.Repository
         /// <param name="year"></param>
         /// <param name="month"></param>
         /// <returns></returns>
-        public async Task<List<MonthCardLogModel>> GetCardLogTimesList(string cardNum, int year, int month)
+        public async Task<List<MonthCardLogModel>> GetCardLogTimesListAsync(string cardNum, int year, int month)
         {
             const string sql = @"SELECT EXTRACT (DAY FROM tcardlog.fcreatetime ) creatday,COUNT ( EXTRACT ( DAY FROM tcardlog.fcreatetime ) ) FROM tcardlog 
                                  WHERE tcardlog.fid = @fid
@@ -410,6 +410,22 @@ namespace SchoolBusWXWeb.Repository
             p.Add("@year", year);
             p.Add("@month", month);
             var em = await GetAllEntityAsync<MonthCardLogModel>(sql, p);
+            return em.ToList();
+        }
+
+        /// <summary>
+        /// 获取该卡号该天打卡信息
+        /// </summary>
+        /// <param name="cardNum"></param>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public async Task<List<DayCardLogModel>> GetDateCardLogAsync(string cardNum,DateTime date)
+        {
+            const string sql = @"SELECT pkid,fcreatetime FROM tcardlog WHERE fid = @fid AND to_char(fcreatetime, 'yyyy-MM-dd') = @date ORDER BY fcreatetime";
+            var p = new DynamicParameters();
+            p.Add("@fid", cardNum);
+            p.Add("@date", date.ToString("yyyy-MM-dd"));
+            var em = await GetAllEntityAsync<DayCardLogModel>(sql, p);
             return em.ToList();
         }
     }

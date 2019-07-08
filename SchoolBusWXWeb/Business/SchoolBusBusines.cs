@@ -531,24 +531,26 @@ namespace SchoolBusWXWeb.Business
         /// 获取当月打卡天数和每天打卡次数
         /// </summary>
         /// <param name="wxid"></param>
-        /// <param name="dt"></param>
+        /// <param name="dt">时间精确到日</param>
         /// <returns></returns>
-        public async Task GetAttendanceInfo(string wxid, DateTime dt)
+        public async Task<CalendarVD> GetAttendanceInfoAsync(string wxid, DateTime dt)
         {
-            List<MonthMarkAndDayCount> mList = new List<MonthMarkAndDayCount>();
+            CalendarVD vD = new CalendarVD();
             var data = await GetCardNumAsync(wxid);
-            if (string.IsNullOrEmpty(data))
+            if (string.IsNullOrEmpty(data)) return vD;
+            var cardLogMonthlist = await _schoolBusRepository.GetCardLogTimesListAsync(data, dt.Year, dt.Month);
+            foreach (var item in cardLogMonthlist)
             {
-                var cardLoglist = await _schoolBusRepository.GetCardLogTimesList(data, dt.Year, dt.Month);
-                foreach (var item in cardLoglist)
-                {
-                    mList.Add(new MonthMarkAndDayCount
-                    {
-                        date = dt.Year + "-" + dt.Month + "-" + item.creatday.ToString(),
-                        mark = item.count < 4 ? "danger" : "success"
-                    });
-                }
+                vD.monthMark.TryAdd(
+                    dt.Year + "-" + dt.Month + "-" + item.creatday.ToString(),
+                    //dt.Year + "-7-" + item.creatday.ToString(),
+                    item.count < 4 ? "danger" : "success"
+                );
             }
+            var dayList = await _schoolBusRepository.GetDateCardLogAsync(data, dt); // pkid=cardLogId
+            vD.dayList = dayList;
+           vD.status = 1;
+            return vD;
         }
 
         /// <summary>

@@ -3,13 +3,13 @@
     ViewBag.Title = "考勤查看";
 }
 @section Css{
-    <link href="~/css/tools/reset.css" rel="stylesheet" />
-    <link href="~/lib/laydate/theme/default/laydate.css" rel="stylesheet" />
-    <style>
-        body {
-            margin-bottom: 50px
-        }
-    </style>
+<link href="~/css/tools/reset.css" rel="stylesheet" />
+<link href="~/lib/laydate/theme/default/laydate.css" rel="stylesheet" />
+<style>
+    body {
+        margin-bottom: 50px
+    }
+</style>
 }
 <div class="calendar" id="calendar"></div>
 <div class="mui-slider">
@@ -28,7 +28,7 @@
                 <span>打卡时间</span>
             </div>
             <div class="text">
-                <p>{{item.fcreatetime}}</p>
+                <p>{{item.formatcreatetime}}</p>
             </div>
         </li>
     </ul>
@@ -51,85 +51,95 @@
 </nav>
 
 @section Scripts{
-    <script src="~/lib/laydate/laydate.js"></script>
-    <script src="~/js/vue.js"></script>
-    <script>
-        var mark = {};
-        var vue = new Vue({
-            el: '#vue',
-            data: {
-                month: '',//月份
-                cardDate: '',//打卡日期
-                cardLogList: []//打卡信息列表
-            },
-            methods: {
-                goCardAddress: function (cardLogId) { // 跳转打卡位置页
-                    window.location.href = "${basePath}/goAddress?cardLogId=" + cardLogId + "&showType=0";
-                }
-            }
-        });
-
+<script src="~/lib/laydate/laydate.js"></script>
+<script src="~/js/vue.js"></script>
+<script>
+    var marks = {};
+    $(document).ready(function () {
+        getDayAttendanceInfo(new Date().Format("yyyy-MM-dd"));
         // 日历控件
         laydate.render({
             elem: '#calendar',
-            value: _value,
             show: true,
             position: 'static',
             showBottom: false,
-            mark: {
-                '2019-7-5': "danger",
-                '2019-7-10': "success",
-                '2019-7-11': "danger",
-                '2019-7-12': "danger",
-                '2019-7-19': "danger",
-                '2019-7-24': "danger"
-            },
+            mark: marks,
             ready: function (date) {    // 控件在打开时触发，回调返回一个参数
                 vue.cardDate = date.month + '月' + date.date + '号';
             },
             beforeChange: function (value, date, endDate) {  // 渲染日期前设置mark
-                this.mark = {
-                    '2019-8-5': "danger",
-                    '2019-8-10': "success"
-                }
+                getDayAttendanceInfo(value);
+                this.mark = marks;
             },
             change: function (value, date) {//日期时间被切换后的回调
+                getDayAttendanceInfo(value);
                 vue.cardDate = date.month + '月' + date.date + '号'; // 打卡日期赋值
             }
         });
+    });
 
-        // 获取日打卡考勤信息
-        function getDayAttendanceInfo(date) {
-            $.ajax({
-                type: "POST",
-                url: "${basePath}/webService/getDayAttendanceInfo",
-                data: {
-                    cardNum: '${cardNum}',
-                    date: date
-                },
-                success: function (data) {
-                    if (data.code === 1) {
-                        //打卡信息列表赋值
-                        vue.cardLogList = data.data;
-                    }
-                }
-            });
+    var vue = new Vue({
+        el: '#vue',
+        data: {
+            month: '',//月份
+            cardDate: '',//打卡日期
+            cardLogList: []//打卡信息列表
+        },
+        methods: {
+            goCardAddress: function (cardLogId) { // 跳转打卡位置页
+                window.location.href = "/SchoolBus/GoAddress?cardLogId=" + cardLogId + "&showType=0";
+            }
         }
+    });
 
-        // 实时位置跳转
-        mui('body').on('tap', '#cardAddress', function () {
-            window.location.href = "/SchoolBus/GoAddress?showType=1";
+    // 获取打卡考勤信息
+    function getDayAttendanceInfo(date) {
+        $.ajax({
+            type: "get",
+            url: "/SchoolBus/GetAttendanceInfo?dt=" + date,
+            async: false,
+            success: function (data) {
+                if (data.status === 1) {
+                    marks = data.monthMark;         // 月mark赋值
+                    vue.cardLogList = data.dayList; // 打卡信息列表赋值
+                    console.log(marks);
+                }
+            }
         });
+    }
 
-        // 教育文章跳转
-        mui('body').on('tap', '#education', function () {
-            location.href = 'https://mp.weixin.qq.com/mp/homepage?__biz=MzU5Nzc3OTcxNw==&hid=1&sn=862cbb911dca00c871a342e2bcaf06cc';
-        });
+    // 实时位置跳转
+    mui('body').on('tap', '#cardAddress', function () {
+        window.location.href = "/SchoolBus/GoAddress?showType=1";
+    });
 
-        // 福利商城跳转
-        mui('body').on('tap', '#welfareMall', function () {
-            location.href = '/erweima';
-        });
+    // 教育文章跳转
+    mui('body').on('tap', '#education', function () {
+        location.href = 'https://mp.weixin.qq.com/mp/homepage?__biz=MzU5Nzc3OTcxNw==&hid=1&sn=862cbb911dca00c871a342e2bcaf06cc';
+    });
 
-    </script>
+    // 福利商城跳转
+    mui('body').on('tap', '#welfareMall', function () {
+        location.href = '/erweima';
+    });
+
+    Date.prototype.Format = function(fmt)   
+    { //author: meizz   
+        var o = {   
+            "M+" : this.getMonth()+1,                 //月份   
+            "d+" : this.getDate(),                    //日   
+            "h+" : this.getHours(),                   //小时   
+            "m+" : this.getMinutes(),                 //分   
+            "s+" : this.getSeconds(),                 //秒   
+            "q+" : Math.floor((this.getMonth()+3)/3), //季度   
+            "S"  : this.getMilliseconds()             //毫秒   
+        };   
+        if(/(y+)/.test(fmt))   
+            fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));   
+        for(var k in o)   
+            if(new RegExp("("+ k +")").test(fmt))   
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));   
+        return fmt;   
+    }  
+</script>
 }
