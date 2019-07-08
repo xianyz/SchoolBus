@@ -51,6 +51,13 @@ namespace SchoolBusWXWeb.Business
         Task<BaseVD> UntringAsync(string wxid);
 
         /// <summary>
+        /// 挂失
+        /// </summary>
+        /// <param name="wxid"></param>
+        /// <returns></returns>
+        Task<BaseVD> UnReportAsync(string wxid);
+        
+        /// <summary>
         /// 获取用户卡信息
         /// </summary>
         /// <param name="wxid">微信openid</param>

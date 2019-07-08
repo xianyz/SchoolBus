@@ -422,6 +422,19 @@ namespace SchoolBusWXWeb.Business
             await _schoolBusRepository.DeleteWxUserAsync(userRecord.pkid);
             return new BaseVD { status = 1, msg = "解绑成功" };
         }
+        
+        /// <summary>
+        /// 挂失
+        /// </summary>
+        /// <param name="wxid"></param>
+        /// <returns></returns>
+        public async Task<BaseVD> UnReportAsync(string wxid)
+        {
+            var userRecord = await _schoolBusRepository.GetTwxuserBytOpenidAsync(wxid);
+            if (userRecord == null) return new BaseVD { status = 1, msg = "挂失成功" };
+            var b = await _schoolBusRepository.UpdateCardStatusAsync(userRecord.fk_card_id, 2);
+            return b > 0 ? new BaseVD { status = 1, msg = "挂失成功" } : new BaseVD { msg = "挂失失败" };
+        }
 
         /// <summary>
         /// 获取用户卡信息

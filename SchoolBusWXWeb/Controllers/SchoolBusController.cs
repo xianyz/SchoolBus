@@ -26,6 +26,7 @@ namespace SchoolBusWXWeb.Controllers
         {
             _schoolBusBusines = schoolBusBusines;
         }
+        
         #region 注册
         /// <summary>
         /// https://localhost:5001/schoolbus/Register
@@ -137,6 +138,26 @@ namespace SchoolBusWXWeb.Controllers
             string wxid = TokenResult.openid;
 #endif
             var result = await _schoolBusBusines.UntringAsync(wxid);
+            return Json(result);
+        }
+        #endregion
+
+        #region 挂失
+        [HttpGet]
+        public IActionResult GoReport()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DoReport()
+        {
+#if DEBUG
+            const string wxid = Openid;
+#else
+            string wxid = TokenResult.openid;
+#endif
+            var result = await _schoolBusBusines.UnReportAsync(wxid);
             return Json(result);
         }
         #endregion

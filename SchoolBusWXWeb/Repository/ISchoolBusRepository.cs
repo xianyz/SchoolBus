@@ -190,5 +190,13 @@ namespace SchoolBusWXWeb.Repository
         /// <param name="fcode"></param>
         /// <returns></returns>
         Task<tterm> GetTermPayRecordByFCodeAsync(string fcode);
+
+        /// <summary>
+        /// 更新卡片状态
+        /// </summary>
+        /// <param name="pkid"></param>
+        /// <param name="status">1:微信已经注册 2:挂失 3:注销 默认:0</param>
+        /// <returns></returns>
+        Task<int> UpdateCardStatusAsync(string pkid, int status);
     }
 }

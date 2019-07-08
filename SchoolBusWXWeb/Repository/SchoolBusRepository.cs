@@ -361,5 +361,20 @@ namespace SchoolBusWXWeb.Repository
             p.Add("@fcode", fcode);
             return await GetEntityAsync<tterm>(sql, p);
         }
+
+        /// <summary>
+        /// 更新卡片状态
+        /// </summary>
+        /// <param name="pkid"></param>
+        /// <param name="status">1:微信已经注册 2:挂失 3:注销 默认:0</param>
+        /// <returns></returns>
+        public async Task<int> UpdateCardStatusAsync(string pkid,int status)
+        {
+            const string sql = "update tcard set fstatus=@fstatus where pkid=@pkid";
+            var p = new DynamicParameters();
+            p.Add("@fstatus", status);
+            p.Add("@pkid", pkid.TrimEnd());
+            return await ExecuteEntityAsync(sql, p);
+        }
     }
 }
