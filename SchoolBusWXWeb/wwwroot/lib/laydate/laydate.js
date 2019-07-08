@@ -1687,38 +1687,43 @@
             return isYear || isMonth;
         };
 
-        return {
+        return { // https://fly.layui.com/jie/41926/
             prevYear: function () {
                 if (addSubYeay('sub')) return;
                 dateTime.year--;
+                options.range || that.done(null, "beforeChange");
                 that.checkDate('limit').calendar();
                 options.range || that.done(null, 'change');
-            }
-            , prevMonth: function () {
+            },
+            prevMonth: function () {
                 var YM = that.getAsYM(dateTime.year, dateTime.month, 'sub');
                 lay.extend(dateTime, {
                     year: YM[0]
                     , month: YM[1]
                 });
-                that.checkDate('limit').calendar();
-                options.range || that.done(null, 'change');
-            }
-            , nextMonth: function () {
+                options.range || that.done(null, "beforeChange");
+                that.checkDate("limit").calendar();
+                options.range || that.done(null, "change");
+            },
+            nextMonth: function () {
                 var YM = that.getAsYM(dateTime.year, dateTime.month);
                 lay.extend(dateTime, {
                     year: YM[0]
                     , month: YM[1]
                 });
-                that.checkDate('limit').calendar();
-                options.range || that.done(null, 'change');
-            }
-            , nextYear: function () {
+                options.range || that.done(null, "beforeChange");
+                that.checkDate("limit").calendar();
+                options.range || that.done(null, "change");
+            },
+            nextYear: function () {
                 if (addSubYeay()) return;
-                dateTime.year++
+                dateTime.year++;
+                options.range || that.done(null, "beforeChange"),
                 that.checkDate('limit').calendar();
                 options.range || that.done(null, 'change');
             }
-        };
+        }
+
     };
 
     //日期切换事件

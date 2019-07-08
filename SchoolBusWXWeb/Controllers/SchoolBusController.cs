@@ -15,7 +15,7 @@ namespace SchoolBusWXWeb.Controllers
     {
         private const string Openid = "oBcNx1lHzHxIpKm5m64XX99zTMGs";
         private const string Nickname = "测试昵称";
-      
+
 #else
     public class SchoolBusController : OAuthAndJsSdkController
     {
@@ -26,7 +26,7 @@ namespace SchoolBusWXWeb.Controllers
         {
             _schoolBusBusines = schoolBusBusines;
         }
-        
+
         #region 注册
         /// <summary>
         /// https://localhost:5001/schoolbus/Register
@@ -187,5 +187,23 @@ namespace SchoolBusWXWeb.Controllers
 
         #endregion
 
+        #region 刷卡日历
+        [HttpGet]
+        public async Task<IActionResult> GoCalendar()
+        {
+#if DEBUG
+            const string wxid = Openid;
+#else
+            string wxid = TokenResult.openid;
+#endif
+            var data = await _schoolBusBusines.GetCardNumAsync(wxid);
+            if (string.IsNullOrEmpty(data))
+            {
+                return RedirectToAction(actionName: "Register", "SchoolBus");
+            }
+            return View();
+        }
+
+        #endregion
     }
 }

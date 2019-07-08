@@ -90,7 +90,7 @@ html #layuicss-laydate {
 .laydate-set-ym span, .layui-laydate-header i {
     padding: 0 5px;
     cursor: pointer;
-    color: #fff !important;
+    color: #333!important;
 }
 
 .layui-laydate-header * {
@@ -110,7 +110,7 @@ html #layuicss-laydate {
 }
 
 .layui-laydate-header i.laydate-prev-m {
-    left: 45px
+    left: 80px
 }
 
 .layui-laydate-header i.laydate-next-y {
@@ -118,7 +118,7 @@ html #layuicss-laydate {
 }
 
 .layui-laydate-header i.laydate-next-m {
-    right: 45px
+    right: 80px
 }
 
 .laydate-set-ym {
@@ -294,7 +294,7 @@ html #layuicss-laydate {
     width: 546px
 }
 
-.layui-laydate-range .laydate-main-list-0 .laydate-next-m, .layui-laydate-range .laydate-main-list-0 .laydate-next-y, .layui-laydate-range .laydate-main-list-1 .laydate-prev-m, .layui-laydate-range .laydate-main-list-1 .laydate-prev-y {
+.layui-laydate-range .laydate-main-list-0 .laydate-next-m, .layui-la    ydate-range .laydate-main-list-0 .laydate-next-y, .layui-laydate-range .laydate-main-list-1 .laydate-prev-m, .layui-laydate-range .laydate-main-list-1 .laydate-prev-y {
     display: none
 }
 
@@ -303,14 +303,14 @@ html #layuicss-laydate {
 }
 
 .layui-laydate, .layui-laydate-hint {
-    border: 1px solid #d2d2d2;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .12);
+    /*border: 1px solid #d2d2d2;*/
+    /*box-shadow: 0 2px 4px rgba(0, 0, 0, .12);*/
     background-color: #fff;
     color: #666
 }
 
 .layui-laydate-header {
-    border-bottom: 1px solid #e2e2e2
+    /*border-bottom: 1px solid #e2e2e2*/
 }
 
 .layui-laydate-header i:hover, .layui-laydate-header span:hover {
@@ -328,7 +328,7 @@ html #layuicss-laydate {
 }
 
 .layui-laydate-content td {
-    color: #666
+    color: #333
 }
 
 .layui-laydate-content td.laydate-selected {
@@ -360,7 +360,7 @@ html #layuicss-laydate {
 }
 
 .layui-laydate-content .laydate-day-next, .layui-laydate-content .laydate-day-prev {
-    color: #fff
+    color: #dcdcdc
 }
 
 .laydate-selected.laydate-day-next, .laydate-selected.laydate-day-prev {
@@ -388,9 +388,9 @@ html #layuicss-laydate {
 }
 
 .layui-laydate .layui-this {
-    background-color: rgba(255, 255, 255, 0.7) !important;
+    background-color:#349df0 !important;
     border-radius: 50%;
-    color: #f65d5d !important
+    color: #fff !important
 }
 
 .layui-laydate .laydate-disabled, .layui-laydate .laydate-disabled:hover {
@@ -484,17 +484,17 @@ html #layuicss-laydate {
 }
 
 .layui-laydate {
-    background: linear-gradient(#faa711, #facf39);
+    /*background: #FFA800;*/
 }
 
 .layui-laydate-content th {
-    color: #fff;
+    /*color: #fff;*/
 }
 
 .laydate-set-ym {
     color: #fff;
     font-size: 16px;
-    font-weight: bold;
+    /*font-weight: bold;*/
 }
 
 .laydate-prev-y {

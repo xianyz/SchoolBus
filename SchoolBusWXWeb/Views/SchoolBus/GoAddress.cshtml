@@ -1,11 +1,12 @@
 ﻿@{
     string wz = Model.showType == 0 ? "刷卡" : "实时";
     Layout = "~/Views/Shared/_SchoolBusLayout.cshtml";
-    ViewBag.Title = "校车"+wz+"位置";
+    ViewBag.Title = "校车" + wz + "位置";
 }
 @using SchoolBusWXWeb.Models.ViewData
 @model AddressModel
 @section Css{
+    <link href="~/lib/mui/css/mui.picker.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
     <link href="~/css/tools/reset.css" rel="stylesheet" />
     <style>

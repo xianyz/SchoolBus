@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+// ReSharper disable RedundantToStringCallForValueType
 
 
 // ReSharper disable SwitchStatementMissingSomeCases
@@ -52,7 +53,7 @@ namespace SchoolBusWXWeb.Business
         /// <returns></returns>
         public async Task<int> GetUserCodeAsync(string wxid)
         {
-            var userRecord = await _schoolBusRepository.GetTwxuserBytOpenidAsync(wxid);
+            var userRecord = await _schoolBusRepository.GetTwxuserByOpenidAsync(wxid);
             if (userRecord == null)
             {
                 return 1; //该微信没注册
@@ -114,7 +115,7 @@ namespace SchoolBusWXWeb.Business
             #endregion
 
             #region 微信号校验和注册操作
-            var userRecord = await _schoolBusRepository.GetTwxuserBytOpenidAsync(user.wxid);
+            var userRecord = await _schoolBusRepository.GetTwxuserByOpenidAsync(user.wxid);
             if (userRecord == null) // 用户没有注册过
             {
                 twxuser wxuser = new twxuser
@@ -198,7 +199,7 @@ namespace SchoolBusWXWeb.Business
         /// <returns></returns>
         public async Task<SaveCardInfoVD> SavaCardAndUserInfoAsync(UserAndCardModel model)
         {
-            var userRecord = await _schoolBusRepository.GetTwxuserBytOpenidAsync(model.wxid);
+            var userRecord = await _schoolBusRepository.GetTwxuserByOpenidAsync(model.wxid);
             if (userRecord != null)
             {
                 #region 验证是否更换手机号
@@ -400,7 +401,7 @@ namespace SchoolBusWXWeb.Business
         /// <returns></returns>
         public async Task<BaseVD> UntringAsync(string wxid)
         {
-            var userRecord = await _schoolBusRepository.GetTwxuserBytOpenidAsync(wxid);
+            var userRecord = await _schoolBusRepository.GetTwxuserByOpenidAsync(wxid);
             if (userRecord == null) return new BaseVD { status = 1, msg = "解绑成功" };
             var userCardRecord = await _schoolBusRepository.GetOtherUserByCardIdAsync(userRecord.fk_card_id, userRecord.pkid);
             if (userCardRecord == null) // 如果该卡下没有绑定微信用户
@@ -422,7 +423,7 @@ namespace SchoolBusWXWeb.Business
             await _schoolBusRepository.DeleteWxUserAsync(userRecord.pkid);
             return new BaseVD { status = 1, msg = "解绑成功" };
         }
-        
+
         /// <summary>
         /// 挂失
         /// </summary>
@@ -430,7 +431,7 @@ namespace SchoolBusWXWeb.Business
         /// <returns></returns>
         public async Task<BaseVD> UnReportAsync(string wxid)
         {
-            var userRecord = await _schoolBusRepository.GetTwxuserBytOpenidAsync(wxid);
+            var userRecord = await _schoolBusRepository.GetTwxuserByOpenidAsync(wxid);
             if (userRecord == null) return new BaseVD { status = 1, msg = "挂失成功" };
             var b = await _schoolBusRepository.UpdateCardStatusAsync(userRecord.fk_card_id, 2);
             return b > 0 ? new BaseVD { status = 1, msg = "挂失成功" } : new BaseVD { msg = "挂失失败" };
@@ -508,6 +509,46 @@ namespace SchoolBusWXWeb.Business
                 _option.WxShareOption.URL + "/SchoolBus/GoAddress?showType=" + showType;
             model.wximgUrl = _option.WxShareOption.URL + "/img/pic1.jpg";
             return model;
+        }
+
+        /// <summary>
+        /// 考勤查看获取卡号
+        /// </summary>
+        /// <param name="wxid"></param>
+        /// <returns></returns>
+        public async Task<string> GetCardNumAsync(string wxid)
+        {
+            var userRecord = await _schoolBusRepository.GetTwxuserNotStateByOpenidAsync(wxid);
+            if (userRecord == null)
+            {
+                return "";
+            }
+            var cardRecord = await _schoolBusRepository.GetCardBypkidAsync(userRecord.fk_card_id);
+            return cardRecord?.fcode ?? "";
+        }
+
+        /// <summary>
+        /// 获取当月打卡天数和每天打卡次数
+        /// </summary>
+        /// <param name="wxid"></param>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        public async Task GetAttendanceInfo(string wxid, DateTime dt)
+        {
+            List<MonthMarkAndDayCount> mList = new List<MonthMarkAndDayCount>();
+            var data = await GetCardNumAsync(wxid);
+            if (string.IsNullOrEmpty(data))
+            {
+                var cardLoglist = await _schoolBusRepository.GetCardLogTimesList(data, dt.Year, dt.Month);
+                foreach (var item in cardLoglist)
+                {
+                    mList.Add(new MonthMarkAndDayCount
+                    {
+                        date = dt.Year + "-" + dt.Month + "-" + item.creatday.ToString(),
+                        mark = item.count < 4 ? "danger" : "success"
+                    });
+                }
+            }
         }
 
         /// <summary>

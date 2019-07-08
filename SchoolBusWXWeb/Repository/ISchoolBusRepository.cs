@@ -22,8 +22,15 @@ namespace SchoolBusWXWeb.Repository
         /// </summary>
         /// <param name="openid"></param>
         /// <returns></returns>
-        Task<twxuser> GetTwxuserBytOpenidAsync(string openid);
+        Task<twxuser> GetTwxuserByOpenidAsync(string openid);
 
+        /// <summary>
+        /// 根据微信openid获取用户注册信息(不带用户状态)
+        /// </summary>
+        /// <param name="openid"></param>
+        /// <returns></returns>
+        Task<twxuser> GetTwxuserNotStateByOpenidAsync(string openid);
+        
         /// <summary>
         /// 根据主键返回卡信息
         /// </summary>
@@ -198,5 +205,14 @@ namespace SchoolBusWXWeb.Repository
         /// <param name="status">1:微信已经注册 2:挂失 3:注销 默认:0</param>
         /// <returns></returns>
         Task<int> UpdateCardStatusAsync(string pkid, int status);
+
+        /// <summary>
+        /// 获取该卡号该月份每天打卡次数列表
+        /// </summary>
+        /// <param name="cardNum"></param>
+        /// <param name="year"></param>
+        /// <param name="month"></param>
+        /// <returns></returns>
+        Task<List<MonthCardLogModel>> GetCardLogTimesList(string cardNum, int year, int month);
     }
 }

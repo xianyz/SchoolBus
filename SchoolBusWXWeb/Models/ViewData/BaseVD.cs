@@ -116,4 +116,30 @@ namespace SchoolBusWXWeb.Models.ViewData
         /// </summary>
         public int code { get;set;}
     }
+
+    public class MonthCardLogModel
+    {
+        /// <summary>
+        /// 几号打卡
+        /// </summary>
+        public int creatday { get;set;}
+
+        /// <summary>
+        /// 当天打卡次数
+        /// </summary>
+        public int count { get;set;}
+    }
+
+    public class MonthMarkAndDayCount
+    {
+        /// <summary>
+        /// 日期 "2019-04-03"
+        /// </summary>
+        public string date { get;set;}
+
+        /// <summary>
+        /// 日历标记 danger success
+        /// </summary>
+        public string mark { get;set;}
+    }
 }

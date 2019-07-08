@@ -4,6 +4,9 @@
 }
 @using SchoolBusWXWeb.Models.PmsData
 @model UserAndCardModel
+@section Css{
+    <link href="~/lib/mui/css/mui.picker.min.css" rel="stylesheet" />
+}
 <div class="register_pic">
     <img src="~/img/pic1.jpg" />
 </div>
@@ -65,93 +68,93 @@
 </div>
 
 @section Scripts{
-<script>
-    var schoolList = [];
-    $(document).ready(function () {
-        getSchoolList($("#fplatenumber").val());
-        // 选择出生日期
-        $("#dateSelect").click(function () {
-            var dtPicker = new mui.DtPicker({
-                type: 'date',
-                beginDate: new Date(1999, 01, 01),  // 设置开始日期
-                endDate: new Date()                 // 设置结束日期
+    <script>
+        var schoolList = [];
+        $(document).ready(function () {
+            getSchoolList($("#fplatenumber").val());
+            // 选择出生日期
+            $("#dateSelect").click(function () {
+                var dtPicker = new mui.DtPicker({
+                    type: 'date',
+                    beginDate: new Date(1999, 01, 01),  // 设置开始日期
+                    endDate: new Date()                 // 设置结束日期
+                });
+                dtPicker.show(function (selectItems) {
+                    var y = selectItems.y.text;  //获取选择的年
+                    var m = selectItems.m.text;  //获取选择的月
+                    var d = selectItems.d.text;  //获取选择的日
+                    var date = y + "-" + m + "-" + d;
+                    $("#dateSelect").find('input').val(date);
+                });
             });
-            dtPicker.show(function (selectItems) {
-                var y = selectItems.y.text;  //获取选择的年
-                var m = selectItems.m.text;  //获取选择的月
-                var d = selectItems.d.text;  //获取选择的日
-                var date = y + "-" + m + "-" + d;
-                $("#dateSelect").find('input').val(date);
+            // 选择学校
+            $("#dateSelect2").click(function () {
+                var platenumber = $("#fplatenumber").val();
+                if (platenumber === '') {
+                    alert("请先填写车牌号");
+                    return;
+                } else {
+                    getSchoolList(platenumber);
+                }
+                setPicker();
             });
-        });
-        // 选择学校
-        $("#dateSelect2").click(function () {
-            var platenumber = $("#fplatenumber").val();
-            if (platenumber === '') {
-                alert("请先填写车牌号");
-                return;
-            } else {
-                getSchoolList(platenumber);
+            function setPicker() {
+                var picker = new mui.PopPicker({ layer: 2 });
+                picker.setData(schoolList);
+                picker.pickers[0].setSelectedIndex(0);
+                picker.show(function (selectItems) {
+                    $("#fschoolname").val(selectItems[1].text);
+                });
             }
-            setPicker();
         });
-        function setPicker() {
-            var picker = new mui.PopPicker({ layer: 2 });
-            picker.setData(schoolList);
-            picker.pickers[0].setSelectedIndex(0);
-            picker.show(function (selectItems) {
-                $("#fschoolname").val(selectItems[1].text);
-            });
-        }
-    });
-    // 保存信息
-    $('#frm').submit(function () {
-        if ($(this).valid()) {
-            $.ajax({
-                url: this.action,
-                type: this.method,
-                data: $(this).serialize(),
-                success: function (result) {
-                    if (result.status === 1) {
-                        alert(result.msg);
-                        //window.location.href = "/SchoolBus/GoBinding";
-                    } else {
-                        alert(result.msg);
-                    }
-                },
-                error: function (result) {
-                    console.log(result);
-                },
-                complete: function (XMLHttpRequest, textStatus) {
+        // 保存信息
+        $('#frm').submit(function () {
+            if ($(this).valid()) {
+                $.ajax({
+                    url: this.action,
+                    type: this.method,
+                    data: $(this).serialize(),
+                    success: function (result) {
+                        if (result.status === 1) {
+                            alert(result.msg);
+                            //window.location.href = "/SchoolBus/GoBinding";
+                        } else {
+                            alert(result.msg);
+                        }
+                    },
+                    error: function (result) {
+                        console.log(result);
+                    },
+                    complete: function (XMLHttpRequest, textStatus) {
 
-                }
-            });
-        }
-        return false;
-    });
-    // 获取学校列表并赋值
-    function getSchoolList(plater) {
-        if (plater != "") {
-            $.ajax({
-                type: "GET",
-                url: "/SchoolBus/GetSchoolListByNum",
-                data: { platenumber: plater },
-                async: false,
-                success: function (data) {
-                    if (data.status === 1) {
-                        schoolList = data.data;
-                    } else {
-                        alert(data.msg);
                     }
-                }
-            });
+                });
+            }
+            return false;
+        });
+        // 获取学校列表并赋值
+        function getSchoolList(plater) {
+            if (plater != "") {
+                $.ajax({
+                    type: "GET",
+                    url: "/SchoolBus/GetSchoolListByNum",
+                    data: { platenumber: plater },
+                    async: false,
+                    success: function (data) {
+                        if (data.status === 1) {
+                            schoolList = data.data;
+                        } else {
+                            alert(data.msg);
+                        }
+                    }
+                });
+            }
         }
-    }
 
-    // 修改按钮
-    function modifyPhoneNum() {
-        $("#vcoded").show();
-        $("#phoneNum").attr("readonly", false);
-    }
-</script>
+        // 修改按钮
+        function modifyPhoneNum() {
+            $("#vcoded").show();
+            $("#phoneNum").attr("readonly", false);
+        }
+    </script>
 }

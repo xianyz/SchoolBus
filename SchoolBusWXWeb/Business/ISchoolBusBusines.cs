@@ -72,5 +72,12 @@ namespace SchoolBusWXWeb.Business
         /// <param name="wxid"></param>
         /// <returns></returns>
         Task<int> GetUserCodeAsync(string wxid);
+
+        /// <summary>
+        /// 考勤查看获取卡号
+        /// </summary>
+        /// <param name="wxid"></param>
+        /// <returns></returns>
+        Task<string> GetCardNumAsync(string wxid);
     }
 }

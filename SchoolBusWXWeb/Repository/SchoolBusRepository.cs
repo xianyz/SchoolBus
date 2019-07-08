@@ -34,9 +34,22 @@ namespace SchoolBusWXWeb.Repository
         /// </summary>
         /// <param name="openid"></param>
         /// <returns></returns>
-        public async Task<twxuser> GetTwxuserBytOpenidAsync(string openid)
+        public async Task<twxuser> GetTwxuserByOpenidAsync(string openid)
         {
             const string sql = "SELECT * from public.twxuser where fstate=0 and fwxid=@fwxid";
+            var p = new DynamicParameters();
+            p.Add("@fwxid", openid.TrimEnd());
+            return await GetEntityAsync<twxuser>(sql, p);
+        }
+
+        /// <summary>
+        /// 根据微信openid获取用户注册信息(不带用户状态)
+        /// </summary>
+        /// <param name="openid"></param>
+        /// <returns></returns>
+        public async Task<twxuser> GetTwxuserNotStateByOpenidAsync(string openid)
+        {
+            const string sql = "SELECT * from public.twxuser where fwxid=@fwxid";
             var p = new DynamicParameters();
             p.Add("@fwxid", openid.TrimEnd());
             return await GetEntityAsync<twxuser>(sql, p);
@@ -375,6 +388,29 @@ namespace SchoolBusWXWeb.Repository
             p.Add("@fstatus", status);
             p.Add("@pkid", pkid.TrimEnd());
             return await ExecuteEntityAsync(sql, p);
+        }
+
+        /// <summary>
+        /// 获取该卡号该月份每天打卡次数列表
+        /// </summary>
+        /// <param name="cardNum"></param>
+        /// <param name="year"></param>
+        /// <param name="month"></param>
+        /// <returns></returns>
+        public async Task<List<MonthCardLogModel>> GetCardLogTimesList(string cardNum, int year, int month)
+        {
+            const string sql = @"SELECT EXTRACT (DAY FROM tcardlog.fcreatetime ) creatday,COUNT ( EXTRACT ( DAY FROM tcardlog.fcreatetime ) ) FROM tcardlog 
+                                 WHERE tcardlog.fid = @fid
+                                 AND EXTRACT ( YEAR FROM tcardlog.fcreatetime ) = @year
+                                 AND EXTRACT ( MONTH FROM tcardlog.fcreatetime ) = @month
+                                 GROUP BY EXTRACT ( DAY FROM tcardlog.fcreatetime ) 
+                                 ORDER BY creatday";
+            var p = new DynamicParameters();
+            p.Add("@fid", cardNum);
+            p.Add("@year", year);
+            p.Add("@month", month);
+            var em = await GetAllEntityAsync<MonthCardLogModel>(sql, p);
+            return em.ToList();
         }
     }
 }

@@ -1,0 +1,135 @@
+﻿@{
+    Layout = "~/Views/Shared/_SchoolBusLayout.cshtml";
+    ViewBag.Title = "考勤查看";
+}
+@section Css{
+    <link href="~/css/tools/reset.css" rel="stylesheet" />
+    <link href="~/lib/laydate/theme/default/laydate.css" rel="stylesheet" />
+    <style>
+        body {
+            margin-bottom: 50px
+        }
+    </style>
+}
+<div class="calendar" id="calendar"></div>
+<div class="mui-slider">
+    <div class="mui-slider-group mui-slider-loop">
+        <div class="mui-slider-item"><img src="~/img/skjllb.jpg" /></div>
+    </div>
+</div>
+
+<!--打卡记录-->
+<div class="record" id="vue" v-cloak>
+    <h1>{{cardDate}}</h1>
+    <ul>
+        <li v-for="item in cardLogList" @@click="goCardAddress(item.pkid)">
+            <em></em>
+            <div class="top">
+                <span>打卡时间</span>
+            </div>
+            <div class="text">
+                <p>{{item.fcreatetime}}</p>
+            </div>
+        </li>
+    </ul>
+</div>
+
+<!--底部导航-->
+<nav class="mui-bar mui-bar-tab" id="nav">
+    <a class="mui-tab-item" id="cardAddress">
+        <span class="mui-icon mui-icon1"></span>
+        <span class="mui-tab-label">实时位置</span>
+    </a>
+    <a class="mui-tab-item mui-active">
+        <span class="mui-icon mui-icon2"></span>
+        <span class="mui-tab-label">刷卡记录</span>
+    </a>
+    <a class="mui-tab-item" id="welfareMall">
+        <span class="mui-icon mui-icon3"></span>
+        <span class="mui-tab-label">福利商城</span>
+    </a>
+</nav>
+
+@section Scripts{
+    <script src="~/lib/laydate/laydate.js"></script>
+    <script src="~/js/vue.js"></script>
+    <script>
+        var mark = {};
+        var vue = new Vue({
+            el: '#vue',
+            data: {
+                month: '',//月份
+                cardDate: '',//打卡日期
+                cardLogList: []//打卡信息列表
+            },
+            methods: {
+                goCardAddress: function (cardLogId) { // 跳转打卡位置页
+                    window.location.href = "${basePath}/goAddress?cardLogId=" + cardLogId + "&showType=0";
+                }
+            }
+        });
+
+        // 日历控件
+        laydate.render({
+            elem: '#calendar',
+            value: _value,
+            show: true,
+            position: 'static',
+            showBottom: false,
+            mark: {
+                '2019-7-5': "danger",
+                '2019-7-10': "success",
+                '2019-7-11': "danger",
+                '2019-7-12': "danger",
+                '2019-7-19': "danger",
+                '2019-7-24': "danger"
+            },
+            ready: function (date) {    // 控件在打开时触发，回调返回一个参数
+                vue.cardDate = date.month + '月' + date.date + '号';
+            },
+            beforeChange: function (value, date, endDate) {  // 渲染日期前设置mark
+                this.mark = {
+                    '2019-8-5': "danger",
+                    '2019-8-10': "success"
+                }
+            },
+            change: function (value, date) {//日期时间被切换后的回调
+                vue.cardDate = date.month + '月' + date.date + '号'; // 打卡日期赋值
+            }
+        });
+
+        // 获取日打卡考勤信息
+        function getDayAttendanceInfo(date) {
+            $.ajax({
+                type: "POST",
+                url: "${basePath}/webService/getDayAttendanceInfo",
+                data: {
+                    cardNum: '${cardNum}',
+                    date: date
+                },
+                success: function (data) {
+                    if (data.code === 1) {
+                        //打卡信息列表赋值
+                        vue.cardLogList = data.data;
+                    }
+                }
+            });
+        }
+
+        // 实时位置跳转
+        mui('body').on('tap', '#cardAddress', function () {
+            window.location.href = "/SchoolBus/GoAddress?showType=1";
+        });
+
+        // 教育文章跳转
+        mui('body').on('tap', '#education', function () {
+            location.href = 'https://mp.weixin.qq.com/mp/homepage?__biz=MzU5Nzc3OTcxNw==&hid=1&sn=862cbb911dca00c871a342e2bcaf06cc';
+        });
+
+        // 福利商城跳转
+        mui('body').on('tap', '#welfareMall', function () {
+            location.href = '/erweima';
+        });
+
+    </script>
+}
