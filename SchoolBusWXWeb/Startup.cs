@@ -1,12 +1,9 @@
-﻿using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SchoolBusWXWeb.Business;
@@ -22,6 +19,11 @@ using Senparc.Weixin;
 using Senparc.Weixin.Entities;
 using Senparc.Weixin.MP;
 using Senparc.Weixin.RegisterServices;
+#if !DEBUG
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+#endif
 // ReSharper disable CommentTypo
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable SuggestVarOrType_SimpleTypes
@@ -53,13 +55,14 @@ namespace SchoolBusWXWeb
             services.AddScoped<ISchoolBusRepository, SchoolBusRepository>();
 
             services.AddStartupTask<MqttStartupFilter>();
+            services.AddLoggingFileUI(); // https://localhost:5001/Logging 日志查看 对于多个子网站中密码文件要一样才可以
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddMemoryCache();                           // 使用本地缓存必须添加
             services.AddSession();                               // 使用Session
             #region 健康检擦服务
 #if !DEBUG
                services.AddHealthChecks().AddNpgSql(Configuration["SiteConfig:DefaultConnection"], failureStatus: HealthStatus.Degraded);
-              services.AddHealthChecksUI();
+               services.AddHealthChecksUI();
 #endif
             #endregion
             services.AddSenparcGlobalServices(Configuration)     // Senparc.CO2NET 全局注册
@@ -88,9 +91,10 @@ namespace SchoolBusWXWeb
                 app.UseDeveloperExceptionPage();
                 //app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                //app.UseHsts();
+                app.UseHsts();
             }
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
+            
             app.UseStaticFiles();
             app.UseCookiePolicy();
             #region 健康检查中间件 https://localhost:5001/healthchecks-ui
@@ -117,7 +121,7 @@ namespace SchoolBusWXWeb
             });
             app.UseMvc(routes =>
             {
-                routes.MapRoute("default", "{controller=SchoolBus}/{action=GoAddress}/{id?}");
+                routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
         }
         /// <summary>
