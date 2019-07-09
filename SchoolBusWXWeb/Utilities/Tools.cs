@@ -6,10 +6,17 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using MQTTnet;
+using MQTTnet.Client;
+using MQTTnet.Client.Connecting;
+using MQTTnet.Client.Disconnecting;
+using MQTTnet.Client.Options;
+using MQTTnet.Client.Receiving;
 using Newtonsoft.Json;
 using Qiniu.IO;
 using Qiniu.IO.Model;
 using Qiniu.Util;
+using SchoolBusWXWeb.Business;
 using SchoolBusWXWeb.Models;
 using System;
 using System.Collections.Generic;
@@ -30,6 +37,8 @@ namespace SchoolBusWXWeb.Utilities
 {
     public static class Tools
     {
+        private static IMqttClient _mqttClient;
+        private static bool _isReconnect = true;
         private static ILogger _toollogger;
         private static SiteConfig _settings;
         private static readonly string[] ImageExtensions = { ".jpg", ".png", ".gif", ".jpeg", ".bmp" };
@@ -107,7 +116,6 @@ namespace SchoolBusWXWeb.Utilities
                 uptoken = auth.CreateUploadToken(putPolicy.ToJsonString())
             };
         }
-
 
         /// <summary>
         /// 生成验证码图片
@@ -507,6 +515,138 @@ namespace SchoolBusWXWeb.Utilities
             }
         }
         #endregion
+
+        /// <summary>
+        /// 写TXT
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public static async Task WriteTxt(string path, string msg)
+        {
+            using (StreamWriter sw = new StreamWriter(path, true))
+            {
+                await sw.WriteLineAsync(msg);
+            }
+
+            //FileStream fs = new FileStream(path, FileMode.OpenOrCreate);
+            //StreamWriter sw = new StreamWriter(fs);
+            ////开始写入
+            //await sw.WriteAsync(msg);
+            ////清空缓冲区
+            //await sw.FlushAsync();
+            ////关闭流
+            //sw.Close();
+            //fs.Close();
+        }
+
+        #region Mqtt
+
+        public static async Task ConnectMqttServerAsync(ISchoolBusBusines _schoolBusBusines)
+        {
+            IMqttClientOptions MqttOptions()
+            {
+                var options = new MqttClientOptionsBuilder()
+                    .WithClientId(_settings.MqttOption.ClientID)
+                    .WithTcpServer(_settings.MqttOption.HostIp, _settings.MqttOption.HostPort)
+                    .WithCredentials(_settings.MqttOption.UserName, _settings.MqttOption.Password)
+                    //.WithTls()//服务器端没有启用加密协议，这里用tls的会提示协议异常
+                    .WithCleanSession()
+                    .Build();
+                return options;
+            }
+
+            // Create a new Mqtt client.
+            try
+            {
+                if (_mqttClient == null)
+                {
+                    _mqttClient = new MqttFactory().CreateMqttClient();
+
+                    _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(async e =>
+                    {
+                        var received = new MqttMessageReceived
+                        {
+                            Topic = e.ApplicationMessage.Topic,
+                            Payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload),
+                            QoS = e.ApplicationMessage.QualityOfServiceLevel,
+                            Retain = e.ApplicationMessage.Retain
+                        };
+#if DEBUG
+                        var data = await _schoolBusBusines.GetTwxuserAsync("2c9ab45969dc19990169dd5bb9ea08b5");
+                        await WriteTxt("E:\\User.txt", JsonConvert.SerializeObject(data));
+                        const string path = "E:\\MQTTPayload.txt";
+                        await WriteTxt(path, received.Payload);
+#endif
+                        Console.WriteLine($">> ### 接受消息 ###{Environment.NewLine}");
+                        Console.WriteLine($">> Topic = {received.Topic}{Environment.NewLine}");
+                        Console.WriteLine($">> Payload = {received.Payload}{Environment.NewLine}");
+                        Console.WriteLine($">> QoS = {received.QoS}{Environment.NewLine}");
+                        Console.WriteLine($">> Retain = {received.Retain}{Environment.NewLine}");
+                    });
+
+                    _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(async e =>
+                    {
+                        Console.WriteLine("已连接到MQTT服务器！" + Environment.NewLine);
+                        await Subscribe(_mqttClient, _settings.MqttOption.MqttTopic);
+                    });
+
+                    _mqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(async e =>
+                    {
+                        var curTime = DateTime.UtcNow;
+                        Console.WriteLine($">> [{curTime.ToLongTimeString()}]");
+                        Console.WriteLine("已断开MQTT连接！" + Environment.NewLine);
+                        //Reconnecting 重连
+                        if (_isReconnect && !e.ClientWasConnected)
+                        {
+                            Console.WriteLine("正在尝试重新连接" + Environment.NewLine);
+                            await Task.Delay(TimeSpan.FromSeconds(5));
+                            try
+                            {
+                                await _mqttClient.ConnectAsync(MqttOptions());
+                            }
+                            catch
+                            {
+                                Console.WriteLine("### 重新连接 失败 ###" + Environment.NewLine);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("已下线！" + Environment.NewLine);
+                        }
+                    });
+
+                    try
+                    {
+                        await _mqttClient.ConnectAsync(MqttOptions());
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("连接到MQTT服务器失败！" + Environment.NewLine + ex.Message + Environment.NewLine);
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("连接到MQTT服务器未知异常！" + Environment.NewLine + e.Message + Environment.NewLine);
+            }
+        }
+        private static async Task Subscribe(IMqttClient mqttClient, string topic)
+        {
+            if (mqttClient.IsConnected && !string.IsNullOrEmpty(topic))
+            {
+                // Subscribe to a topic
+                await mqttClient.SubscribeAsync(new TopicFilterBuilder()
+                    .WithTopic(topic)
+                    .WithAtMostOnceQoS()
+                    .Build()
+                );
+                Console.WriteLine($"已订阅[{topic}]主题{Environment.NewLine}");
+            }
+        }
+
+        #endregion
     }
-   
+
 }

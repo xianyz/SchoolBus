@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 using SchoolBusWXWeb.StartupTask;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable MemberCanBePrivate.Global
 
 
 namespace SchoolBusWXWeb
@@ -13,7 +15,8 @@ namespace SchoolBusWXWeb
         {
             await CreateWebHostBuilder(args)
                 .Build()
-                .RunWithTasksAsync();
+                .RunAsync();
+                //.RunWithTasksAsync();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>

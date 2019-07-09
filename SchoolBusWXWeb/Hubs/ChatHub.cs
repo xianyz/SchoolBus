@@ -9,6 +9,7 @@ namespace SchoolBusWXWeb.Hubs
     {
         // 参考:https://blog.csdn.net/qq_39818210/article/details/82631809
 
+        
         /// <summary>
         /// 建立连接时触发
         /// </summary>

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +22,8 @@ using Senparc.Weixin;
 using Senparc.Weixin.Entities;
 using Senparc.Weixin.MP;
 using Senparc.Weixin.RegisterServices;
+
+
 #if !DEBUG
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -55,7 +59,6 @@ namespace SchoolBusWXWeb
             services.AddScoped<ISchoolBusBusines, SchoolBusBusines>();
             services.AddScoped<ISchoolBusRepository, SchoolBusRepository>();
 
-            services.AddStartupTask<MqttStartupFilter>();
             services.AddLoggingFileUI(); // https://localhost:5001/Logging 日志查看 对于多个子网站中密码文件要一样才可以
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddMemoryCache();                           // 使用本地缓存必须添加
@@ -69,6 +72,10 @@ namespace SchoolBusWXWeb
             services.AddSenparcGlobalServices(Configuration)     // Senparc.CO2NET 全局注册
                     .AddSenparcWeixinServices(Configuration);    // Senparc.Weixin 注册
             services.AddSignalR();
+
+            // services.AddStartupTask<MqttStartupFilter>();
+            services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, MqttService>();
+
             services.AddMvc(options =>
             {
                 options.Filters.Add<GlobalExceptionFilter>();
@@ -117,14 +124,21 @@ namespace SchoolBusWXWeb
                 .UseSenparcWeixin(senparcWeixinSetting.Value, senparcSetting.Value)
                 .RegisterMpAccount(senparcWeixinSetting.Value, "【刘哲测试】公众号"); // 注册公众号(可注册多个)
             #endregion
+
             app.UseSignalR(route =>
             {
                 route.MapHub<ChatHub>("/chathub");
             });
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
+
+            //Task.Run(async () =>
+            //{
+            //    await Tools.ConnectMqttServerAsync();
+            //});
         }
         /// <summary>
         /// 配置微信跟踪日志
@@ -153,4 +167,18 @@ namespace SchoolBusWXWeb
             };
         }
     }
+
+    //public class MqttService : BackgroundService
+    //{
+    //    private readonly ISchoolBusBusines _schoolBusBusines;
+    //    //public MqttService(ISchoolBusBusines schoolBusBusines)
+    //    //{
+    //    //    _schoolBusBusines = schoolBusBusines;
+    //    //}
+
+    //    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    //    {
+    //        await Tools.ConnectMqttServerAsync(_schoolBusBusines);
+    //    }
+    //}
 }

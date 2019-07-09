@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using MQTTnet;
 using MQTTnet.Client;
@@ -6,13 +7,13 @@ using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Options;
 using MQTTnet.Client.Receiving;
+using SchoolBusWXWeb.Hubs;
 using SchoolBusWXWeb.Models;
+using SchoolBusWXWeb.Utilities;
 using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR;
-using SchoolBusWXWeb.Hubs;
 
 // ReSharper disable NotAccessedField.Local
 // ReSharper disable IdentifierTypo
@@ -21,6 +22,9 @@ using SchoolBusWXWeb.Hubs;
 
 namespace SchoolBusWXWeb.StartupTask
 {
+    /// <summary>
+    /// 暂时不符合mqtt业务逻辑用不到
+    /// </summary>
     public class MqttStartupFilter : IStartupTask
     {
         private IMqttClient _mqttClient;
@@ -54,8 +58,8 @@ namespace SchoolBusWXWeb.StartupTask
             // 发生在程序正在完成正常退出的时候，所有请求都被处理完成。程序会在处理完这货的Action委托代码以后退出
             _appLifetime.ApplicationStopped.Register(async () =>
             {
-                _isReconnect = false;
-                await _mqttClient.DisconnectAsync();
+                //_isReconnect = false;
+                //await _mqttClient.DisconnectAsync();
             });
             #endregion
         }
@@ -80,7 +84,7 @@ namespace SchoolBusWXWeb.StartupTask
                 {
                     _mqttClient = new MqttFactory().CreateMqttClient();
 
-                    _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(e =>
+                    _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(async e =>
                     {
                         var received = new MqttMessageReceived
                         {
@@ -89,7 +93,11 @@ namespace SchoolBusWXWeb.StartupTask
                             QoS = e.ApplicationMessage.QualityOfServiceLevel,
                             Retain = e.ApplicationMessage.Retain
                         };
-  
+#if DEBUG
+
+                        const string path = "E:\\MQTTPayload.txt";
+                        await Tools.WriteTxt(path, received.Payload);
+#endif
                         Console.WriteLine($">> ### 接受消息 ###{Environment.NewLine}");
                         Console.WriteLine($">> Topic = {received.Topic}{Environment.NewLine}");
                         Console.WriteLine($">> Payload = {received.Payload}{Environment.NewLine}");
