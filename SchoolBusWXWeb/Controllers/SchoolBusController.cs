@@ -68,9 +68,9 @@ namespace SchoolBusWXWeb.Controllers
             }
             return Json(res);
         }
-#endregion
+        #endregion
 
-#region 获取验证码
+        #region 获取验证码
         [HttpPost]
         public async Task<IActionResult> SendSmsCode(SmsModel sms)
         {
@@ -85,17 +85,17 @@ namespace SchoolBusWXWeb.Controllers
             }
             return Json(smsVd);
         }
-#endregion
+        #endregion
 
-#region 绑定成功提示页面
+        #region 绑定成功提示页面
         [HttpGet]
         public IActionResult GoBinding()
         {
             return View();
         }
-#endregion
+        #endregion
 
-#region 完善信息并保存
+        #region 完善信息并保存
         [HttpGet]
         public async Task<IActionResult> GoCardInfo()
         {
@@ -127,9 +127,9 @@ namespace SchoolBusWXWeb.Controllers
             }
             return Json(res);
         }
-#endregion
+        #endregion
 
-#region 解绑
+        #region 解绑
         [HttpGet]
         public IActionResult GoUntying()
         {
@@ -147,9 +147,9 @@ namespace SchoolBusWXWeb.Controllers
             var result = await _schoolBusBusines.UntringAsync(wxid);
             return Json(result);
         }
-#endregion
+        #endregion
 
-#region 挂失
+        #region 挂失
         [HttpGet]
         public IActionResult GoReport()
         {
@@ -167,21 +167,22 @@ namespace SchoolBusWXWeb.Controllers
             var result = await _schoolBusBusines.UnReportAsync(wxid);
             return Json(result);
         }
-#endregion
+        #endregion
 
-#region 根据车牌号获取托运的学校 "辽A00002"
+        #region 根据车牌号获取托运的学校 "辽A00002"
         [HttpGet]
         public async Task<IActionResult> GetSchoolListByNum(string platenumber)
         {
             var result = await _schoolBusBusines.GetSchoolListByPlatenumberAsync(platenumber);
             return Json(result);
         }
-#endregion
+        #endregion
 
-#region 校车位置
+        #region 校车位置
         [HttpGet]
         public async Task<IActionResult> GoAddress(int showType, string cardLogId = "")
         {
+            
 #if DEBUG
             const string wxid = Openid;
 #else
@@ -192,9 +193,9 @@ namespace SchoolBusWXWeb.Controllers
         }
 
 
-#endregion
+        #endregion
 
-#region 刷卡日历
+        #region 刷卡日历
         [HttpGet]
         public async Task<IActionResult> GoCalendar()
         {
@@ -222,6 +223,6 @@ namespace SchoolBusWXWeb.Controllers
             var result = await _schoolBusBusines.GetAttendanceInfoAsync(wxid, dt);
             return Json(result);
         }
-#endregion
+        #endregion
     }
 }

@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace SchoolBusWXWeb.Filters
@@ -25,24 +27,27 @@ namespace SchoolBusWXWeb.Filters
             await Task.Run(() =>
             {
                 var logger = _loggerFactory.CreateLogger(context.Exception.TargetSite.ReflectedType);
-                var json = new ErrorResponse("未知错误,请重试");
+                var json = new ErrorResponse("未知错误,请重试")
+                {
+                    Name = context.ActionDescriptor.GetType().GetProperty("ActionName").GetValue(context.ActionDescriptor).ToString(),
+                    Path = $"链接访问出错：{context.HttpContext.Request.Path}",
+                    Msg = context.Exception.Message,
+                    Data = context.Exception
+                };
                 if (context.Exception is OperationCanceledException)
                 {
-                    json = new ErrorResponse("一个请求在浏览器被取消");
+                    json.Msg = "一个请求在浏览器被取消";
                     if (_env.IsDevelopment()) logger.LogInformation("请求被取消了");
                 }
                 else
                 {
-                    logger.LogError(new EventId(context.Exception.HResult), context.Exception, context.Exception.Message);
+                    logger.LogError(new EventId(context.Exception.HResult), context.Exception, JsonConvert.SerializeObject(json));
                 }
-
-                json.Name = context.ActionDescriptor.GetType().GetProperty("ActionName").GetValue(context.ActionDescriptor).ToString();
-                json.Path = $"链接访问出错：{context.HttpContext.Request.Path}";
-                json.Msg = context.Exception.Message;
-                json.Data = context.Exception;
-                context.Result = new ApplicationErrorResult(json);
+                //context.Result = new ApplicationErrorResult(json);
+                //context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                context.Result=new RedirectResult("/Home/Error");
                 context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                context.ExceptionHandled = true;
+                context.ExceptionHandled = true; //设置异常已经处理,否则会被其他异常过滤器覆盖
             });
         }
     }

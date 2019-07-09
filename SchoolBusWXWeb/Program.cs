@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using SchoolBusWXWeb.StartupTask;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 
 namespace SchoolBusWXWeb
@@ -20,6 +21,6 @@ namespace SchoolBusWXWeb
 #if !DEBUG
                   .UseUrls("http://0.0.0.0:5005/")
 #endif
-                .UseStartup<Startup>();
+                .UseStartup<Startup>().ConfigureLogging(builder => builder.AddFile());
     }
 }
