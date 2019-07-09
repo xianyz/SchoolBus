@@ -29,7 +29,7 @@ namespace SchoolBusWXWeb.Controllers
             _option = option.Value;
             _schoolBusBusines = schoolBusBusines;
         }
-        public async Task<IActionResult> Index(int type)
+        public async Task<IActionResult> Index()
         {
             //await _chatHub.Clients.All.SendAsync("ReceiveMessage", $"刘哲", "你好");
             await _chatHub.Clients.Group("onegroup").SendAsync("ReceiveMessage", $"刘哲", "你好");

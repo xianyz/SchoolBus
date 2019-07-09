@@ -10,8 +10,7 @@ namespace SchoolBusWXWeb.Controllers
         [CustomOAuth(null, "/OAuth2/UserInfoCallback")]
         public IActionResult Index()
         {
-            ViewData["State"] = HttpContext.Session.GetString("State");
-            ViewData["userinfo"] = HttpContext.Session.GetString("Userinfo");
+            ViewData["userinfo"] = HttpContext.Session.GetString("OAuthAccessTokenResult");
             return View();
         }
     }
