@@ -381,7 +381,7 @@ namespace SchoolBusWXWeb.Repository
         /// <param name="pkid"></param>
         /// <param name="status">1:微信已经注册 2:挂失 3:注销 默认:0</param>
         /// <returns></returns>
-        public async Task<int> UpdateCardStatusAsync(string pkid,int status)
+        public async Task<int> UpdateCardStatusAsync(string pkid, int status)
         {
             const string sql = "update tcard set fstatus=@fstatus where pkid=@pkid";
             var p = new DynamicParameters();
@@ -419,7 +419,7 @@ namespace SchoolBusWXWeb.Repository
         /// <param name="cardNum"></param>
         /// <param name="date"></param>
         /// <returns></returns>
-        public async Task<List<DayCardLogModel>> GetDateCardLogAsync(string cardNum,DateTime date)
+        public async Task<List<DayCardLogModel>> GetDateCardLogAsync(string cardNum, DateTime date)
         {
             const string sql = @"SELECT pkid,fcreatetime FROM tcardlog WHERE fid = @fid AND to_char(fcreatetime, 'yyyy-MM-dd') = @date ORDER BY fcreatetime";
             var p = new DynamicParameters();
@@ -427,6 +427,80 @@ namespace SchoolBusWXWeb.Repository
             p.Add("@date", date.ToString("yyyy-MM-dd"));
             var em = await GetAllEntityAsync<DayCardLogModel>(sql, p);
             return em.ToList();
+        }
+
+        /// <summary>
+        /// 查询系统微信绑定卡记录
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        public async Task<List<UserBindCard>> GetUserBindCardAsync(string sql)
+        {
+            var em = await GetAllEntityAsync<UserBindCard>(sql);
+            return em.ToList();
+        }
+
+        /// <summary>
+        /// 更新tcardlog日志
+        /// </summary>
+        /// <param name="tcardlogs"></param>
+        /// <returns></returns>
+        public async Task<int> InsertCardLogListAsync(List<tcardlog> tcardlogs)
+        {
+            const string sql = @"insert INTO public.tcardlog(pkid,fcode,fid,fcreatetime,flng,flat,ftype)values(@pkid,@fcode,@fid,@fcreatetime,@flng,@flat,@ftype)";
+            return await ExecuteMultipleEntityAsync(sql, tcardlogs);
+        }
+        /// <summary>
+        /// 更新tcardlog日志
+        /// </summary>
+        /// <param name="tcardlog"></param>
+        /// <returns></returns>
+        public async Task<int> InsertCardLogAsync(tcardlog tcardlog)
+        {
+            const string sql = @"insert INTO public.tcardlog(pkid,fcode,fid,fcreatetime,flng,flat,ftype)values(@pkid,@fcode,@fid,@fcreatetime,@flng,@flat,@ftype)";
+            return await ExecuteEntityAsync(sql, tcardlog);
+        }
+        /// <summary>
+        /// 更新tlocatelog日志
+        /// </summary>
+        /// <param name="tlocatelogs"></param>
+        /// <returns></returns>
+        public async Task<int> InsertLocatelogListAsync(List<tlocatelog> tlocatelogs)
+        {
+            const string sql = @"insert INTO public.tlocatelog(pkid,fcode,fcreatetime,flng,flat)values(@pkid,@fcode,@fcreatetime,@flng,@flat)";
+            return await ExecuteMultipleEntityAsync(sql, tlocatelogs);
+        }
+        /// <summary>
+        /// 更新tlocatelog日志
+        /// </summary>
+        /// <param name="tlocatelog"></param>
+        /// <returns></returns>
+        public async Task<int> InsertLocatelogAsync(tlocatelog tlocatelog)
+        {
+            const string sql = @"insert INTO public.tlocatelog(pkid,fcode,fcreatetime,flng,flat)values(@pkid,@fcode,@fcreatetime,@flng,@flat)";
+            return await ExecuteEntityAsync(sql, tlocatelog);
+        }
+
+        /// <summary>
+        /// 更新twxpushlog日志 (刷卡日志)
+        /// </summary>
+        /// <param name="twxpushlogs"></param>
+        /// <returns></returns>
+        public async Task<int> InsertWXpushlogListAsync(List<twxpushlog> twxpushlogs)
+        {
+            const string sql = @"insert INTO public.twxpushlog(pkid,fk_id,fwxid,fstatus,fcreatetime,fmsg)values(@pkid,@fk_id,@fwxid,@fstatus,@fcreatetime,@fmsg)";
+            return await ExecuteMultipleEntityAsync(sql, twxpushlogs);
+        }
+
+        /// <summary>
+        /// 更新twxpushlog日志 (刷卡日志)
+        /// </summary>
+        /// <param name="twxpushlog"></param>
+        /// <returns></returns>
+        public async Task<int> InsertWXpushlogAsync(twxpushlog twxpushlog)
+        {
+            const string sql = @"insert INTO public.twxpushlog(pkid,fk_id,fwxid,fstatus,fcreatetime,fmsg)values(@pkid,@fk_id,@fwxid,@fstatus,@fcreatetime,@fmsg)";
+            return await ExecuteEntityAsync(sql, twxpushlog);
         }
     }
 }

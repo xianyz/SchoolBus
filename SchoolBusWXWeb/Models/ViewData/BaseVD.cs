@@ -155,4 +155,118 @@ namespace SchoolBusWXWeb.Models.ViewData
 
         public string formatcreatetime => fcreatetime.ToString("yyyy-MM-dd HH:mm:ss");
     }
+
+    public class MqttMessage
+    {
+        /// <summary>
+        /// 主键
+        /// </summary>
+        public string pkid { get; set; }
+        /// <summary>
+        /// 设备号 tdevice表fcode
+        /// </summary>
+        public string dev_id { get; set; }
+        /// <summary>
+        /// 上下车状态 1:上车 2:下车
+        /// </summary>
+        public string sxc_zt { get; set; }
+        /// <summary>
+        /// 经度
+        /// </summary>
+        public string jd { get; set; }
+        /// <summary>
+        /// 维度
+        /// </summary>
+        public string wd { get; set; }
+        /// <summary>
+        /// 高度
+        /// </summary>
+        public string gd { get; set; }
+        /// <summary>
+        /// 卡号数量
+        /// </summary>
+        public string card_num { get; set; }
+        /// <summary>
+        /// 卡号集合
+        /// </summary>
+        public List<string> card_list { get; set; }
+    }
+
+    /// <summary>
+    /// 微信绑定卡记录
+    /// </summary>
+    public class UserBindCard
+    {
+        /// <summary>
+        /// 学生姓名
+        /// </summary>
+        public string fname { get; set; }
+        /// <summary>
+        /// 微信openid
+        /// </summary>
+        public string fwxid { get; set; }
+        /// <summary>
+        /// 校车牌号
+        /// </summary>
+        public string fplatenumber { get; set; }
+        /// <summary>
+        /// 司机姓名
+        /// </summary>
+        public string fdriver { get; set; }
+        /// <summary>
+        /// 司机手机号
+        /// </summary>
+        public string fdriverphone { get; set; }
+        /// <summary>
+        /// 卡号 卡编码
+        /// </summary>
+        public string fid { get; set; }
+
+        /// <summary>
+        /// 付款状态
+        /// </summary>
+        public int paystate { get; set; }
+
+        /// <summary>
+        /// 当天收到模板消息数量
+        /// </summary>
+        public int wxmsgcount { get; set; }
+    }
+
+    public class WXtemplateModel
+    {
+        public string pkid
+        {
+            get => string.IsNullOrEmpty(_pkid) ? Guid.NewGuid().ToString("N") : _pkid.TrimEnd();
+            set => _pkid = !string.IsNullOrEmpty(value) ? value : Guid.NewGuid().ToString("N");
+        }
+        private string _pkid;
+        /// <summary>
+        /// 学生姓名
+        /// </summary>
+        public string fname { get; set; }
+        /// <summary>
+        /// 微信openid
+        /// </summary>
+        public string fwxid { get; set; } 
+        
+        /// <summary>
+        /// 校车牌号
+        /// </summary>
+        public string fplatenumber { get; set; }
+        /// <summary>
+        /// 司机姓名
+        /// </summary>
+        public string fdriver { get; set; }
+        /// <summary>
+        /// 司机手机号
+        /// </summary>
+        public string fdriverphone { get; set; }
+
+        /// <summary>
+        /// 付钱提示
+        /// </summary>
+        public string paymsg { get;set;}
+    }
+
 }

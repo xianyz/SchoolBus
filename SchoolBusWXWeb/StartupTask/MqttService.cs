@@ -11,6 +11,7 @@ using SchoolBusWXWeb.Utilities;
 namespace SchoolBusWXWeb.StartupTask
 {
     /// <summary>
+    /// Mqtt启动服务(暂时不用 用appLifetime代替)
     /// 参考:https://thinkrethink.net/2018/07/12/injecting-a-scoped-service-into-ihostedservice/
     /// </summary>
     public class MqttService : BackgroundService

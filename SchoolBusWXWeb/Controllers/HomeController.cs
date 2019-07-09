@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using SchoolBusWXWeb.Business;
 using SchoolBusWXWeb.Hubs;
+using SchoolBusWXWeb.Utilities;
 
 // ReSharper disable UnassignedGetOnlyAutoProperty
 // ReSharper disable NotAccessedField.Local
@@ -32,7 +33,8 @@ namespace SchoolBusWXWeb.Controllers
         public async Task<IActionResult> Index()
         {
             //await _chatHub.Clients.All.SendAsync("ReceiveMessage", $"刘哲", "你好");
-            await _chatHub.Clients.Group("onegroup").SendAsync("ReceiveMessage", $"刘哲", "你好");
+            //await _chatHub.Clients.Group("onegroup").SendAsync("ReceiveMessage", $"刘哲", "你好");
+            //string msg= "{\"pkid\":\"4475EEDC2BB74F7C8FA6A59CEDB64720\",\"dev_id\":\"1124347989\",\"sxc_zt\":\"2\",\"jd\":\"123.354068\",\"wd\":\"41.857727\",\"gd\":\"0\",\"card_num\":\"0\"}";
             return View();
         }
 

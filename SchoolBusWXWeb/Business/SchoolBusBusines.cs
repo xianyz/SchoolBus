@@ -10,7 +10,10 @@ using SchoolBusWXWeb.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+
 // ReSharper disable RedundantToStringCallForValueType
 
 
@@ -344,8 +347,8 @@ namespace SchoolBusWXWeb.Business
             var configList = await _schoolBusRepository.GetSchoolConfigListAsync("'002','003'");
             data.wxshareTitle = configList.FirstOrDefault(x => x.fcode == "002")?.fvalue;
             data.wxshareDescription = configList.FirstOrDefault(x => x.fcode == "003")?.fvalue;
-            data.wxLink = _option.WxShareOption.URL + "/index?type=0&cardNum=" + data.fcode;
-            data.wximgUrl = _option.WxShareOption.URL + "/img/pic1.jpg";
+            data.wxLink = _option.WxOption.URL + "/index?type=0&cardNum=" + data.fcode;
+            data.wximgUrl = _option.WxOption.URL + "/img/pic1.jpg";
             return data;
         }
 
@@ -505,9 +508,9 @@ namespace SchoolBusWXWeb.Business
             model.wxshareTitle = showType == 0 ? "刷卡位置" : "实时位置";
             model.wxshareDescription = "点击查看";
             model.wxLink = showType == 0 ?
-                _option.WxShareOption.URL + "/SchoolBus/GoAddress?showType=" + showType + "&cardLogId=" + model.cardLogId :
-                _option.WxShareOption.URL + "/SchoolBus/GoAddress?showType=" + showType;
-            model.wximgUrl = _option.WxShareOption.URL + "/img/pic1.jpg";
+                _option.WxOption.URL + "/SchoolBus/GoAddress?showType=" + showType + "&cardLogId=" + model.cardLogId :
+                _option.WxOption.URL + "/SchoolBus/GoAddress?showType=" + showType;
+            model.wximgUrl = _option.WxOption.URL + "/img/pic1.jpg";
             return model;
         }
 
@@ -582,6 +585,119 @@ namespace SchoolBusWXWeb.Business
                 return new BaseVD { msg = "验证码超时" };
             }
             return new BaseVD { status = 1, msg = "ok" };
+        }
+
+        /// <summary>
+        /// Mqtt回调消息处理
+        /// </summary>
+        /// <param name="received"></param>
+        /// <returns></returns>
+        public async Task MqttMessageReceivedAsync(MqttMessageReceived received)
+        {
+            if (!string.IsNullOrEmpty(received.Payload) && received.Payload != "close")
+            {
+                if (received.Topic == "cnc_sbm/gps_card")
+                {
+                    try
+                    {
+                        MqttMessage mqttMessage = JsonConvert.DeserializeObject<MqttMessage>(received.Payload);
+                        if (int.TryParse(mqttMessage.card_num, out int cardnum) && cardnum > 0)
+                        {
+                            decimal.TryParse(mqttMessage.jd, out decimal jd);
+                            decimal.TryParse(mqttMessage.wd, out decimal wd);
+                            int.TryParse(mqttMessage.sxc_zt, out int sxc_zt);
+                            var cardList = mqttMessage.card_list;
+                            if (cardList != null && cardList.Count > 0)
+                            {
+                                Dictionary<string, string> map = new Dictionary<string, string>();
+                                List<tcardlog> cardLogList = new List<tcardlog>();
+                                foreach (var cardid in cardList)
+                                {
+                                    var tcardlog = new tcardlog
+                                    {
+                                        fcreatetime = DateTime.Now,
+                                        fcode = mqttMessage.dev_id,
+                                        fid = cardid,
+                                        flng = jd,
+                                        flat = wd,
+                                        ftype = sxc_zt
+                                    };
+                                    cardLogList.Add(tcardlog);
+                                    map.TryAdd(cardid, tcardlog.pkid);
+                                }
+                                await _schoolBusRepository.InsertCardLogListAsync(cardLogList);
+                                await _schoolBusRepository.InsertLocatelogAsync(new tlocatelog
+                                {
+                                    fcreatetime = DateTime.Now,
+                                    fcode = mqttMessage.dev_id,
+                                    flng = jd,
+                                    flat = wd
+                                });
+
+                                StringBuilder sb = new StringBuilder("SELECT tcard.fname,twxuser.fwxid,tdevice.fplatenumber," +
+                                                                     "tdevice.fdriver,tdevice.fdriverphone,tcard.fid," +
+                                                                     //是否服务判断2019年3月18日，未在试用期和付费用户只推送一条上车消息
+                                                                     " case when (tcard.ftrialdate >= now() or " +
+                                                                     " (SELECT count(1) FROM tterm INNER JOIN ttermpay ON ttermpay.fk_term_id = tterm.pkid " +
+                                                                     " where ttermpay.fcode = tcard.fcode and tterm.fstartdate <= now() and tterm.fenddate >= now()) > 0)" +
+                                                                     " then 1 else 0 end as paystate," +
+                                                                     //判断当天是否推送过消息判断
+                                                                     " (select count(1) from twxpushlog where twxpushlog.fwxid = twxuser.fwxid and " +
+                                                                     " to_char(twxpushlog.fcreatetime, 'yyyy-mm-dd') = to_char(now(), 'yyyy-mm-dd')) as wxmsgcount " +
+                                                                     " FROM tcard " +
+                                                                     " LEFT JOIN twxuser ON twxuser.fk_card_id = tcard.pkid " +
+                                                                     " LEFT JOIN tdevice ON tdevice.fcode = " + mqttMessage.dev_id + " and tdevice.fstate = 0 " +
+                                                                     //2019年3月7日 填加试用和付款筛选 去掉筛选
+                                                                     " WHERE tcard.fstatus in (0,1) and tcard.fid IN ( '" + cardList[0] + "'");
+                                for (int i = 1; i < cardList.Count; i++)
+                                {
+                                    sb.Append(",'" + cardList[i] + "'");
+                                }
+                                sb.Append(")");
+
+                                List<twxpushlog> twxpushlogs = new List<twxpushlog>();
+                                List<WXtemplateModel> wxpushtems = new List<WXtemplateModel>();
+                                // 查询系统微信绑定卡记录
+                                var userList = await _schoolBusRepository.GetUserBindCardAsync(sb.ToString());
+                                foreach (var user in userList)
+                                {
+                                    // paystate:1 付款用户,非付款用户 每天第一次上车 推送一条消息
+                                    if (user.paystate == 1 || (int.TryParse(mqttMessage.sxc_zt, out int sxc) && sxc == 1 && user.wxmsgcount == 0))
+                                    {
+                                        twxpushlogs.Add(new twxpushlog
+                                        {
+                                            fk_id = map.GetValueOrDefault(user.fid),
+                                            fcreatetime = DateTime.Now,
+                                            fwxid = user.fwxid,
+                                            fstate = 1,
+                                            fmsg = "微信id：" + _option.WxOption.WXConfigName + ",模板id：" + _option.WxOption.TemplateId
+                                        });
+
+                                        #region 发送模板消息需要数组
+                                        wxpushtems.Add(new WXtemplateModel
+                                        {
+                                            pkid = map.GetValueOrDefault(user.fid), // cardLogId
+                                            fwxid = user.fwxid,
+                                            fname = user.fname,
+                                            fdriver = user.fdriver,
+                                            fdriverphone = user.fdriverphone,
+                                            fplatenumber = user.fplatenumber,
+                                            paymsg = user.paystate == 1 ? "" : "*您绑定的卡已经不在使用期内，请及时续费"
+                                        });
+                                        #endregion
+                                    }
+                                    await _schoolBusRepository.InsertWXpushlogListAsync(twxpushlogs);
+                                    // 发送模板消息
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
+                }
+            }
         }
     }
 

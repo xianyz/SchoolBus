@@ -3,6 +3,7 @@ using SchoolBusWXWeb.Models.PmsData;
 using SchoolBusWXWeb.Models.SchollBusModels;
 using SchoolBusWXWeb.Models.ViewData;
 using System.Threading.Tasks;
+using SchoolBusWXWeb.Models;
 
 namespace SchoolBusWXWeb.Business
 {
@@ -88,5 +89,12 @@ namespace SchoolBusWXWeb.Business
         /// <param name="dt">时间精确到日</param>
         /// <returns></returns>
         Task<CalendarVD> GetAttendanceInfoAsync(string wxid, DateTime dt);
+
+        /// <summary>
+        /// Mqtt回调消息处理
+        /// </summary>
+        /// <param name="received"></param>
+        /// <returns></returns>
+        Task MqttMessageReceivedAsync(MqttMessageReceived received);
     }
 }

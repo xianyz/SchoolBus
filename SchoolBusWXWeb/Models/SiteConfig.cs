@@ -29,7 +29,7 @@ namespace SchoolBusWXWeb.Models
         /// <summary>
         /// 微信分享配置
         /// </summary>
-        public WxShareOption WxShareOption { get;set;}
+        public WxOption WxOption { get;set;}
     }
     public class QiniuOption
     {
@@ -77,8 +77,11 @@ namespace SchoolBusWXWeb.Models
         public string Version { get;set;}
     }
 
-    public class WxShareOption
+    public class WxOption
     {
         public string URL { get;set;}
+        public string TemplateId { get;set;}
+        public string WXConfigName { get; set; }
+        public string Domainnames { get; set; }
     }
 }

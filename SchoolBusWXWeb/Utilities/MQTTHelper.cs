@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SignalR;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using MQTTnet;
 using MQTTnet.Client;
@@ -7,63 +11,27 @@ using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Options;
 using MQTTnet.Client.Receiving;
-using SchoolBusWXWeb.Hubs;
+using Newtonsoft.Json;
+using SchoolBusWXWeb.Business;
 using SchoolBusWXWeb.Models;
-using SchoolBusWXWeb.Utilities;
-using System;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
-// ReSharper disable NotAccessedField.Local
-// ReSharper disable IdentifierTypo
-// ReSharper disable StringLiteralTypo
-// ReSharper disable ClassNeverInstantiated.Global
-
-namespace SchoolBusWXWeb.StartupTask
+namespace SchoolBusWXWeb.Utilities
 {
-    /// <summary>
-    /// 暂时不符合mqtt业务逻辑用不到
-    /// </summary>
-    public class MqttStartupFilter : IStartupTask
+    public class MQTTHelper
     {
-        private IMqttClient _mqttClient;
-        private bool _isReconnect = true;
+        public static IMqttClient _mqttClient;
+        public static bool _isReconnect = true;
         private readonly MqttOption _option;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly ISchoolBusBusines _schoolBusBusines;
         private readonly IApplicationLifetime _appLifetime;
-        private readonly IHubContext<ChatHub> _chatHub;
-        public MqttStartupFilter(IServiceProvider serviceProvider, IOptions<SiteConfig> option, IApplicationLifetime appLifetime, IHubContext<ChatHub> chatHub)
+        public MQTTHelper(ISchoolBusBusines schoolBusBusines, IOptions<SiteConfig> option, IApplicationLifetime appLifetime)
         {
-            _chatHub = chatHub;
-            _serviceProvider = serviceProvider;
-            _appLifetime = appLifetime;
-            _option = option.Value.MqttOption;
+            _schoolBusBusines = schoolBusBusines;
+            _option= option.Value.MqttOption;
+            _appLifetime= appLifetime;
         }
-        public async Task ExecuteAsync(CancellationToken cancellationToken = default)
-        {
-            await ConnectMqttServerAsync();
 
-            #region 控制程序生命周期
-            // 发生在应用启动成功以后，也就是Startup.Configure()方法结束后。
-            _appLifetime.ApplicationStarted.Register(() =>
-            {
-
-            });
-            // 发生在程序正在执行退出的过程中，此时还有请求正在被处理。应用程序也会等到这个事件完成后，再退出。
-            _appLifetime.ApplicationStopping.Register(() =>
-            {
-
-            });
-            // 发生在程序正在完成正常退出的时候，所有请求都被处理完成。程序会在处理完这货的Action委托代码以后退出
-            _appLifetime.ApplicationStopped.Register( () =>
-            {
-                //_isReconnect = false;
-                //await _mqttClient.DisconnectAsync();
-            });
-            #endregion
-        }
-        private async Task ConnectMqttServerAsync()
+        public async Task ConnectMqttServerAsync()
         {
             IMqttClientOptions MqttOptions()
             {
@@ -84,7 +52,8 @@ namespace SchoolBusWXWeb.StartupTask
                 {
                     _mqttClient = new MqttFactory().CreateMqttClient();
 
-                    _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate( e =>
+                    // 接收到消息回调
+                    _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(async e =>
                     {
                         var received = new MqttMessageReceived
                         {
@@ -93,6 +62,12 @@ namespace SchoolBusWXWeb.StartupTask
                             QoS = e.ApplicationMessage.QualityOfServiceLevel,
                             Retain = e.ApplicationMessage.Retain
                         };
+#if DEBUG
+                        var data = await _schoolBusBusines.GetTwxuserAsync("2c9ab45969dc19990169dd5bb9ea08b5");
+                        await Tools.WriteTxt("E:\\User.txt", JsonConvert.SerializeObject(data));
+                        const string path = "E:\\MQTTPayload.txt";
+                        await Tools.WriteTxt(path, received.Payload);
+#endif
 
                         Console.WriteLine($">> ### 接受消息 ###{Environment.NewLine}");
                         Console.WriteLine($">> Topic = {received.Topic}{Environment.NewLine}");
@@ -101,12 +76,13 @@ namespace SchoolBusWXWeb.StartupTask
                         Console.WriteLine($">> Retain = {received.Retain}{Environment.NewLine}");
                     });
 
+                    // 连接成功回调
                     _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(async e =>
                     {
                         Console.WriteLine("已连接到MQTT服务器！" + Environment.NewLine);
                         await Subscribe(_mqttClient, _option.MqttTopic);
                     });
-
+                    // 断开连接回调
                     _mqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(async e =>
                     {
                         var curTime = DateTime.UtcNow;
@@ -162,6 +138,4 @@ namespace SchoolBusWXWeb.StartupTask
             }
         }
     }
-
-
 }

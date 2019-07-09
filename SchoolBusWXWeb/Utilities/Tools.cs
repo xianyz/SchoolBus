@@ -541,7 +541,6 @@ namespace SchoolBusWXWeb.Utilities
         }
 
         #region Mqtt
-
         public static async Task ConnectMqttServerAsync(ISchoolBusBusines _schoolBusBusines)
         {
             IMqttClientOptions MqttOptions()
@@ -563,7 +562,8 @@ namespace SchoolBusWXWeb.Utilities
                 {
                     _mqttClient = new MqttFactory().CreateMqttClient();
 
-                    _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(async e =>
+                    // 接收到消息回调
+                    _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate( e =>
                     {
                         var received = new MqttMessageReceived
                         {
@@ -572,12 +572,8 @@ namespace SchoolBusWXWeb.Utilities
                             QoS = e.ApplicationMessage.QualityOfServiceLevel,
                             Retain = e.ApplicationMessage.Retain
                         };
-#if DEBUG
-                        var data = await _schoolBusBusines.GetTwxuserAsync("2c9ab45969dc19990169dd5bb9ea08b5");
-                        await WriteTxt("E:\\User.txt", JsonConvert.SerializeObject(data));
-                        const string path = "E:\\MQTTPayload.txt";
-                        await WriteTxt(path, received.Payload);
-#endif
+
+
                         Console.WriteLine($">> ### 接受消息 ###{Environment.NewLine}");
                         Console.WriteLine($">> Topic = {received.Topic}{Environment.NewLine}");
                         Console.WriteLine($">> Payload = {received.Payload}{Environment.NewLine}");
@@ -585,12 +581,13 @@ namespace SchoolBusWXWeb.Utilities
                         Console.WriteLine($">> Retain = {received.Retain}{Environment.NewLine}");
                     });
 
+                    // 连接成功回调
                     _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(async e =>
                     {
                         Console.WriteLine("已连接到MQTT服务器！" + Environment.NewLine);
                         await Subscribe(_mqttClient, _settings.MqttOption.MqttTopic);
                     });
-
+                    // 断开连接回调
                     _mqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(async e =>
                     {
                         var curTime = DateTime.UtcNow;
@@ -645,7 +642,6 @@ namespace SchoolBusWXWeb.Utilities
                 Console.WriteLine($"已订阅[{topic}]主题{Environment.NewLine}");
             }
         }
-
         #endregion
     }
 

@@ -30,7 +30,7 @@ namespace SchoolBusWXWeb.Repository
         /// <param name="openid"></param>
         /// <returns></returns>
         Task<twxuser> GetTwxuserNotStateByOpenidAsync(string openid);
-        
+
         /// <summary>
         /// 根据主键返回卡信息
         /// </summary>
@@ -53,7 +53,7 @@ namespace SchoolBusWXWeb.Repository
         /// <param name="st">发送时间的开始时间</param>
         /// <param name="et">发送时间的结束时间</param>
         /// <returns></returns>
-        Task<List<tsms>> GetSmsListBySendTimeAsync(string phone, int type,DateTime st,DateTime et);
+        Task<List<tsms>> GetSmsListBySendTimeAsync(string phone, int type, DateTime st, DateTime et);
 
         /// <summary>
         /// 添加注册用户
@@ -222,5 +222,53 @@ namespace SchoolBusWXWeb.Repository
         /// <param name="date"></param>
         /// <returns></returns>
         Task<List<DayCardLogModel>> GetDateCardLogAsync(string cardNum, DateTime date);
+
+        /// <summary>
+        /// 查询系统微信绑定卡记录
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        Task<List<UserBindCard>> GetUserBindCardAsync(string sql);
+
+        /// <summary>
+        /// 更新tcardlog日志
+        /// </summary>
+        /// <param name="tcardlogs"></param>
+        /// <returns></returns>
+        Task<int> InsertCardLogListAsync(List<tcardlog> tcardlogs);
+
+        /// <summary>
+        /// 更新tcardlog日志
+        /// </summary>
+        /// <param name="tcardlog"></param>
+        /// <returns></returns>
+        Task<int> InsertCardLogAsync(tcardlog tcardlog);
+        /// <summary>
+        /// 更新tlocatelog日志
+        /// </summary>
+        /// <param name="tlocatelogs"></param>
+        /// <returns></returns>
+        Task<int> InsertLocatelogListAsync(List<tlocatelog> tlocatelogs);
+
+        /// <summary>
+        /// 更新tlocatelog日志
+        /// </summary>
+        /// <param name="tlocatelog"></param>
+        /// <returns></returns>
+        Task<int> InsertLocatelogAsync(tlocatelog tlocatelog);
+
+        /// <summary>
+        /// 更新twxpushlog日志 (刷卡日志)
+        /// </summary>
+        /// <param name="twxpushlogs"></param>
+        /// <returns></returns>
+        Task<int> InsertWXpushlogListAsync(List<twxpushlog> twxpushlogs);
+        
+        /// <summary>
+        /// 更新twxpushlog日志 (刷卡日志)
+        /// </summary>
+        /// <param name="twxpushlog"></param>
+        /// <returns></returns>
+        Task<int> InsertWXpushlogAsync(twxpushlog twxpushlog);
     }
 }
