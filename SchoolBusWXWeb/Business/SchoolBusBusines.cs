@@ -15,8 +15,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 // ReSharper disable RedundantToStringCallForValueType
-
-
 // ReSharper disable SwitchStatementMissingSomeCases
 
 namespace SchoolBusWXWeb.Business
