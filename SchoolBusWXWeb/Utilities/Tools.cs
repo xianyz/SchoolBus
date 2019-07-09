@@ -573,7 +573,6 @@ namespace SchoolBusWXWeb.Utilities
                             Retain = e.ApplicationMessage.Retain
                         };
 
-
                         Console.WriteLine($">> ### 接受消息 ###{Environment.NewLine}");
                         Console.WriteLine($">> Topic = {received.Topic}{Environment.NewLine}");
                         Console.WriteLine($">> Payload = {received.Payload}{Environment.NewLine}");
