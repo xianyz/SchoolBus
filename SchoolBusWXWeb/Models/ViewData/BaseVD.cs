@@ -232,41 +232,4 @@ namespace SchoolBusWXWeb.Models.ViewData
         /// </summary>
         public int wxmsgcount { get; set; }
     }
-
-    public class WXtemplateModel
-    {
-        public string pkid
-        {
-            get => string.IsNullOrEmpty(_pkid) ? Guid.NewGuid().ToString("N") : _pkid.TrimEnd();
-            set => _pkid = !string.IsNullOrEmpty(value) ? value : Guid.NewGuid().ToString("N");
-        }
-        private string _pkid;
-        /// <summary>
-        /// 学生姓名
-        /// </summary>
-        public string fname { get; set; }
-        /// <summary>
-        /// 微信openid
-        /// </summary>
-        public string fwxid { get; set; } 
-        
-        /// <summary>
-        /// 校车牌号
-        /// </summary>
-        public string fplatenumber { get; set; }
-        /// <summary>
-        /// 司机姓名
-        /// </summary>
-        public string fdriver { get; set; }
-        /// <summary>
-        /// 司机手机号
-        /// </summary>
-        public string fdriverphone { get; set; }
-
-        /// <summary>
-        /// 付钱提示
-        /// </summary>
-        public string paymsg { get;set;}
-    }
-
 }

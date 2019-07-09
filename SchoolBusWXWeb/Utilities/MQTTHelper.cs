@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using MQTTnet;
 using MQTTnet.Client;
@@ -14,21 +9,22 @@ using MQTTnet.Client.Receiving;
 using Newtonsoft.Json;
 using SchoolBusWXWeb.Business;
 using SchoolBusWXWeb.Models;
+using System;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SchoolBusWXWeb.Utilities
 {
-    public class MQTTHelper
+    public class MqttHelper
     {
-        public static IMqttClient _mqttClient;
-        public static bool _isReconnect = true;
+        public static IMqttClient MqttClient;
+        public static bool IsReconnect = true;
         private readonly MqttOption _option;
         private readonly ISchoolBusBusines _schoolBusBusines;
-        private readonly IApplicationLifetime _appLifetime;
-        public MQTTHelper(ISchoolBusBusines schoolBusBusines, IOptions<SiteConfig> option, IApplicationLifetime appLifetime)
+        public MqttHelper(ISchoolBusBusines schoolBusBusines, IOptions<SiteConfig> option)
         {
             _schoolBusBusines = schoolBusBusines;
             _option= option.Value.MqttOption;
-            _appLifetime= appLifetime;
         }
 
         public async Task ConnectMqttServerAsync()
@@ -48,12 +44,12 @@ namespace SchoolBusWXWeb.Utilities
             // Create a new Mqtt client.
             try
             {
-                if (_mqttClient == null)
+                if (MqttClient == null)
                 {
-                    _mqttClient = new MqttFactory().CreateMqttClient();
+                    MqttClient = new MqttFactory().CreateMqttClient();
 
                     // 接收到消息回调
-                    _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(async e =>
+                    MqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(async e =>
                     {
                         var received = new MqttMessageReceived
                         {
@@ -77,25 +73,25 @@ namespace SchoolBusWXWeb.Utilities
                     });
 
                     // 连接成功回调
-                    _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(async e =>
+                    MqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(async e =>
                     {
                         Console.WriteLine("已连接到MQTT服务器！" + Environment.NewLine);
-                        await Subscribe(_mqttClient, _option.MqttTopic);
+                        await Subscribe(MqttClient, _option.MqttTopic);
                     });
                     // 断开连接回调
-                    _mqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(async e =>
+                    MqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(async e =>
                     {
                         var curTime = DateTime.UtcNow;
                         Console.WriteLine($">> [{curTime.ToLongTimeString()}]");
                         Console.WriteLine("已断开MQTT连接！" + Environment.NewLine);
                         //Reconnecting 重连
-                        if (_isReconnect && !e.ClientWasConnected)
+                        if (IsReconnect && !e.ClientWasConnected)
                         {
                             Console.WriteLine("正在尝试重新连接" + Environment.NewLine);
                             await Task.Delay(TimeSpan.FromSeconds(5));
                             try
                             {
-                                await _mqttClient.ConnectAsync(MqttOptions());
+                                await MqttClient.ConnectAsync(MqttOptions());
                             }
                             catch
                             {
@@ -110,7 +106,7 @@ namespace SchoolBusWXWeb.Utilities
 
                     try
                     {
-                        await _mqttClient.ConnectAsync(MqttOptions());
+                        await MqttClient.ConnectAsync(MqttOptions());
                     }
                     catch (Exception ex)
                     {

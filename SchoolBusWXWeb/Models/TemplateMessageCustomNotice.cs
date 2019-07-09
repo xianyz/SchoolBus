@@ -1,22 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Senparc.Weixin.Entities.TemplateMessage;
+﻿using Senparc.Weixin.Entities.TemplateMessage;
 using Senparc.Weixin.MP.AdvancedAPIs.TemplateMessage;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace SchoolBusWXWeb.Models
 {
- 
+
     public class TemplateMessageCustomNotice : TemplateMessageBase
     {
-        public TemplateDataItem first { get; set; }
-        public TemplateDataItem keyword1 { get; set; }
-        public TemplateDataItem keyword2 { get; set; }
-        public TemplateDataItem keyword3 { get; set; }
-        public TemplateDataItem keyword4 { get; set; }
-        public TemplateDataItem keyword5 { get; set; }
-        public TemplateDataItem remark { get; set; }
+        public TemplateDataItem First { get; set; }
+        public TemplateDataItem Keyword1 { get; set; }
+        public TemplateDataItem Keyword2 { get; set; }
+        public TemplateDataItem Keyword3 { get; set; }
+        public TemplateDataItem Keyword4 { get; set; }
+        public TemplateDataItem Keyword5 { get; set; }
+        public TemplateDataItem Remark { get; set; }
         public TemplateMessageCustomNotice(
             string _first,
             string openid,
@@ -28,13 +25,13 @@ namespace SchoolBusWXWeb.Models
             string url, string templateId = "6RzeJPMnzoPv5AyWTx2ezAhDEyKmbidf4JspdBNT4Io")
             : base(templateId, url, "测试格式")
         {
-            first = new TemplateDataItem(_first);
-            keyword1 = new TemplateDataItem(openid);
-            keyword2 = new TemplateDataItem(biaoti);
-            keyword3 = new TemplateDataItem(neirong);
-            keyword4 = new TemplateDataItem(neirong2);
-            keyword5 = new TemplateDataItem(Messagetime);
-            remark = new TemplateDataItem(_remark);
+            First = new TemplateDataItem(_first);
+            Keyword1 = new TemplateDataItem(openid);
+            Keyword2 = new TemplateDataItem(biaoti);
+            Keyword3 = new TemplateDataItem(neirong);
+            Keyword4 = new TemplateDataItem(neirong2);
+            Keyword5 = new TemplateDataItem(Messagetime);
+            Remark = new TemplateDataItem(_remark);
         }
     }
 }

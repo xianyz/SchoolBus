@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Senparc.Weixin;
 
 // ReSharper disable RedundantToStringCallForValueType
 // ReSharper disable SwitchStatementMissingSomeCases
@@ -48,7 +49,7 @@ namespace SchoolBusWXWeb.Business
         }
 
         /// <summary>
-        /// 根据openid返回用户状态
+        /// TODO 根据openid返回用户状态
         /// </summary>
         /// <param name="wxid"></param>
         /// <returns></returns>
@@ -426,7 +427,7 @@ namespace SchoolBusWXWeb.Business
         }
 
         /// <summary>
-        /// 挂失
+        /// TODO 挂失
         /// </summary>
         /// <param name="wxid"></param>
         /// <returns></returns>
@@ -439,7 +440,7 @@ namespace SchoolBusWXWeb.Business
         }
 
         /// <summary>
-        /// 获取用户卡信息
+        /// TODO 获取用户卡信息
         /// </summary>
         /// <param name="wxid">微信openid</param>
         /// <param name="showType">0:刷卡位置 1:实时位置</param>
@@ -513,7 +514,7 @@ namespace SchoolBusWXWeb.Business
         }
 
         /// <summary>
-        /// 考勤查看获取卡号
+        /// TODO 考勤查看获取卡号
         /// </summary>
         /// <param name="wxid"></param>
         /// <returns></returns>
@@ -529,7 +530,7 @@ namespace SchoolBusWXWeb.Business
         }
 
         /// <summary>
-        /// 获取当月打卡天数和每天打卡次数
+        /// TODO 获取当月打卡天数和每天打卡次数
         /// </summary>
         /// <param name="wxid"></param>
         /// <param name="dt">时间精确到日</param>
@@ -586,115 +587,108 @@ namespace SchoolBusWXWeb.Business
         }
 
         /// <summary>
-        /// Mqtt回调消息处理
+        /// TODO Mqtt回调消息处理
         /// </summary>
         /// <param name="received"></param>
         /// <returns></returns>
         public async Task MqttMessageReceivedAsync(MqttMessageReceived received)
         {
-            if (!string.IsNullOrEmpty(received.Payload) && received.Payload != "close")
+            if (!string.IsNullOrEmpty(received.Payload) && received.Payload != "close" && !string.IsNullOrEmpty(received.Topic) && received.Topic == "cnc_sbm/gps_card")
             {
-                if (received.Topic == "cnc_sbm/gps_card")
+                try
                 {
-                    try
+                    var mqttMessage = JsonConvert.DeserializeObject<MqttMessage>(received.Payload);
+                    if (int.TryParse(mqttMessage.card_num, out var cardnum) && cardnum > 0)
                     {
-                        MqttMessage mqttMessage = JsonConvert.DeserializeObject<MqttMessage>(received.Payload);
-                        if (int.TryParse(mqttMessage.card_num, out int cardnum) && cardnum > 0)
+                        decimal.TryParse(mqttMessage.jd, out var jd);
+                        decimal.TryParse(mqttMessage.wd, out var wd);
+                        int.TryParse(mqttMessage.sxc_zt, out var sxcZt);
+                        var cardList = mqttMessage.card_list;
+                        if (cardList != null && cardList.Count > 0)
                         {
-                            decimal.TryParse(mqttMessage.jd, out decimal jd);
-                            decimal.TryParse(mqttMessage.wd, out decimal wd);
-                            int.TryParse(mqttMessage.sxc_zt, out int sxc_zt);
-                            var cardList = mqttMessage.card_list;
-                            if (cardList != null && cardList.Count > 0)
+                            #region 记录打卡位置和实时位置
+                            var map = new Dictionary<string, string>();
+                            var cardLogList = new List<tcardlog>();
+                            foreach (var cardid in cardList)
                             {
-                                Dictionary<string, string> map = new Dictionary<string, string>();
-                                List<tcardlog> cardLogList = new List<tcardlog>();
-                                foreach (var cardid in cardList)
-                                {
-                                    var tcardlog = new tcardlog
-                                    {
-                                        fcreatetime = DateTime.Now,
-                                        fcode = mqttMessage.dev_id,
-                                        fid = cardid,
-                                        flng = jd,
-                                        flat = wd,
-                                        ftype = sxc_zt
-                                    };
-                                    cardLogList.Add(tcardlog);
-                                    map.TryAdd(cardid, tcardlog.pkid);
-                                }
-                                await _schoolBusRepository.InsertCardLogListAsync(cardLogList);
-                                await _schoolBusRepository.InsertLocatelogAsync(new tlocatelog
+                                var tcardlog = new tcardlog
                                 {
                                     fcreatetime = DateTime.Now,
                                     fcode = mqttMessage.dev_id,
+                                    fid = cardid,
                                     flng = jd,
-                                    flat = wd
-                                });
-
-                                StringBuilder sb = new StringBuilder("SELECT tcard.fname,twxuser.fwxid,tdevice.fplatenumber," +
-                                                                     "tdevice.fdriver,tdevice.fdriverphone,tcard.fid," +
-                                                                     //是否服务判断2019年3月18日，未在试用期和付费用户只推送一条上车消息
-                                                                     " case when (tcard.ftrialdate >= now() or " +
-                                                                     " (SELECT count(1) FROM tterm INNER JOIN ttermpay ON ttermpay.fk_term_id = tterm.pkid " +
-                                                                     " where ttermpay.fcode = tcard.fcode and tterm.fstartdate <= now() and tterm.fenddate >= now()) > 0)" +
-                                                                     " then 1 else 0 end as paystate," +
-                                                                     //判断当天是否推送过消息判断
-                                                                     " (select count(1) from twxpushlog where twxpushlog.fwxid = twxuser.fwxid and " +
-                                                                     " to_char(twxpushlog.fcreatetime, 'yyyy-mm-dd') = to_char(now(), 'yyyy-mm-dd')) as wxmsgcount " +
-                                                                     " FROM tcard " +
-                                                                     " LEFT JOIN twxuser ON twxuser.fk_card_id = tcard.pkid " +
-                                                                     " LEFT JOIN tdevice ON tdevice.fcode = " + mqttMessage.dev_id + " and tdevice.fstate = 0 " +
-                                                                     //2019年3月7日 填加试用和付款筛选 去掉筛选
-                                                                     " WHERE tcard.fstatus in (0,1) and tcard.fid IN ( '" + cardList[0] + "'");
-                                for (int i = 1; i < cardList.Count; i++)
-                                {
-                                    sb.Append(",'" + cardList[i] + "'");
-                                }
-                                sb.Append(")");
-
-                                List<twxpushlog> twxpushlogs = new List<twxpushlog>();
-                                List<WXtemplateModel> wxpushtems = new List<WXtemplateModel>();
-                                // 查询系统微信绑定卡记录
-                                var userList = await _schoolBusRepository.GetUserBindCardAsync(sb.ToString());
-                                foreach (var user in userList)
-                                {
-                                    // paystate:1 付款用户,非付款用户 每天第一次上车 推送一条消息
-                                    if (user.paystate == 1 || (int.TryParse(mqttMessage.sxc_zt, out int sxc) && sxc == 1 && user.wxmsgcount == 0))
-                                    {
-                                        twxpushlogs.Add(new twxpushlog
-                                        {
-                                            fk_id = map.GetValueOrDefault(user.fid),
-                                            fcreatetime = DateTime.Now,
-                                            fwxid = user.fwxid,
-                                            fstate = 1,
-                                            fmsg = "微信id：" + _option.WxOption.WXConfigName + ",模板id：" + _option.WxOption.TemplateId
-                                        });
-
-                                        #region 发送模板消息需要数组
-                                        wxpushtems.Add(new WXtemplateModel
-                                        {
-                                            pkid = map.GetValueOrDefault(user.fid), // cardLogId
-                                            fwxid = user.fwxid,
-                                            fname = user.fname,
-                                            fdriver = user.fdriver,
-                                            fdriverphone = user.fdriverphone,
-                                            fplatenumber = user.fplatenumber,
-                                            paymsg = user.paystate == 1 ? "" : "*您绑定的卡已经不在使用期内，请及时续费"
-                                        });
-                                        #endregion
-                                    }
-                                    await _schoolBusRepository.InsertWXpushlogListAsync(twxpushlogs);
-                                    // 发送模板消息
-                                }
+                                    flat = wd,
+                                    ftype = sxcZt
+                                };
+                                cardLogList.Add(tcardlog);
+                                map.TryAdd(cardid, tcardlog.pkid);
                             }
+                            await _schoolBusRepository.InsertCardLogListAsync(cardLogList);
+                            await _schoolBusRepository.InsertLocatelogAsync(new tlocatelog { fcreatetime = DateTime.Now, fcode = mqttMessage.dev_id, flng = jd, flat = wd });
+                            #endregion
+
+                            #region 推送模板消息和日志
+                            var sb = new StringBuilder("SELECT tcard.fname,twxuser.fwxid,tdevice.fplatenumber,tdevice.fdriver,tdevice.fdriverphone,tcard.fid,");
+                            sb.Append("case when(tcard.ftrialdate >= now() or (SELECT count(1) FROM tterm INNER JOIN ttermpay ON ttermpay.fk_term_id = tterm.pkid ");
+                            // 是否服务判断,未在试用期和付费用户只推送一条上车消息
+                            sb.Append("where ttermpay.fcode = tcard.fcode and tterm.fstartdate <= now() and tterm.fenddate >= now()) > 0)");
+                            sb.Append("then 1 else 0 end as paystate,");
+                            // 判断当天是否推送过消息判断
+                            sb.Append("(select count(1) from twxpushlog where twxpushlog.fwxid = twxuser.fwxid and ");
+                            sb.Append("to_char(twxpushlog.fcreatetime, 'yyyy-mm-dd') = to_char(now(), 'yyyy-mm-dd')) as wxmsgcount ");
+                            sb.Append("FROM tcard LEFT JOIN twxuser ON twxuser.fk_card_id = tcard.pkid LEFT JOIN tdevice ON tdevice.fcode = " + mqttMessage.dev_id + " and tdevice.fstate = 0 ");
+                            // 2019年3月7日 填加试用和付款筛选 去掉筛选
+                            sb.Append("WHERE tcard.fstatus in (0,1) and tcard.fid IN ( '" + cardList[0] + "'");
+                            for (var i = 1; i < cardList.Count; i++)
+                            {
+                                sb.Append(",'" + cardList[i] + "'");
+                            }
+                            sb.Append(")");
+
+                            var twxpushlogs = new List<twxpushlog>();
+                            // 查询系统微信绑定卡记录
+                            var userList = await _schoolBusRepository.GetUserBindCardAsync(sb.ToString());
+                            const string remk= "\r\n鲸卫士全面上线，关注学生安全，鲸卫士让您实时了解孩子行程！";
+                            foreach (var user in userList)
+                            {
+                                // paystate:1 付款用户,非付款用户 每天第一次上车 推送一条消息
+                                if (user.paystate == 1 || int.TryParse(mqttMessage.sxc_zt, out var sxc) && sxc == 1 && user.wxmsgcount == 0)
+                                {
+                                    twxpushlogs.Add(new twxpushlog
+                                    {
+                                        fk_id = map.GetValueOrDefault(user.fid),
+                                        fcreatetime = DateTime.Now,
+                                        fwxid = user.fwxid,
+                                        fstate = 1,
+                                        fmsg = "微信id：" + _option.WxOption.WXConfigName + ",模板id：" + _option.WxOption.TemplateId
+                                    });
+
+                                    #region 发送模板消息
+                                    var tempdata = new TemplateMessageSchoolBus("点击查看刷卡位置",
+                                        user.fname,
+                                        DateTime.Now.ToString("HH:mm"),
+                                        user.fdriver,
+                                        user.fdriverphone,
+                                        user.fplatenumber,
+                                        user.paystate == 1 ? remk : " *您绑定的卡已经不在使用期内，请及时续费" + remk,
+                                        _option.WxOption.TemplateId,
+                                        _option.WxOption.Domainnames + "/SchoolBus/GoAddress?showType=0&cardLogId=" + map.GetValueOrDefault(user.fid),
+                                        "刷卡通知"
+                                    );
+                                    Senparc.Weixin.MP.AdvancedAPIs.TemplateApi.SendTemplateMessage(Config.SenparcWeixinSetting.WeixinAppId, user.fwxid, tempdata);
+                                    #endregion
+                                }
+                                await _schoolBusRepository.InsertWXpushlogListAsync(twxpushlogs);
+                            }
+                            #endregion
                         }
                     }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e);
-                    }
                 }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+
             }
         }
     }
