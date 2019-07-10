@@ -148,7 +148,7 @@ namespace SchoolBusWXWeb
 
             app.UseMvc(routes =>
             {
-                routes.MapRoute("default", "{controller=SchoolBus}/{action=GoAddress}/{id?}");
+                routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
 
             //Task.Run(async () =>
