@@ -5,6 +5,7 @@ using SchoolBusWXWeb.Models.SchollBusModels;
 using SchoolBusWXWeb.Models.ViewData;
 using SchoolBusWXWeb.Repository;
 #if !DEBUG
+using Senparc.Weixin;
 using SchoolBusWXWeb.Utilities;
 #endif
 using System;
@@ -15,7 +16,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using SchoolBusWXWeb.Hubs;
-using Senparc.Weixin;
 
 // ReSharper disable RedundantToStringCallForValueType
 // ReSharper disable SwitchStatementMissingSomeCases
@@ -29,7 +29,7 @@ namespace SchoolBusWXWeb.Business
         private readonly IHubContext<ChatHub> _chatHub;
         public SchoolBusBusines(ISchoolBusRepository schoolBusRepository, IOptions<SiteConfig> option, IHubContext<ChatHub> chatHub)
         {
-            _chatHub= chatHub;
+            _chatHub = chatHub;
             _option = option.Value;
             _schoolBusRepository = schoolBusRepository;
         }
@@ -495,7 +495,7 @@ namespace SchoolBusWXWeb.Business
                     }
                     else
                     {
-                        model.cardcode= usercard.fcode;
+                        model.cardcode = usercard.fcode;
                         model.devicecode = positionInfo.fcode;
                         model.flng = positionInfo.flng;
                         model.flat = positionInfo.flat;
@@ -630,7 +630,15 @@ namespace SchoolBusWXWeb.Business
                                 cardLogList.Add(tcardlog);
                                 map.TryAdd(cardid, tcardlog.pkid);
                             }
-                            await _schoolBusRepository.InsertCardLogListAsync(cardLogList);
+
+                            if (cardLogList.Count == 1)
+                            {
+                                await _schoolBusRepository.InsertCardLogAsync(cardLogList.First());
+                            }
+                            else
+                            {
+                                await _schoolBusRepository.InsertCardLogListAsync(cardLogList);
+                            }
                             await _schoolBusRepository.InsertLocatelogAsync(new tlocatelog { fcreatetime = DateTime.Now, fcode = mqttMessage.dev_id, flng = jd, flat = wd });
                             #endregion
 
@@ -643,7 +651,7 @@ namespace SchoolBusWXWeb.Business
                             // 判断当天是否推送过消息判断
                             sb.Append("(select count(1) from twxpushlog where twxpushlog.fwxid = twxuser.fwxid and ");
                             sb.Append("to_char(twxpushlog.fcreatetime, 'yyyy-mm-dd') = to_char(now(), 'yyyy-mm-dd')) as wxmsgcount ");
-                            sb.Append("FROM tcard LEFT JOIN twxuser ON twxuser.fk_card_id = tcard.pkid LEFT JOIN tdevice ON tdevice.fcode = " + mqttMessage.dev_id + " and tdevice.fstate = 0 ");
+                            sb.Append("FROM tcard LEFT JOIN twxuser ON twxuser.fk_card_id = tcard.pkid LEFT JOIN tdevice ON tdevice.fcode = '" + mqttMessage.dev_id + "' and tdevice.fstate = 0 ");
                             // 2019年3月7日 填加试用和付款筛选 去掉筛选
                             sb.Append("WHERE tcard.fstatus in (0,1) and tcard.fid IN ( '" + cardList[0] + "'");
                             for (var i = 1; i < cardList.Count; i++)
@@ -655,38 +663,41 @@ namespace SchoolBusWXWeb.Business
                             var twxpushlogs = new List<twxpushlog>();
                             // 查询系统微信绑定卡记录
                             var userList = await _schoolBusRepository.GetUserBindCardAsync(sb.ToString());
-                            const string remk= "\r\n鲸卫士全面上线，关注学生安全，鲸卫士让您实时了解孩子行程！";
+                           
                             foreach (var user in userList)
                             {
                                 // paystate:1 付款用户,非付款用户 每天第一次上车 推送一条消息
-                                if (user.paystate == 1 || int.TryParse(mqttMessage.sxc_zt, out var sxc) && sxc == 1 && user.wxmsgcount == 0)
-                                {
-                                    twxpushlogs.Add(new twxpushlog
-                                    {
-                                        fk_id = map.GetValueOrDefault(user.fid),
-                                        fcreatetime = DateTime.Now,
-                                        fwxid = user.fwxid,
-                                        fstate = 1,
-                                        fmsg = "微信id：" + _option.WxOption.WXConfigName + ",模板id：" + _option.WxOption.TemplateId
-                                    });
+                                if (user.paystate != 1 && (!int.TryParse(mqttMessage.sxc_zt, out var sxc) || sxc != 1 || user.wxmsgcount != 0)) continue;
 
-                                    #region 发送模板消息
-                                    var tempdata = new TemplateMessageSchoolBus("点击查看刷卡位置",
-                                        user.fname,
-                                        DateTime.Now.ToString("HH:mm"),
-                                        user.fdriver,
-                                        user.fdriverphone,
-                                        user.fplatenumber,
-                                        user.paystate == 1 ? remk : " *您绑定的卡已经不在使用期内，请及时续费" + remk,
-                                        _option.WxOption.TemplateId,
-                                        _option.WxOption.Domainnames + "/SchoolBus/GoAddress?showType=0&cardLogId=" + map.GetValueOrDefault(user.fid),
-                                        "测试格式"
-                                    );
-                                    Senparc.Weixin.MP.AdvancedAPIs.TemplateApi.SendTemplateMessage(Config.SenparcWeixinSetting.WeixinAppId, user.fwxid, tempdata);
-                                    #endregion
-                                }
-                                await _schoolBusRepository.InsertWXpushlogListAsync(twxpushlogs);
+                                twxpushlogs.Add(new twxpushlog
+                                {
+                                    fk_id = map.GetValueOrDefault(user.fid),
+                                    fcreatetime = DateTime.Now,
+                                    fwxid = user.fwxid,
+                                    fstate = 1,
+                                    fmsg = "微信id：" + _option.WxOption.WXConfigName + ",模板id：" + _option.WxOption.TemplateId
+                                });
+
+                                #region 发送模板消息
+
+#if !DEBUG
+                                const string remk = "\r\n鲸卫士全面上线，关注学生安全，鲸卫士让您实时了解孩子行程！";
+                                var tempdata = new TemplateMessageSchoolBus("点击查看刷卡位置",
+                                    user.fname,
+                                    DateTime.Now.ToString("HH:mm"),
+                                    user.fdriver,
+                                    user.fdriverphone,
+                                    user.fplatenumber,
+                                    user.paystate == 1 ? remk : " *您绑定的卡已经不在使用期内，请及时续费" + remk,
+                                    _option.WxOption.TemplateId,
+                                    _option.WxOption.Domainnames + "/SchoolBus/GoAddress?showType=0&cardLogId=" + map.GetValueOrDefault(user.fid),
+                                    "测试格式"
+                                );
+                                Senparc.Weixin.MP.AdvancedAPIs.TemplateApi.SendTemplateMessage(Config.SenparcWeixinSetting.WeixinAppId, user.fwxid, tempdata);
+#endif
+                                #endregion
                             }
+                            await _schoolBusRepository.InsertWXpushlogListAsync(twxpushlogs);
                             #endregion
                         }
                     }

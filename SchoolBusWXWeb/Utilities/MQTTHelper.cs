@@ -5,12 +5,12 @@ using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Options;
 using MQTTnet.Client.Receiving;
-using Newtonsoft.Json;
 using SchoolBusWXWeb.Business;
 using SchoolBusWXWeb.Models;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using Senparc.CO2NET.MessageQueue;
 
 namespace SchoolBusWXWeb.Utilities
 {
@@ -23,7 +23,7 @@ namespace SchoolBusWXWeb.Utilities
         public MqttHelper(ISchoolBusBusines schoolBusBusines, IOptions<SiteConfig> option)
         {
             _schoolBusBusines = schoolBusBusines;
-            _option= option.Value.MqttOption;
+            _option = option.Value.MqttOption;
         }
 
         public async Task ConnectMqttServerAsync()
@@ -48,7 +48,7 @@ namespace SchoolBusWXWeb.Utilities
                     MqttClient = new MqttFactory().CreateMqttClient();
 
                     // 接收到消息回调
-                    MqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(async e =>
+                    MqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate( e =>
                     {
                         var received = new MqttMessageReceived
                         {
@@ -58,17 +58,21 @@ namespace SchoolBusWXWeb.Utilities
                             Retain = e.ApplicationMessage.Retain
                         };
 #if DEBUG
-                        //var data = await _schoolBusBusines.GetTwxuserAsync("2c9ab45969dc19990169dd5bb9ea08b5");
-                        //await Tools.WriteTxt("E:\\User.txt", JsonConvert.SerializeObject(data));
                         //const string path = "E:\\MQTTPayload.txt";
                         //await Tools.WriteTxt(path, received.Payload);
 #endif
-                        await _schoolBusBusines.MqttMessageReceivedAsync(received);
-                        Console.WriteLine($">> ### 接受消息 ###{Environment.NewLine}");
-                        Console.WriteLine($">> Topic = {received.Topic}{Environment.NewLine}");
-                        Console.WriteLine($">> Payload = {received.Payload}{Environment.NewLine}");
-                        Console.WriteLine($">> QoS = {received.QoS}{Environment.NewLine}");
-                        Console.WriteLine($">> Retain = {received.Retain}{Environment.NewLine}");
+                        var messageQueue = new SenparcMessageQueue();
+                        var key = SenparcMessageQueue.GenerateKey("MessageHandlerSendMessageAsync", MqttClient.GetType(), Guid.NewGuid().ToString(), "MqttClient.ApplicationMessageReceivedHandler");
+                        messageQueue.Add(key, async () =>
+                        {
+                            await _schoolBusBusines.MqttMessageReceivedAsync(received);
+                        });
+
+                        //Console.WriteLine($">> ### 接受消息 ###{Environment.NewLine}");
+                        //Console.WriteLine($">> Topic = {received.Topic}{Environment.NewLine}");
+                        //Console.WriteLine($">> Payload = {received.Payload}{Environment.NewLine}");
+                        //Console.WriteLine($">> QoS = {received.QoS}{Environment.NewLine}");
+                        //Console.WriteLine($">> Retain = {received.Retain}{Environment.NewLine}");
                     });
 
                     // 连接成功回调
@@ -77,6 +81,7 @@ namespace SchoolBusWXWeb.Utilities
                         Console.WriteLine("已连接到MQTT服务器！" + Environment.NewLine);
                         await Subscribe(MqttClient, _option.MqttTopic);
                     });
+
                     // 断开连接回调
                     MqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(async e =>
                     {

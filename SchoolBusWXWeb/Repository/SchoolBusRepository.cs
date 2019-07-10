@@ -488,7 +488,7 @@ namespace SchoolBusWXWeb.Repository
         /// <returns></returns>
         public async Task<int> InsertWXpushlogListAsync(List<twxpushlog> twxpushlogs)
         {
-            const string sql = @"insert INTO public.twxpushlog(pkid,fk_id,fwxid,fstatus,fcreatetime,fmsg)values(@pkid,@fk_id,@fwxid,@fstatus,@fcreatetime,@fmsg)";
+            const string sql = @"insert INTO public.twxpushlog(pkid,fk_id,fwxid,fstate,fcreatetime,fmsg)values(@pkid,@fk_id,@fwxid,@fstate,@fcreatetime,@fmsg)";
             return await ExecuteMultipleEntityAsync(sql, twxpushlogs);
         }
 

@@ -13,9 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SchoolBusWXWeb.CommServices.MessageHandlers.MessageQueue;
 // ReSharper disable RedundantToStringCallForValueType
-
 // ReSharper disable RedundantToStringCall
-
 // ReSharper disable NotAccessedField.Local
 
 
