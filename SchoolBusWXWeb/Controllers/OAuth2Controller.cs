@@ -26,8 +26,7 @@ namespace SchoolBusWXWeb.Controllers
         public ActionResult Index(string returnUrl = "http://www.baidu.com")
         {
             var state = "Liuzhe-" + SystemTime.Now.Millisecond;//随机数，用于识别请求可靠性
-            //var callbackUrl = "http://wx.360wll.cn/OAuth2/UserInfoCallback?returnUrl=" + returnUrl.UrlEncode();
-            var callbackUrl = "http://19ce889a.ngrok.io/OAuth2/UserInfoCallback?returnUrl=" + returnUrl.UrlEncode();
+            var callbackUrl = "http://wx.360wll.cn/OAuth2/UserInfoCallback?returnUrl=" + returnUrl.UrlEncode();
             HttpContext.Session.SetString("State", state);//储存随机数到Session
             ViewData["returnUrl"] = returnUrl;
             ViewData["UrlUserInfo"] = OAuthApi.GetAuthorizeUrl(appId, callbackUrl, state, OAuthScope.snsapi_userinfo);
@@ -48,14 +47,6 @@ namespace SchoolBusWXWeb.Controllers
             {
                 return Content("您拒绝了授权！");
             }
-            // HttpContext.Session.SetString("State", state);
-            //if (state != HttpContext.Session.GetString("State"))
-            //{
-            //    //这里的state其实是会暴露给客户端的，验证能力很弱，这里只是演示一下，
-            //    //建议用完之后就清空，将其一次性使用
-            //    //实际上可以存任何想传递的数据，比如用户ID，并且需要结合例如下面的Session["OAuthAccessToken"]进行验证
-            //    return Content("验证失败！请从正规途径进入！");
-            //}
             OAuthAccessTokenResult result;
             try
             {
@@ -80,7 +71,6 @@ namespace SchoolBusWXWeb.Controllers
             try
             {
                 HttpContext.Session.SetString("OAuthAccessTokenResult", result.ToJson());
-                //HttpContext.Session.SetString("OpenId", result.openid);
                 return Redirect(returnUrl);
 
                 //OAuthUserInfo userInfo = OAuthApi.GetUserInfo(result.access_token, result.openid);
@@ -94,14 +84,6 @@ namespace SchoolBusWXWeb.Controllers
             }
         }
 
-        public ActionResult OAuthLogin()
-        {
-            var state = "Liuzhe-" + SystemTime.Now.Millisecond;//随机数，用于识别请求可靠性
-            var callbackUrl = "http://wx.360wll.cn/OAuth2/UserInfoCallback?returnUrl=";
-            HttpContext.Session.SetString("State", state);//储存随机数到Session
-
-            var oauthOffcialUrl = OAuthApi.GetAuthorizeUrl(appId, callbackUrl, state, OAuthScope.snsapi_userinfo);
-            return Redirect(oauthOffcialUrl);
-        }
+      
     }
 }

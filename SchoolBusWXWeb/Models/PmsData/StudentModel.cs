@@ -1,6 +1,7 @@
 ﻿// ReSharper disable UnusedMember.Global
 // ReSharper disable InconsistentNaming
 
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace SchoolBusWXWeb.Models.PmsData
 {
     public class StudentModel

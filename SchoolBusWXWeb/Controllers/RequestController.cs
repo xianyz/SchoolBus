@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using Microsoft.AspNetCore.Mvc;
-using System.Text;
-using Microsoft.AspNetCore.Http;
-using SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler;
+﻿using Microsoft.AspNetCore.Mvc;
 using SchoolBusWXWeb.Models;
 using Senparc.CO2NET.Extensions;
 using Senparc.Weixin;
-using Senparc.Weixin.MP.AdvancedAPIs.TemplateMessage;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Text;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 // ReSharper disable RedundantToStringCallForValueType
 
@@ -18,7 +16,7 @@ namespace SchoolBusWXWeb.Controllers
 {
     public class RequestController : Controller
     {
-        public string _appId = Config.SenparcWeixinSetting.WeixinAppId;
+        private readonly string _appId = Config.SenparcWeixinSetting.WeixinAppId;
         public IActionResult Get(string url = "https://www.baidu.com")
         {
             var html = Senparc.CO2NET.HttpUtility.RequestUtility.HttpGet(url, encoding: Encoding.UTF8);
@@ -32,7 +30,7 @@ namespace SchoolBusWXWeb.Controllers
         public IActionResult SimulateLogin(string url = "https://www.baidu.com")
         {
             var cookieContainer = new CookieContainer();
-            var html = Senparc.CO2NET.HttpUtility.RequestUtility.HttpGet(url, cookieContainer, encoding: Encoding.UTF8, null, null, false);
+            var html = Senparc.CO2NET.HttpUtility.RequestUtility.HttpGet(url, cookieContainer, encoding: Encoding.UTF8);
             return Content(html);
         }
 
@@ -48,6 +46,7 @@ namespace SchoolBusWXWeb.Controllers
             var html = Senparc.CO2NET.HttpUtility.Get.GetJson<TestModel>(url);
             return Content(html.status.ToString());
         }
+        
         /// <summary>
         /// 下载并且上传下载的文件
         /// </summary>
@@ -78,10 +77,10 @@ namespace SchoolBusWXWeb.Controllers
             {
                 Senparc.CO2NET.HttpUtility.Get.Download(url, ms);
                 ms.Seek(0, SeekOrigin.Begin); // 最好建议操作
-                var uploadUrl = "https://localhost:5001/Request/UploadImage";
+                const string uploadUrl = "https://localhost:5001/Request/UploadImage";
                 var html = Senparc.CO2NET.HttpUtility.RequestUtility.HttpPost(uploadUrl, null, ms);
+                return Content(html);
             }
-            return Content("");
         }
 
         public IActionResult UploadImage()

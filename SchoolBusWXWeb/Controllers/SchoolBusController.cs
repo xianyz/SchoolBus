@@ -19,7 +19,7 @@ namespace SchoolBusWXWeb.Controllers
         private const string Nickname = "测试昵称";
 
 #else
-    public class SchoolBusController : OAuthAndJsSdkController
+    public class SchoolBusController : OAuthBaseController
     {
 #endif
 

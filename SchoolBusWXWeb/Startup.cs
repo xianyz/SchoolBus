@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +12,6 @@ using SchoolBusWXWeb.Filters;
 using SchoolBusWXWeb.Hubs;
 using SchoolBusWXWeb.Models;
 using SchoolBusWXWeb.Repository;
-using SchoolBusWXWeb.StartupTask;
 using SchoolBusWXWeb.Utilities;
 using Senparc.CO2NET;
 using Senparc.CO2NET.RegisterServices;
@@ -151,7 +148,7 @@ namespace SchoolBusWXWeb
 
             app.UseMvc(routes =>
             {
-                routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                routes.MapRoute("default", "{controller=SchoolBus}/{action=GoAddress}/{id?}");
             });
 
             //Task.Run(async () =>

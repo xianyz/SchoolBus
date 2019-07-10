@@ -75,8 +75,12 @@ namespace SchoolBusWXWeb.Models.ViewData
         /// <summary>
         /// public.tdevice 表的 设备编码
         /// </summary>
-        public string fcode { get; set; }
+        public string devicecode { get; set; }
 
+        /// <summary>
+        /// 卡号
+        /// </summary>
+        public string cardcode { get; set; }
         /// <summary>
         /// 纬度
         /// </summary>

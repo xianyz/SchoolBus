@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 
 namespace SchoolBusWXWeb.Hubs
 {
+    // 参考:https://blog.csdn.net/qq_39818210/article/details/82631809
     public class ChatHub : Hub
     {
-        // 参考:https://blog.csdn.net/qq_39818210/article/details/82631809
-
         
         /// <summary>
         /// 建立连接时触发
@@ -19,7 +18,7 @@ namespace SchoolBusWXWeb.Hubs
             // 1.连接后加入组
             string groupName = Context.GetHttpContext().Request.Query["groupName"];
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-            await Clients.Group(groupName).SendAsync("ReceiveMessage", $"{Context.ConnectionId} joined {groupName}");
+            //await Clients.Group("123").SendAsync("ReceiveMessage", $"{Context.ConnectionId} joined {groupName}");
 
             //await Clients.All.SendAsync("ReceiveMessage", $"{Context.ConnectionId} joined");
         }
@@ -33,7 +32,7 @@ namespace SchoolBusWXWeb.Hubs
         {
             string groupName = Context.GetHttpContext().Request.Query["groupName"];
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-            await Clients.All.SendAsync("ReceiveMessage", $"{Context.ConnectionId} left");
+            //await Clients.All.SendAsync("ReceiveMessage", $"{Context.ConnectionId} left");
         }
 
         /// <summary>

@@ -127,7 +127,6 @@
 @section Scripts{
     <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=dc057fdc90b12e88c567293b0ae3f4cb&plugin=AMap.Geocoder"></script>
     <script src="~/lib/signalr/dist/browser/signalr.js"></script>
-    <script src="~/js/chat.js"></script>
     <script>
         var setFullMapBtn = $('#setFullMap');
         var addressMap = $('.address_map');
@@ -137,10 +136,86 @@
         var province = "辽宁省";
         var city = "沈阳市";
         var district = "";
-        var delayed = 10000;  // 间隔更新时间
         var gps = [@(Model?.flng), @(Model?.flat)];
         var resLnglat = [123.507758, 41.694648];
+        var intervalid = null;
         var geocoder, marker;
+
+        // 高德地图
+        var map = new AMap.Map('container', {
+            resizeEnable: true,    // 是否监控地图容器尺寸变化
+            zoom: 15,              // 初始化地图层级
+            center: resLnglat      // 初始化地图中心点
+        });
+        map.on('complete', function () {
+            convertFrom();
+        });
+
+        // 查看实时位置
+        if (@(Model?.showType) === 1) {
+            var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub?groupName=@(Model?.cardcode)").build();
+
+            connection.on("ReceiveMessage", function (flng, flat) {
+                gps = [flng, flat];
+                convertFrom();
+                console.log(flng+","+flat);
+            });
+
+            connection.start().then(function () {}).catch(function (err) {
+                return console.error(err.toString());
+            });
+            console.log(1);
+        }
+
+
+        // GPS坐标 -> 高德坐标
+        function convertFrom() {
+            AMap.convertFrom(gps, 'gps', function (status, result) {
+                if (result.info === 'ok') {
+                    resLnglat = result.locations[0];
+                    map.setCenter(resLnglat); // 地图中心点
+                    regeoCode();
+                }
+            });
+        }
+
+        // 根据经纬度标记自定义点
+        function regeoCode() {
+            if (!geocoder) {
+                geocoder = new AMap.Geocoder({ // 逆地理编码（坐标 -> 地址）
+                    city: "010",               // 城市设为北京，默认：“全国”
+                    radius: 1000               // 范围，默认：500
+                });
+            }
+            if (!marker) {                      // 点标记
+                marker = new AMap.Marker({
+                    content: '<img style="height: 30px" class="position_ico" src="/img/position_ico.png" />',
+                    offset: new AMap.Pixel(-9, -15)
+                });
+                map.add(marker);
+            }
+            geocoder.getAddress(resLnglat, function (status, result) {
+                if (status === 'complete' && result.regeocode) {
+                    $("#address_map").show();
+                    var address = result.regeocode.formattedAddress;
+                    logMapinfo();
+                    address = address.replace(province, "").replace(city, "");
+                    console.log(address);
+                    marker.setLabel({                        // 设置label标签
+                        offset: new AMap.Pixel(-106, -108),  // 修改label相对于maker的位置
+                        content: '<div class="map_text">' +
+                            '<a id="label" style="z-index: 99999;display: block;"  href="javascript:;"><img class="map_position" src="/img/map_position.jpg"></a>' +
+                            '<span style="width: 100%;background: #fff;display: block;height: 45px;padding: 0 5px;">' + address + '</span>' +
+                            '<img class="position_ico" src="/img/position_ico.png" />' +
+                            '</div>'
+                    });
+                    marker.setPosition(resLnglat); // 小车位置
+                    //setTimeout("clickeven()", 1000);
+                } else {
+                    $("#address_map").hide();
+                }
+            });
+        }
 
         // 放大地图
         setFullMapBtn.on('click', function () {
@@ -195,8 +270,6 @@
         });
 
         // 向下小箭头
-        var intervalid = null;
-
         $(window).scroll(function () {
             if ($(window).scrollTop() + $(window).height() === $(document).height()) {
                 clearInterval(intervalid);
@@ -208,70 +281,12 @@
                 }
             }
         });
+
         function showhideTag() {
             $(".address_fix").toggle();
         }
 
         intervalid = setInterval('showhideTag()', 500);
-
-        // 高德地图
-        var map = new AMap.Map('container', {
-            resizeEnable: true,    // 是否监控地图容器尺寸变化
-            zoom: 15,              // 初始化地图层级
-            center: resLnglat      // 初始化地图中心点
-        });
-        map.on('complete', function () {
-            convertFrom();
-        });
-
-        // GPS坐标 -> 高德坐标
-        function convertFrom() {
-            AMap.convertFrom(gps, 'gps', function (status, result) {
-                if (result.info === 'ok') {
-                    resLnglat = result.locations[0];
-                    map.setCenter(resLnglat); // 地图中心点
-                    regeoCode();
-                }
-            });
-        }
-
-        // 根据经纬度标记自定义点
-        function regeoCode() {
-            if (!geocoder) {
-                geocoder = new AMap.Geocoder({ // 逆地理编码（坐标 -> 地址）
-                    city: "010",               // 城市设为北京，默认：“全国”
-                    radius: 1000               // 范围，默认：500
-                });
-            }
-            if (!marker) {                      // 点标记
-                marker = new AMap.Marker({
-                    content: '<img style="height: 30px" class="position_ico" src="/img/position_ico.png" />',
-                    offset: new AMap.Pixel(-9, -15)
-                });
-                map.add(marker);
-            }
-            geocoder.getAddress(resLnglat, function (status, result) {
-                if (status === 'complete' && result.regeocode) {
-                    $("#address_map").show();
-                    var address = result.regeocode.formattedAddress;
-                    logMapinfo();
-                    address = address.replace(province, "").replace(city, "");
-                    console.log(address);
-                    marker.setLabel({                        // 设置label标签
-                        offset: new AMap.Pixel(-106, -108),  // 修改label相对于maker的位置
-                        content: '<div class="map_text">' +
-                            '<a id="label" style="z-index: 99999;display: block;"  href="javascript:;"><img class="map_position" src="/img/map_position.jpg"></a>' +
-                            '<span style="width: 100%;background: #fff;display: block;height: 45px;padding: 0 5px;">' + address + '</span>' +
-                            '<img class="position_ico" src="/img/position_ico.png" />' +
-                            '</div>'
-                    });
-                    marker.setPosition(resLnglat); // 小车位置
-                    //setTimeout("clickeven()", 1000);
-                } else {
-                    $("#address_map").hide();
-                }
-            });
-        }
 
         // 小屏地图定位按钮
         $("#map_reset").click(function () {
@@ -298,16 +313,10 @@
             let btn = document.getElementById("label");
             btn.addEventListener(
                 "touchstart", function (event) {
-
+                    // 跳转广告
                 },
                 false
             );
-        }
-
-        // 查看实时位置
-        if (@(Model?.showType) === 1) {
-            //setInterval(getRuntimePosition, delayed);
-            console.log(1);
         }
 
 

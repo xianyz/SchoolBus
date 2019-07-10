@@ -12,7 +12,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
+using SchoolBusWXWeb.Hubs;
 using Senparc.Weixin;
 
 // ReSharper disable RedundantToStringCallForValueType
@@ -24,8 +26,10 @@ namespace SchoolBusWXWeb.Business
     {
         private readonly SiteConfig _option;
         private readonly ISchoolBusRepository _schoolBusRepository;
-        public SchoolBusBusines(ISchoolBusRepository schoolBusRepository, IOptions<SiteConfig> option)
+        private readonly IHubContext<ChatHub> _chatHub;
+        public SchoolBusBusines(ISchoolBusRepository schoolBusRepository, IOptions<SiteConfig> option, IHubContext<ChatHub> chatHub)
         {
+            _chatHub= chatHub;
             _option = option.Value;
             _schoolBusRepository = schoolBusRepository;
         }
@@ -475,7 +479,7 @@ namespace SchoolBusWXWeb.Business
                     }
                     else
                     {
-                        model.fcode = positionInfo.fcode;
+                        model.devicecode = positionInfo.fcode;
                         model.flng = positionInfo.flng;
                         model.flat = positionInfo.flat;
                         model.cardLogId = positionInfo.pkid;
@@ -491,7 +495,8 @@ namespace SchoolBusWXWeb.Business
                     }
                     else
                     {
-                        model.fcode = positionInfo.fcode;
+                        model.cardcode= usercard.fcode;
+                        model.devicecode = positionInfo.fcode;
                         model.flng = positionInfo.flng;
                         model.flat = positionInfo.flat;
                     }
@@ -611,6 +616,8 @@ namespace SchoolBusWXWeb.Business
                             var cardLogList = new List<tcardlog>();
                             foreach (var cardid in cardList)
                             {
+                                //await _chatHub.Clients.Group(cardid).SendAsync("ReceiveMessage", jd, wd);
+                                await _chatHub.Clients.Group("3603631297").SendAsync("ReceiveMessage", jd, wd);
                                 var tcardlog = new tcardlog
                                 {
                                     fcreatetime = DateTime.Now,

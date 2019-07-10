@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Connecting;
@@ -59,12 +58,12 @@ namespace SchoolBusWXWeb.Utilities
                             Retain = e.ApplicationMessage.Retain
                         };
 #if DEBUG
-                        var data = await _schoolBusBusines.GetTwxuserAsync("2c9ab45969dc19990169dd5bb9ea08b5");
-                        await Tools.WriteTxt("E:\\User.txt", JsonConvert.SerializeObject(data));
-                        const string path = "E:\\MQTTPayload.txt";
-                        await Tools.WriteTxt(path, received.Payload);
+                        //var data = await _schoolBusBusines.GetTwxuserAsync("2c9ab45969dc19990169dd5bb9ea08b5");
+                        //await Tools.WriteTxt("E:\\User.txt", JsonConvert.SerializeObject(data));
+                        //const string path = "E:\\MQTTPayload.txt";
+                        //await Tools.WriteTxt(path, received.Payload);
 #endif
-
+                        await _schoolBusBusines.MqttMessageReceivedAsync(received);
                         Console.WriteLine($">> ### 接受消息 ###{Environment.NewLine}");
                         Console.WriteLine($">> Topic = {received.Topic}{Environment.NewLine}");
                         Console.WriteLine($">> Payload = {received.Payload}{Environment.NewLine}");
