@@ -350,7 +350,7 @@ namespace SchoolBusWXWeb.Business
             var configList = await _schoolBusRepository.GetSchoolConfigListAsync("'002','003'");
             data.wxshareTitle = configList.FirstOrDefault(x => x.fcode == "002")?.fvalue;
             data.wxshareDescription = configList.FirstOrDefault(x => x.fcode == "003")?.fvalue;
-            data.wxLink = _option.WxOption.URL + "/index?type=0&cardNum=" + data.fcode;
+            data.wxLink = _option.WxOption.URL + "SchoolBus/GoCardInfo";
             data.wximgUrl = _option.WxOption.URL + "/img/pic1.jpg";
             return data;
         }

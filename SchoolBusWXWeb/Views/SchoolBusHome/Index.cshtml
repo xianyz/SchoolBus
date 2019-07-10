@@ -3,7 +3,7 @@
 }
 @model SchoolBusWXWeb.Models.ViewData.IndexModel
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+<h1 class="display-4">Welcome: @ViewData["OpenId"]</h1>
     @{
         if (Model.code != -1)
         {
@@ -56,7 +56,7 @@
                             break;
                     }
                     break;
-                case 2:// 修改信息
+                case 2: // 修改信息
                     switch (Model.code)
                     {
                         case 1:
@@ -110,7 +110,7 @@
                             break;
                     }
                     break;
-                case 4:// 考勤查看
+                case 4: // 考勤查看
                     switch (Model.code)
                     {
                         case 1:
@@ -137,7 +137,7 @@
                             break;
                     }
                     break;
-                case 5:// 解绑
+                case 5: // 解绑
                     if (Model.code == 1)
                     {
                         <div><a href="https://mp.weixin.qq.com/mp/homepage?__biz=MzU5Nzc3OTcxNw==&hid=1&sn=862cbb911dca00c871a342e2bcaf06cc">跳转到教育文章</a></div>

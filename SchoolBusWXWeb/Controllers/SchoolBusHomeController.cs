@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 #if !DEBUG
 using Microsoft.AspNetCore.Http;
@@ -17,21 +18,30 @@ namespace SchoolBusWXWeb.Controllers
     public class SchoolBusHomeController : Controller
     {
         private readonly ISchoolBusBusines _schoolBusBusines;
-        private OAuthAccessTokenResult TokenResult { get; set; }
         public SchoolBusHomeController(ISchoolBusBusines schoolBusBusines)
         {
             _schoolBusBusines = schoolBusBusines;
-#if !DEBUG
-          TokenResult = JsonConvert.DeserializeObject<OAuthAccessTokenResult>(HttpContext.Session.GetString("OAuthAccessTokenResult"));
-#endif
         }
         public async Task<IActionResult> Index(int type)
         {
+
+            try
+            {
 #if DEBUG
-            TokenResult = new OAuthAccessTokenResult { openid = "oBcNx1lHzHxIpKm5m64XX99zTMGs" };
+                var tokenResult = new OAuthAccessTokenResult { openid = "oBcNx1lHzHxIpKm5m64XX99zTMGs" };
+#else 
+                var tokenResult = JsonConvert.DeserializeObject<OAuthAccessTokenResult>(HttpContext.Session.GetString("OAuthAccessTokenResult"));
 #endif
-            var code = await _schoolBusBusines.GetUserCodeAsync(TokenResult.openid);
-            return View(new IndexModel { type = type, code = code });
+                ViewData["OpenId"] = tokenResult.openid;
+                var code = await _schoolBusBusines.GetUserCodeAsync(tokenResult.openid);
+                return View(new IndexModel { type = type, code = code });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ViewData["OpenId"] = e.ToString();
+            }
+            return View(new IndexModel { type = type, code = -1 });
         }
     }
 }

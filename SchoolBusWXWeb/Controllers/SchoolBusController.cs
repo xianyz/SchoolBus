@@ -102,8 +102,9 @@ namespace SchoolBusWXWeb.Controllers
 #if DEBUG
             const string wxid = Openid;
 #else
-            string wxid = TokenResult.openid;
+            var wxid = TokenResult.openid;
 #endif
+            ViewData["OpenId"] = wxid;
             var result = await _schoolBusBusines.GetCardInfoByCodeAsync(wxid);
             return View(result);
         }
@@ -182,7 +183,7 @@ namespace SchoolBusWXWeb.Controllers
         [HttpGet]
         public async Task<IActionResult> GoAddress(int showType, string cardLogId = "")
         {
-            
+
 #if DEBUG
             const string wxid = Openid;
 #else
