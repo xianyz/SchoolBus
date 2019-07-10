@@ -124,6 +124,7 @@ namespace SchoolBusWXWeb.Utilities
                 Console.WriteLine("连接到MQTT服务器未知异常！" + Environment.NewLine + e.Message + Environment.NewLine);
             }
         }
+
         private static async Task Subscribe(IMqttClient mqttClient, string topic)
         {
             if (mqttClient.IsConnected && !string.IsNullOrEmpty(topic))
