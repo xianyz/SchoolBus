@@ -680,7 +680,7 @@ namespace SchoolBusWXWeb.Business
                                         user.paystate == 1 ? remk : " *您绑定的卡已经不在使用期内，请及时续费" + remk,
                                         _option.WxOption.TemplateId,
                                         _option.WxOption.Domainnames + "/SchoolBus/GoAddress?showType=0&cardLogId=" + map.GetValueOrDefault(user.fid),
-                                        "刷卡通知"
+                                        "测试格式"
                                     );
                                     Senparc.Weixin.MP.AdvancedAPIs.TemplateApi.SendTemplateMessage(Config.SenparcWeixinSetting.WeixinAppId, user.fwxid, tempdata);
                                     #endregion

@@ -19,7 +19,6 @@ namespace SchoolBusWXWeb.Hubs
             string groupName = Context.GetHttpContext().Request.Query["groupName"];
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
             //await Clients.Group("123").SendAsync("ReceiveMessage", $"{Context.ConnectionId} joined {groupName}");
-
             //await Clients.All.SendAsync("ReceiveMessage", $"{Context.ConnectionId} joined");
         }
 
@@ -32,7 +31,6 @@ namespace SchoolBusWXWeb.Hubs
         {
             string groupName = Context.GetHttpContext().Request.Query["groupName"];
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-            //await Clients.All.SendAsync("ReceiveMessage", $"{Context.ConnectionId} left");
         }
 
         /// <summary>

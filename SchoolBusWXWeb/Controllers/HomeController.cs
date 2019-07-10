@@ -1,17 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
+using SchoolBusWXWeb.Business;
+using SchoolBusWXWeb.Hubs;
 using SchoolBusWXWeb.Models;
 using Senparc.CO2NET.Extensions;
 using Senparc.Weixin;
 using Senparc.Weixin.MP.Containers;
 using System;
 using System.Diagnostics;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR;
-using SchoolBusWXWeb.Business;
-using SchoolBusWXWeb.Hubs;
-using SchoolBusWXWeb.Utilities;
 
 // ReSharper disable UnassignedGetOnlyAutoProperty
 // ReSharper disable NotAccessedField.Local
