@@ -43,17 +43,17 @@ namespace SchoolBusWXWeb.Controllers
             switch (type)
             {
                 case 0 when (code == 1 || code == 4 || code == 5):
-                    return RedirectToLocal("/SchoolBus/Register");
+                    return RedirectToAction("Register");
                 case 1 when (code == 2 || code == 3):
-                    return RedirectToLocal("/SchoolBus/GoReport");
+                    return RedirectToAction("GoReport");
                 case 2 when code == 3:
-                    return RedirectToLocal("/SchoolBus/GoCardInfo");
+                    return RedirectToAction("GoCardInfo");
                 case 3 when code == 3:
-                    return RedirectToLocal("/SchoolBus/GoAddress?showType=1");
+                    return RedirectToAction("GoAddress", new { showType =1});
                 case 4 when code == 3:
-                    return RedirectToLocal("/SchoolBus/GoCalendar");
+                    return RedirectToAction("GoCalendar");
                 case 5 when code != 1:
-                    return RedirectToLocal("/SchoolBus/GoUntying");
+                    return RedirectToAction("GoUntying");
             }
 
             return View(new IndexModel { type = type, code = code });
