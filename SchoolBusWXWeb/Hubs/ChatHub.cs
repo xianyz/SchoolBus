@@ -18,7 +18,7 @@ namespace SchoolBusWXWeb.Hubs
             // 1.连接后加入组
             string groupName = Context.GetHttpContext().Request.Query["groupName"];
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-            //await Clients.Group("123").SendAsync("ReceiveMessage", $"{Context.ConnectionId} joined {groupName}");
+            await Clients.Group("123").SendAsync("ReceiveMessage", $"{Context.ConnectionId} ",$" {groupName}");
             //await Clients.All.SendAsync("ReceiveMessage", $"{Context.ConnectionId} joined");
         }
 

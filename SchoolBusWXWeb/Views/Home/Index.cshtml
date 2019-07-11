@@ -5,4 +5,35 @@
     <h1 class="display-4">Welcome</h1>
     <div>一起学习asp.net core</div>
 </div>
+@section Scripts{
+    <script src="~/lib/signalr/dist/browser/signalr.js"></script>
+    <script>
+        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub?groupName=123").build();
+        connection.on("ReceiveMessage", function (user, message) {
+            var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            var encodedMsg = user + " says " + msg;
+            console.log(encodedMsg);
+        });
 
+        connection.start().then(function () {
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        connection.onclose(async () => {
+            console.info('监听到链接关闭');
+            await start(); 
+        });
+
+        async function start() {
+            try {
+                await connection.start();
+                console.log("connected");
+            } catch (err) { 
+                console.log(err);
+                setTimeout(() => start(), 5000); // 断线重连
+            }
+        };
+
+    </script>
+}

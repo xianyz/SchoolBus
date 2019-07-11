@@ -164,7 +164,21 @@
             connection.start().then(function () {}).catch(function (err) {
                 return console.error(err.toString());
             });
-            console.log(1);
+
+            connection.onclose(async () => {
+                console.info('监听到链接关闭');
+                await start(); 
+            });
+
+            async function start() {
+                try {
+                    await connection.start();
+                    console.log("connected");
+                } catch (err) { 
+                    console.log(err);
+                    setTimeout(() => start(), 5000); // 断线重连
+                }
+            };
         }
 
 
