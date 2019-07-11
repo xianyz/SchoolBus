@@ -24,31 +24,29 @@ namespace SchoolBusWXWeb.Filters
         }
         public async Task OnExceptionAsync(ExceptionContext context)
         {
-            await Task.Run(() =>
+            var logger = _loggerFactory.CreateLogger(context.Exception.TargetSite.ReflectedType);
+            var json = new ErrorResponse("未知错误,请重试")
             {
-                var logger = _loggerFactory.CreateLogger(context.Exception.TargetSite.ReflectedType);
-                var json = new ErrorResponse("未知错误,请重试")
-                {
-                    Name = context.ActionDescriptor.GetType().GetProperty("ActionName").GetValue(context.ActionDescriptor).ToString(),
-                    Path = $"链接访问出错：{context.HttpContext.Request.Path}",
-                    Msg = context.Exception.Message,
-                    Data = context.Exception
-                };
-                if (context.Exception is OperationCanceledException)
-                {
-                    json.Msg = "一个请求在浏览器被取消";
-                    if (_env.IsDevelopment()) logger.LogInformation("请求被取消了");
-                }
-                else
-                {
-                    logger.LogError(new EventId(context.Exception.HResult), context.Exception, JsonConvert.SerializeObject(json));
-                }
-                //context.Result = new ApplicationErrorResult(json);
-                //context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                context.Result=new RedirectResult("/Home/Error");
-                context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                context.ExceptionHandled = true; //设置异常已经处理,否则会被其他异常过滤器覆盖
-            });
+                Name = context.ActionDescriptor.GetType().GetProperty("ActionName").GetValue(context.ActionDescriptor).ToString(),
+                Path = $"链接访问出错：{context.HttpContext.Request.Path}",
+                Msg = context.Exception.Message,
+                Data = context.Exception
+            };
+            if (context.Exception is OperationCanceledException)
+            {
+                json.Msg = "一个请求在浏览器被取消";
+                if (_env.IsDevelopment()) logger.LogInformation("请求被取消了");
+            }
+            else
+            {
+                logger.LogError(new EventId(context.Exception.HResult), context.Exception, JsonConvert.SerializeObject(json));
+            }
+            //context.Result = new ApplicationErrorResult(json);
+            //context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.Result = new RedirectResult("/Home/Error");
+            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.ExceptionHandled = true; //设置异常已经处理,否则会被其他异常过滤器覆盖
+            await Task.CompletedTask;
         }
     }
     public class ApplicationErrorResult : ObjectResult
