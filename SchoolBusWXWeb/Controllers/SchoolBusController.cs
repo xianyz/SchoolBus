@@ -184,8 +184,7 @@ namespace SchoolBusWXWeb.Controllers
         {
 
 #if DEBUG
-            // const string wxid = Openid;
-            const string wxid = "ovzSu1Ux_R10fGTWCEawfdVADSy8";
+            const string wxid = Openid;
 #else
             string wxid = TokenResult.openid;
 #endif

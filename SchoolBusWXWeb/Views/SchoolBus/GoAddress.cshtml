@@ -161,6 +161,10 @@
                     alert("您的孩子今天还未刷卡，去逛逛福利商城吧");
                     window.location.href = "/erweima";
                 }
+                if (status === '99') {
+                    alert("您已经解绑此卡片,去注册一下吧!");
+                    window.location.href = "/SchoolBus/Register";
+                }
             }
         });
 
