@@ -23,6 +23,8 @@ using Senparc.Weixin.RegisterServices;
 
 
 #if !DEBUG
+using System.IO;
+using Microsoft.AspNetCore.DataProtection;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -52,12 +54,15 @@ namespace SchoolBusWXWeb
                 options.CheckConsentNeeded = context => false;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-
+#if !DEBUG
+            services.AddDataProtection()
+                .SetApplicationName("SchoolBusWeb")
+                .PersistKeysToFileSystem(new DirectoryInfo(@"/var/schooldpkeys/"));
+#endif
             services.Configure<SiteConfig>(Configuration.GetSection("SiteConfig"));
             services.AddScoped<ISchoolBusBusines, SchoolBusBusines>();
             services.AddScoped<ISchoolBusRepository, SchoolBusRepository>();
             services.AddScoped<MqttHelper>();
-            services.AddLoggingFileUI(); // https://localhost:5001/Logging 日志查看 对于多个子网站中密码文件要一样才可以
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddMemoryCache();                           // 使用本地缓存必须添加
             services.AddSession();                               // 使用Session
@@ -70,7 +75,7 @@ namespace SchoolBusWXWeb
             services.AddSenparcGlobalServices(Configuration)     // Senparc.CO2NET 全局注册
                     .AddSenparcWeixinServices(Configuration);    // Senparc.Weixin 注册
             services.AddSignalR();
-
+            services.AddLoggingFileUI(); // https://localhost:5001/Logging
             // services.AddStartupTask<MqttStartupFilter>();
             // services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, MqttService>();
 
@@ -121,7 +126,9 @@ namespace SchoolBusWXWeb
             app.UseHttpsRedirection();
 
             app.UseStaticFiles();
+            
             app.UseCookiePolicy();
+            
             #region 健康检查中间件 https://localhost:5001/healthchecks-ui
 #if !DEBUG 
             app.UseHealthChecks("/healthz", new HealthCheckOptions()

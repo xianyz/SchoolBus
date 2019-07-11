@@ -62,6 +62,7 @@
 <img src="~/img/bg.png" style="width:100%" />
 
 @section Scripts{
+    <script src="~/js/wxfunction.js" asp-append-version="true"></script>
     <script>
         var pop = document.getElementById("pop");
         var mask = mui.createMask(function () {
@@ -80,8 +81,7 @@
                     if (con) {
                         window.location.href = "/SchoolBus/Register";
                     } else {
-                        alert(data.msg);
-                        //wx.closeWindow();  // 微信自动关闭内置浏览器页面，返回公众号窗口
+                        wx.closeWindow();  // 微信自动关闭内置浏览器页面，返回公众号窗口
                     }
                 } else {
                     alert(data.msg);

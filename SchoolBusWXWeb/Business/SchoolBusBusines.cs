@@ -487,17 +487,20 @@ namespace SchoolBusWXWeb.Business
                 else  // 实时位置
                 {
                     var deviceRecord = await _schoolBusRepository.GetDeviceByPkidAsync(usercard.fk_device_id);
-                    var positionInfo = await _schoolBusRepository.GetLastLocateLogAsync(deviceRecord.fcode);
-                    if (positionInfo == null)
+                    if (deviceRecord != null)
                     {
-                        model.status = 3;
-                    }
-                    else
-                    {
-                        model.cardcode = usercard.fcode;
-                        model.devicecode = positionInfo.fcode;
-                        model.flng = positionInfo.flng;
-                        model.flat = positionInfo.flat;
+                        var positionInfo = await _schoolBusRepository.GetLastLocateLogAsync(deviceRecord.fcode);
+                        if (positionInfo == null)
+                        {
+                            model.status = 3;
+                        }
+                        else
+                        {
+                            model.cardcode = usercard.fcode;
+                            model.devicecode = deviceRecord.fcode;
+                            model.flng = positionInfo.flng;
+                            model.flat = positionInfo.flat;
+                        }
                     }
                 }
                 #endregion
@@ -662,7 +665,7 @@ namespace SchoolBusWXWeb.Business
                             var twxpushlogs = new List<twxpushlog>();
                             // 查询系统微信绑定卡记录
                             var userList = await _schoolBusRepository.GetUserBindCardAsync(sb.ToString());
-                           
+
                             foreach (var user in userList)
                             {
                                 // paystate:1 付款用户,非付款用户 每天第一次上车 推送一条消息

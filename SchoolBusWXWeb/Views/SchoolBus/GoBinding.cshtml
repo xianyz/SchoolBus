@@ -14,6 +14,7 @@
     <button id="doInfo" type="button" class="mui-btn-success mui-btn">继续完善卡信息</button>
 </div>
 @section Scripts{
+    <script src="~/js/wxfunction.js" asp-append-version="true"></script>
     <script>
         $('#doInfo').on('click', function () {
             window.location.href = "/SchoolBus/GoCardInfo"; // 跳转完善信息页

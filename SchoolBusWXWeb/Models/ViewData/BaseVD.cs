@@ -51,7 +51,7 @@ namespace SchoolBusWXWeb.Models.ViewData
         public string text { get; set; }
     }
 
-    public class AddressModel
+    public class AddressModel : Base_JSSDKVD
     {
         /// <summary>
         /// 用户状态标识

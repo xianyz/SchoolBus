@@ -29,22 +29,22 @@
         })
     });
 });
+//(function () {
+//    // 监听返回按钮
+//    pushHistory();
+//    window.addEventListener("popstate", function (e) {
+//        //关闭当前浏览器
+//        wx.closeWindow();
+//    }, false);
+//    function pushHistory() {
+//        var state = {
+//            title: "title",
+//            url: "#"
+//        };
+//        window.history.pushState(state, "title", "#");
+//    }
+//})();
 
-(function () {
-    // 监听返回按钮
-    pushHistory();
-    window.addEventListener("popstate", function (e) {
-        //关闭当前浏览器
-        wx.closeWindow();
-    }, false);
-    function pushHistory() {
-        var state = {
-            title: "title",
-            url: "#"
-        };
-        window.history.pushState(state, "title", "#");
-    }
-})();
 
 // 倒计时
 var countdown = 60;
