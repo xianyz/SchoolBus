@@ -453,7 +453,11 @@ namespace SchoolBusWXWeb.Business
         {
             var model = new AddressModel();
             var usercard = await _schoolBusRepository.GetUserCardInfoAsync(wxid); // 根据openId查询已导入绑定卡片信息
-            if (usercard == null) return model;
+            if (usercard == null)
+            {
+                model.status=5;
+                return model;
+            }
             switch (usercard.fstatus) // 校验卡片状态
             {
                 case 2:

@@ -25,9 +25,6 @@ using Senparc.Weixin.RegisterServices;
 #if !DEBUG
 using System.IO;
 using Microsoft.AspNetCore.DataProtection;
-using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 #endif
 // ReSharper disable CommentTypo
 // ReSharper disable MemberCanBePrivate.Global
@@ -66,12 +63,6 @@ namespace SchoolBusWXWeb
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddMemoryCache();                           // 使用本地缓存必须添加
             services.AddSession();                               // 使用Session
-            #region 健康检擦服务
-#if !DEBUG
-               services.AddHealthChecks().AddNpgSql(Configuration["SiteConfig:DefaultConnection"], failureStatus: HealthStatus.Degraded);
-               services.AddHealthChecksUI();
-#endif
-            #endregion
             services.AddSenparcGlobalServices(Configuration)     // Senparc.CO2NET 全局注册
                     .AddSenparcWeixinServices(Configuration);    // Senparc.Weixin 注册
             services.AddSignalR();
@@ -129,16 +120,6 @@ namespace SchoolBusWXWeb
             
             app.UseCookiePolicy();
             
-            #region 健康检查中间件 https://localhost:5001/healthchecks-ui
-#if !DEBUG 
-            app.UseHealthChecks("/healthz", new HealthCheckOptions()
-            {
-                Predicate = _ => true,
-                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-            });
-            app.UseHealthChecksUI();
-#endif
-            #endregion
 
             #region 微信相关
             RegisterService.Start(env, senparcSetting.Value)

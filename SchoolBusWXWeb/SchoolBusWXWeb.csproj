@@ -26,8 +26,6 @@
 
   <ItemGroup>
     <PackageReference Include="aliyun-net-sdk-core" Version="1.5.1" />
-    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="2.2.1" />
-    <PackageReference Include="AspNetCore.HealthChecks.UI" Version="2.2.32" />
     <PackageReference Include="Dapper" Version="1.60.6" />
     <PackageReference Include="Metro.Logging.File" Version="1.0.2" />
     <PackageReference Include="Metro.Logging.File.UI" Version="1.0.2" />

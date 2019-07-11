@@ -3,7 +3,8 @@
 }
 @model SchoolBusWXWeb.Models.ViewData.IndexModel
 <div class="text-center">
-<h1 class="display-4">Welcome: @ViewData["OpenId"]</h1>
+    <h1 class="display-4">Welcome:</h1>
+    <div>@ViewData["OpenId"]</div>
     @{
         if (Model.code != -1)
         {
@@ -14,6 +15,7 @@
                     {
                         case 1:
                             <div>跳转注册页</div>
+                            <a href="/SchoolBus/Register">确定</a>
                             break;
                         case 2:
                             <div>该微信已注册绑卡并且卡已到期->关闭浏览器</div>
@@ -25,10 +27,11 @@
                             break;
                         case 4:
                             <div>已注册并且卡已挂失，跳转至注册页</div>
+                            <a href="/SchoolBus/Register">确定</a>
                             break;
                         case 5:
                             <div>该微信已注册绑卡并且卡已注销,是否重新绑定注册？确认框</div>
-                            <div>确定</div>
+                            <a href="/SchoolBus/Register">确定</a>
                             break;
                     }
                     break;
@@ -40,9 +43,11 @@
                             break;
                         case 2:
                             <div>已注册并且卡已成功绑定，跳转挂失页</div>
+                            <a href="/SchoolBus/GoReport">确定</a>
                             break;
                         case 3:
                             <div>已注册并且卡已成功绑定，跳转挂失页</div>
+                            <a href="/SchoolBus/GoReport">确定</a>
                             break;
                         case 4:
                             // 已注册并且卡已挂失，提示挂失信息，确定信息返回公众号
@@ -70,6 +75,7 @@
                         case 3:
                             // 已注册并且卡已成功绑定，跳转卡片信息修改页
                             <div>跳转卡片信息修改页</div>
+                            <a href="/SchoolBus/GoCardInfo">确定</a>
                             break;
                         case 4:
                             // 已注册并且卡已挂失，提示挂失信息，确定信息返回公众号
@@ -97,6 +103,7 @@
                         case 3:
                             // 已注册并且卡已成功绑定，跳转实时位置查看页
                             <div>跳转实时位置查看页</div>
+                            <a href="/SchoolBus/GoAddress?showType=1">确定</a>
                             break;
                         case 4:
                             // 已注册并且卡已挂失，提示挂失信息，确定信息返回公众号
@@ -124,6 +131,7 @@
                         case 3:
                             // 已注册并且卡已成功绑定，跳转考勤查看页
                             <div>跳转跳转考勤查看页</div>
+                            <a href="/SchoolBus/GoCalendar">确定</a>
                             break;
                         case 4:
                             // 已注册并且卡已挂失，提示挂失信息，确定信息返回公众号
@@ -145,6 +153,7 @@
                     else
                     {
                         <div>已注册并且卡已成功绑定，跳转解绑页</div>
+                        <a href="/SchoolBus/GoUntying">确定</a>
                     }
                     break;
             }
