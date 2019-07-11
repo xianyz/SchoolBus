@@ -23,6 +23,8 @@ using Senparc.Weixin.RegisterServices;
 
 
 #if !DEBUG
+using System.IO;
+using Microsoft.AspNetCore.DataProtection;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -52,7 +54,11 @@ namespace SchoolBusWXWeb
                 options.CheckConsentNeeded = context => false;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-
+#if !DEBUG
+            services.AddDataProtection()
+                .SetApplicationName("SchoolBusWeb")
+                .PersistKeysToFileSystem(new DirectoryInfo(@"/var/schooldpkeys/"));
+#endif
             services.Configure<SiteConfig>(Configuration.GetSection("SiteConfig"));
             services.AddScoped<ISchoolBusBusines, SchoolBusBusines>();
             services.AddScoped<ISchoolBusRepository, SchoolBusRepository>();
