@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using SchoolBusWXWeb.Hubs;
 
+
 // ReSharper disable RedundantToStringCallForValueType
 // ReSharper disable SwitchStatementMissingSomeCases
 
@@ -455,7 +456,7 @@ namespace SchoolBusWXWeb.Business
             var usercard = await _schoolBusRepository.GetUserCardInfoAsync(wxid); // 根据openId查询已导入绑定卡片信息
             if (usercard == null)
             {
-                model.status=5;
+                model.status = 5;
                 return model;
             }
             switch (usercard.fstatus) // 校验卡片状态
@@ -696,10 +697,11 @@ namespace SchoolBusWXWeb.Business
                                     user.fplatenumber,
                                     user.paystate == 1 ? remk : " *您绑定的卡已经不在使用期内，请及时续费" + remk,
                                     _option.WxOption.TemplateId,
-                                    _option.WxOption.Domainnames + "/SchoolBus/GoAddress?showType=0&cardLogId=" + map.GetValueOrDefault(user.fid),
+                                    _option.WxOption.Domainnames + "SchoolBus/GoAddress?showType=0&cardLogId=" + map.GetValueOrDefault(user.fid),
                                     "测试格式"
                                 );
-                                Senparc.Weixin.MP.AdvancedAPIs.TemplateApi.SendTemplateMessage(Config.SenparcWeixinSetting.WeixinAppId, user.fwxid, tempdata);
+                                var openid= "ovzSu1Ux_R10fGTWCEawfdVADSy8";//user.fwxid
+                                var result = Senparc.Weixin.MP.AdvancedAPIs.TemplateApi.SendTemplateMessage(Config.SenparcWeixinSetting.WeixinAppId, openid, tempdata);
 #endif
                                 #endregion
                             }
