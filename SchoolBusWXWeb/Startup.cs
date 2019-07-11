@@ -62,7 +62,7 @@ namespace SchoolBusWXWeb
             services.Configure<SiteConfig>(Configuration.GetSection("SiteConfig"));
             services.AddScoped<ISchoolBusBusines, SchoolBusBusines>();
             services.AddScoped<ISchoolBusRepository, SchoolBusRepository>();
-            services.AddSingleton<MqttHelper>();
+            services.AddScoped<MqttHelper>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddMemoryCache();                           // 使用本地缓存必须添加
             services.AddSession();                               // 使用Session

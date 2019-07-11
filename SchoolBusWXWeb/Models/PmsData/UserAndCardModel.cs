@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.ComponentModel.DataAnnotations;
+using SchoolBusWXWeb.Models.ViewData;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable InconsistentNaming
@@ -11,7 +12,7 @@ namespace SchoolBusWXWeb.Models.PmsData
     /// <summary>
     /// 完善信息model
     /// </summary>
-    public class UserAndCardModel
+    public class UserAndCardModel : Base_JSSDKVD
     {
         /// <summary>
         /// twxuser 表主键

@@ -15,7 +15,7 @@ namespace SchoolBusWXWeb.Controllers
 #if DEBUG
     public class SchoolBusController : ControllerEx
     {
-        private const string Openid = "oBcNx1lHzHxIpKm5m64XX99zTMGs"; // ovzSu1Ux_R10fGTWCEawfdVADSy8 
+        private const string Openid = "ovzSu1Ux_R10fGTWCEawfdVADSy8"; // oBcNx1lHzHxIpKm5m64XX99zTMGs // ovzSu1Ux_R10fGTWCEawfdVADSy8 
         private const string Nickname = "测试昵称";
 
 #else
@@ -90,7 +90,7 @@ namespace SchoolBusWXWeb.Controllers
         [HttpGet]
         public IActionResult GoBinding()
         {
-            return View();
+            return View(new Base_JSSDKVD());
         }
         #endregion
 
@@ -133,7 +133,7 @@ namespace SchoolBusWXWeb.Controllers
         [HttpGet]
         public IActionResult GoUntying()
         {
-            return View();
+            return View(new Base_JSSDKVD());
         }
 
         [HttpPost]
@@ -153,7 +153,7 @@ namespace SchoolBusWXWeb.Controllers
         [HttpGet]
         public IActionResult GoReport()
         {
-            return View();
+            return View(new Base_JSSDKVD());
         }
 
         [HttpPost]

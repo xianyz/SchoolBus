@@ -144,20 +144,20 @@
             var status = '@(Model?.status)';
             if (status!="") {
                 // 判断msg状态（0：所绑定卡已挂失，1：所绑定卡已注销，2：已绑定卡片未完善信息）
-                if (msg === '0') {
+                if (status === '0') {
                     alert("所绑定卡片已挂失");
                     wx.closeWindow();
                 }
-                if (msg === '1') {
+                if (status === '1') {
                     alert("所绑定卡片已注销");
                     wx.closeWindow();
                 }
-                if (msg === '2') {
+                if (status === '2') {
                     alert("请先完善卡片乘车信息");
                     //跳转完善信息页
                     window.location.href = "/SchoolBus/goCardInfo";
                 }
-                if (msg === '3'||msg === '4') {
+                if (status === '3'||status === '4') {
                     alert("您的孩子今天还未刷卡，去逛逛福利商城吧");
                     window.location.href = "/erweima";
                 }
