@@ -210,7 +210,7 @@ namespace SchoolBusWXWeb.Controllers
             {
                 return RedirectToAction(actionName: "Register", "SchoolBus");
             }
-            return View();
+            return View(new Base_JSSDKVD());
         }
 
         [HttpGet]
