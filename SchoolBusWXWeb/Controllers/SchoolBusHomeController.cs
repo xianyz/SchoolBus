@@ -15,7 +15,7 @@ namespace SchoolBusWXWeb.Controllers
 #if !DEBUG
     [CustomOAuth(null, "/OAuth2/UserInfoCallback")]
 #endif
-    public class SchoolBusHomeController : Controller
+    public class SchoolBusHomeController : ControllerEx
     {
         private readonly ISchoolBusBusines _schoolBusBusines;
         public SchoolBusHomeController(ISchoolBusBusines schoolBusBusines)
@@ -34,6 +34,22 @@ namespace SchoolBusWXWeb.Controllers
 #endif
                 ViewData["OpenId"] = tokenResult.openid;
                 var code = await _schoolBusBusines.GetUserCodeAsync(tokenResult.openid);
+                switch (type)
+                {
+                    case 0 when (code == 1 || code == 4 || code == 5):
+                        return  RedirectToLocal("/SchoolBus/Register");
+                    case 1 when (code == 2 || code == 3):
+                        return RedirectToLocal("/SchoolBus/GoReport");
+                    case 2 when code == 3:
+                        return RedirectToLocal("/SchoolBus/GoCardInfo");
+                    case 3 when code == 3:
+                        return RedirectToLocal("/SchoolBus/GoAddress?showType=1");
+                    case 4 when code == 3:
+                        return RedirectToLocal("/SchoolBus/GoCalendar");
+                    case 5 when code != 1:
+                        return RedirectToLocal("/SchoolBus/GoUntying");
+                }
+
                 return View(new IndexModel { type = type, code = code });
             }
             catch (Exception e)
