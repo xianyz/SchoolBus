@@ -29,6 +29,39 @@ namespace SchoolBusWXWeb.Controllers
             _schoolBusBusines = schoolBusBusines;
         }
 
+        #region 默认页
+        public async Task<IActionResult> Index(int type)
+        {
+
+#if DEBUG
+            const string wxid = Openid;
+#else
+            string wxid = TokenResult.openid;
+#endif
+            ViewData["OpenId"] = wxid;
+            var code = await _schoolBusBusines.GetUserCodeAsync(wxid);
+            switch (type)
+            {
+                case 0 when (code == 1 || code == 4 || code == 5):
+                    return RedirectToLocal("/SchoolBus/Register");
+                case 1 when (code == 2 || code == 3):
+                    return RedirectToLocal("/SchoolBus/GoReport");
+                case 2 when code == 3:
+                    return RedirectToLocal("/SchoolBus/GoCardInfo");
+                case 3 when code == 3:
+                    return RedirectToLocal("/SchoolBus/GoAddress?showType=1");
+                case 4 when code == 3:
+                    return RedirectToLocal("/SchoolBus/GoCalendar");
+                case 5 when code != 1:
+                    return RedirectToLocal("/SchoolBus/GoUntying");
+            }
+
+            return View(new IndexModel { type = type, code = code });
+
+        }
+
+        #endregion
+
         #region 注册
         /// <summary>
         /// https://localhost:5001/schoolbus/Register

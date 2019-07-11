@@ -113,7 +113,7 @@ namespace SchoolBusWXWeb.Models.ViewData
         public string wxshareDescription { get; set; }
     }
 
-    public class IndexModel
+    public class IndexModel: Base_JSSDKVD
     {
         /// <summary>
         /// 页面参数
