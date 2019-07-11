@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.ComponentModel.DataAnnotations;
+using SchoolBusWXWeb.Models.ViewData;
+
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace SchoolBusWXWeb.Models.PmsData
 {
-    public class RegisterModel
+    public class RegisterModel: Base_JSSDKVD
     {
         /// <summary>
         /// 微信ID

@@ -21,8 +21,9 @@ namespace SchoolBusWXWeb
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
 #if !DEBUG
-                  .UseUrls("http://0.0.0.0:5005/")
+                .UseUrls("http://0.0.0.0:5005/")
 #endif
-                .UseStartup<Startup>().ConfigureLogging(builder => builder.AddFile());
+                .ConfigureLogging(builder => builder.AddFile())
+                .UseStartup<Startup>();
     }
 }

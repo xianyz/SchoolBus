@@ -699,6 +699,7 @@
 <!--弹出层（通过）结束-->
 
 @section Scripts{
+    <script src="~/js/wxfunction.js" asp-append-version="true"></script>
     <script>
         // 注册
         $('#frm').submit(function () {
@@ -741,6 +742,7 @@
         function popClose(d) {
             $(d).hide();
             $("body").css("overflow", "auto");
-        }
+            }
+
     </script>
 }

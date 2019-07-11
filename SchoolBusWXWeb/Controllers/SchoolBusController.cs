@@ -15,7 +15,7 @@ namespace SchoolBusWXWeb.Controllers
 #if DEBUG
     public class SchoolBusController : ControllerEx
     {
-        private const string Openid = "oBcNx1lHzHxIpKm5m64XX99zTMGs";
+        private const string Openid = "oBcNx1lHzHxIpKm5m64XX99zTMGs"; // ovzSu1Ux_R10fGTWCEawfdVADSy8 
         private const string Nickname = "测试昵称";
 
 #else
@@ -37,13 +37,12 @@ namespace SchoolBusWXWeb.Controllers
         [HttpGet]
         public IActionResult Register()
         {
-            // var data = await _schoolBusBusines.GetTwxuserAsync("2c9ab45969dc19990169dd5bb9ea08b5");
 #if DEBUG
             ViewData["OpenId"] = Openid;
 #else
             ViewData["OpenId"] = TokenResult.openid;
 #endif
-            return View();
+            return View(new RegisterModel());
         }
 
         [HttpPost]
@@ -185,7 +184,8 @@ namespace SchoolBusWXWeb.Controllers
         {
 
 #if DEBUG
-            const string wxid = Openid;
+            // const string wxid = Openid;
+            const string wxid = "ovzSu1Ux_R10fGTWCEawfdVADSy8";
 #else
             string wxid = TokenResult.openid;
 #endif
