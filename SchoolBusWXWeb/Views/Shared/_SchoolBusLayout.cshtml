@@ -16,16 +16,16 @@
 <body>
     @RenderBody()
     <script src="~/lib/jquery/jquery.2.1.4.min.js"></script>
-    <script src="~/js/tools.js" asp-append-version="true"></script>
     <script src="~/lib/mui/js/mui.min.js"></script>
     <script src="~/lib/mui/js/mui.picker.all.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
     <script src="~/js/base.js"></script>
+    <script src="~/js/tools.js" asp-append-version="true"></script>
     <script src="@(this.Context.Request.Scheme)://res2.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
     <script>
         wx.config({
-            debug: false,     
+            debug: false,
             appId: '@(Model?.JsSdkUiPackage?.AppId)',
             timestamp: '@(Model?.JsSdkUiPackage?.Timestamp)',
             nonceStr: '@(Model?.JsSdkUiPackage?.NonceStr)',

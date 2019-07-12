@@ -69,14 +69,13 @@ function settime() {
 function sendSmsCode(codetype) {
     var phone = $("#phoneNum").val();
     if (phone != "") {
-        _generate_code.attr("disabled", true);
         getAjax("/SchoolBus/SendSmsCode", { phoneNum: phone, verificationCodeType: codetype }, function (data) {
             if (data.status == 1) {
                 settime();
             } else {
                 alert(data.msg);
             }
-        }, function () { _generate_code.attr("disabled", false); });
+        }, function () {});
     } else {
         alert("请输入手机号");
     }

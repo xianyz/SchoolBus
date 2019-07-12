@@ -18,7 +18,7 @@ namespace SchoolBusWXWeb.Controllers
         {
             var controller = context.RouteData.Values["controller"]?.ToString();
             var actionName = context.RouteData.Values["action"]?.ToString();
-            if (controller?.ToUpper() == "SCHOOLBUS" && actionName?.ToUpper() != "REGISTER")
+            if (controller?.ToUpper() == "SCHOOLBUS" && (actionName?.ToUpper() != "REGISTER" && actionName?.ToUpper() != "SENDSMSCODE"))
             {
                 var result = await _schoolBusBusines.GetCardInfoByCodeAsync(_openid);
                 if (result == null || string.IsNullOrEmpty(result.fcode) || string.IsNullOrEmpty(result.wxpkid))
