@@ -43,21 +43,17 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
             OmitRepeatedMessageFunc = requestMessage => !(requestMessage is RequestMessageText textRequestMessage) || textRequestMessage.Content != "容错";
         }
 
-        /// <summary>
-        /// 前置消息过滤
-        /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public override async Task OnExecutingAsync(CancellationToken cancellationToken)
-        {
-            //测试MessageContext.StorageData
-            if (CurrentMessageContext.StorageData is StorageModel storagemodel)
-            {
-                storagemodel.CMDCount++;
-            }
-            // CancelExcute=true; // 消息就不会向下执行,用于某些情况过滤
-            await base.OnExecutingAsync(cancellationToken);
-        }
+        // 前置消息过滤
+        //public override async Task OnExecutingAsync(CancellationToken cancellationToken)
+        //{
+        //    //测试MessageContext.StorageData
+        //    if (CurrentMessageContext.StorageData is StorageModel storagemodel)
+        //    {
+        //        storagemodel.CMDCount++;
+        //    }
+        //    // CancelExcute=true; // 消息就不会向下执行,用于某些情况过滤
+        //    await base.OnExecutingAsync(cancellationToken);
+        //}
 
         /// <summary>
         /// 后置消息处理 (比如给消息加上签名) 已经对数据操作这里就不能处理了
@@ -68,7 +64,7 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
         {
             if (ResponseMessage is ResponseMessageText responseMessage)
             {
-                responseMessage.Content += "\r\n[刘哲测试Async]";
+                responseMessage.Content += "\r\n[刘哲测试公众号]";
             }
             // 超过5s中的处理 这里可以用队列
             await base.OnExecutedAsync(cancellationToken);
@@ -221,7 +217,7 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
             if (requestMessage.Status == "success")
             {
                 // 进行逻辑处理 看是否成功处理等
-               await CustomApi.SendTextAsync(_appId,OpenId,"模板消息发送成功"+requestMessage.MsgID.ToString());
+                await CustomApi.SendTextAsync(_appId, OpenId, "模板消息发送成功" + requestMessage.MsgID.ToString());
             }
             return new SuccessResponseMessage();
         }
@@ -240,12 +236,11 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
             * return responseMessage;
             */
             return await Task.Run(() =>
-             {
+            {
                  var responseMessage = CreateResponseMessage<ResponseMessageText>();
                  responseMessage.Content = $"这条消息来自DefaultResponseMessageAsync。{requestMessage.MsgType}";
                  return responseMessage;
-             });
-
+            });
         }
 
         public override IResponseMessageBase DefaultResponseMessage(IRequestMessageBase requestMessage)
