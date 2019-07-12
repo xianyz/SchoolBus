@@ -1,5 +1,9 @@
 ﻿// 微信js
 wx.ready(function () {
+    // 批量隐藏功能按钮
+    wx.hideMenuItems({
+        menuList: ["menuItem:share:qq", "menuItem:share:weiboApp", "menuItem:share:QZone", "menuItem:copyUrl", "menuItem:openWithSafari", "menuItem:openWithQQBrowser"] 
+    });
     // 转发到朋友圈
     wx.onMenuShareTimeline({
         title: '鲸卫士校车联盟-绑定乘车卡,关注孩子乘车安全',

@@ -130,6 +130,10 @@
     <script>
         // 微信js
         wx.ready(function () {
+            // 批量隐藏功能按钮
+            wx.hideMenuItems({
+                menuList: ["menuItem:share:qq", "menuItem:share:weiboApp", "menuItem:share:QZone", "menuItem:copyUrl", "menuItem:openWithSafari", "menuItem:openWithQQBrowser"] 
+            });
             wx.onMenuShareAppMessage({
                 title: '实时位置',
                 desc: '点击查看',

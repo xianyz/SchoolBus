@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 #if !DEBUG
 using Senparc.Weixin.MP.AdvancedAPIs;
 using Senparc.Weixin.MP.AdvancedAPIs.OAuth;
+using Senparc.Weixin.MP.MvcExtension;
 #endif
 
 namespace SchoolBusWXWeb.Controllers
@@ -24,6 +25,7 @@ namespace SchoolBusWXWeb.Controllers
         }
 
 #else
+    [WeixinInternalRequest("访问被拒绝，请通过微信客户端访问！", "nofilter")]
     public class SchoolBusController : OAuthBaseController
     {
         private readonly ISchoolBusBusines _schoolBusBusines;
