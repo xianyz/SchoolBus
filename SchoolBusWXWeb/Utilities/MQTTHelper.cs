@@ -10,6 +10,7 @@ using SchoolBusWXWeb.Models;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Senparc.CO2NET.MessageQueue;
 
 namespace SchoolBusWXWeb.Utilities
@@ -18,16 +19,19 @@ namespace SchoolBusWXWeb.Utilities
     {
         public static IMqttClient MqttClient;
         public static bool IsReconnect = true;
+        private readonly ILogger _logger;
         private readonly MqttOption _option;
         private readonly ISchoolBusBusines _schoolBusBusines;
-        public MqttHelper(ISchoolBusBusines schoolBusBusines, IOptions<SiteConfig> option)
+        public MqttHelper(ISchoolBusBusines schoolBusBusines, IOptions<SiteConfig> option, ILoggerFactory loggerFactory)
         {
+            _logger = loggerFactory.CreateLogger("MqttHelper");
             _schoolBusBusines = schoolBusBusines;
             _option = option.Value.MqttOption;
         }
 
         public async Task ConnectMqttServerAsync()
         {
+           // var logger = _loggerFactory.CreateLogger("MqttHelper");
             IMqttClientOptions MqttOptions()
             {
                 var options = new MqttClientOptionsBuilder()
@@ -48,7 +52,7 @@ namespace SchoolBusWXWeb.Utilities
                     MqttClient = new MqttFactory().CreateMqttClient();
 
                     // 接收到消息回调
-                    MqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate( e =>
+                    MqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(e =>
                     {
                         var received = new MqttMessageReceived
                         {
@@ -60,12 +64,14 @@ namespace SchoolBusWXWeb.Utilities
 #if DEBUG
                         //const string path = "E:\\MQTTPayload.txt";
                         //await Tools.WriteTxt(path, received.Payload);
-#endif
+#endif                  
+                        
                         var messageQueue = new SenparcMessageQueue();
                         var key = SenparcMessageQueue.GenerateKey("MessageHandlerSendMessageAsync", MqttClient.GetType(), Guid.NewGuid().ToString(), "MqttClient.ApplicationMessageReceivedHandler");
                         messageQueue.Add(key, async () =>
                         {
-                            await _schoolBusBusines.MqttMessageReceivedAsync(received);
+                           _logger.LogWarning("MqttReceivedMsg:\r\n" + received.Payload);
+                           await _schoolBusBusines.MqttMessageReceivedAsync(received);
                         });
 
                         //Console.WriteLine($">> ### 接受消息 ###{Environment.NewLine}");

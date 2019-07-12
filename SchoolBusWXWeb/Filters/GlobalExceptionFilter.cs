@@ -6,7 +6,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-
+// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace SchoolBusWXWeb.Filters
