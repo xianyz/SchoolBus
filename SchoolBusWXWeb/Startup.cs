@@ -76,6 +76,7 @@ namespace SchoolBusWXWeb
             {
                 options.Filters.Add<GlobalExceptionFilter>();
                 // 会自动忽略不需要做CSRF验证的请求类型，例如HttpGet请求 Post请求就不需要添加[ValidateAntiForgeryToken]
+                // 使用senparc开发微信会接收不到消息,此处注释
                 // options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 

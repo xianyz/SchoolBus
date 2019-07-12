@@ -76,11 +76,6 @@ namespace SchoolBusWXWeb.Controllers
         [HttpGet]
         public IActionResult Register()
         {
-#if DEBUG
-            ViewData["OpenId"] = Openid;
-#else
-            ViewData["OpenId"] = TokenResult.openid;
-#endif
             return View(new RegisterModel());
         }
 
@@ -144,7 +139,6 @@ namespace SchoolBusWXWeb.Controllers
 #else
             var wxid = TokenResult.openid;
 #endif
-            ViewData["OpenId"] = wxid;
             var result = await _schoolBusBusines.GetCardInfoByCodeAsync(wxid);
             return View(result);
         }
