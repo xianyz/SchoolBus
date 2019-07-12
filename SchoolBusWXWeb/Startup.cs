@@ -67,6 +67,8 @@ namespace SchoolBusWXWeb
                     .AddSenparcWeixinServices(Configuration);    // Senparc.Weixin 注册
             services.AddSignalR();
             services.AddLoggingFileUI(); // https://localhost:5001/Logging
+
+            // services.AddHttpsRedirection(opt => opt.HttpsPort = 443); // 配合Configure->app.UseHttpsRedirection()
             // services.AddStartupTask<MqttStartupFilter>();
             // services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, MqttService>();
 
@@ -110,7 +112,7 @@ namespace SchoolBusWXWeb
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                app.UseHsts();
+                // app.UseHsts(); // HTTP严格安全传输(
             }
             app.UseEnableRequestRewind();  // 微信sdk使用
 
