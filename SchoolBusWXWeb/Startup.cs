@@ -100,26 +100,26 @@ namespace SchoolBusWXWeb
 
             //});
             #endregion
-            
+
+            app.SetUtilsProviderConfiguration(Configuration, loggerFactory); // 静态工具类
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
             else
             {
-                app.UseDeveloperExceptionPage();
-                //app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-            app.UseHttpsRedirection();
+            app.UseEnableRequestRewind();  // 微信sdk使用
+
+            // app.UseHttpsRedirection();
 
             app.UseStaticFiles();
             
             app.UseCookiePolicy();
 
-            app.SetUtilsProviderConfiguration(Configuration, loggerFactory); // 静态工具类
-            app.UseEnableRequestRewind();  // 微信sdk使用
             app.UseSession();
 
             #region 微信相关
