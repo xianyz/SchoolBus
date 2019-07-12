@@ -15,19 +15,23 @@ namespace SchoolBusWXWeb.Controllers
 #if DEBUG
     public class SchoolBusController : ControllerEx
     {
-        private const string Openid = "ovzSu1Ux_R10fGTWCEawfdVADSy8"; // oBcNx1lHzHxIpKm5m64XX99zTMGs // ovzSu1Ux_R10fGTWCEawfdVADSy8 
+        private const string Openid = "ovzSu1Ux_R10fGTWCEawfdVADSy800"; // oBcNx1lHzHxIpKm5m64XX99zTMGs // ovzSu1Ux_R10fGTWCEawfdVADSy8 
         private const string Nickname = "测试昵称";
+        private readonly ISchoolBusBusines _schoolBusBusines;
+        public SchoolBusController(ISchoolBusBusines schoolBusBusines) : base(schoolBusBusines, Openid)
+        {
+            _schoolBusBusines= schoolBusBusines;
+        }
 
 #else
     public class SchoolBusController : OAuthBaseController
     {
-#endif
-
         private readonly ISchoolBusBusines _schoolBusBusines;
-        public SchoolBusController(ISchoolBusBusines schoolBusBusines)
+        public SchoolBusController(ISchoolBusBusines schoolBusBusines) : base(schoolBusBusines)
         {
             _schoolBusBusines = schoolBusBusines;
         }
+#endif
 
         #region 默认页
         public async Task<IActionResult> Index(int type)
@@ -257,5 +261,7 @@ namespace SchoolBusWXWeb.Controllers
             return Json(result);
         }
         #endregion
+
+      
     }
 }

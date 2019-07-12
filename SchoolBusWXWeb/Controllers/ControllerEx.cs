@@ -1,13 +1,39 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using SchoolBusWXWeb.Business;
+using System.Threading.Tasks;
 
 namespace SchoolBusWXWeb.Controllers
 {
     public class ControllerEx : Controller
     {
+        private readonly string _openid;
+        private readonly ISchoolBusBusines _schoolBusBusines;
+        public ControllerEx(ISchoolBusBusines schoolBusBusines, string openid)
+        {
+            _openid = openid;
+            _schoolBusBusines = schoolBusBusines;
+        }
+        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        {
+            var controller = context.RouteData.Values["controller"]?.ToString();
+            var actionName = context.RouteData.Values["action"]?.ToString();
+            if (controller?.ToUpper() == "SCHOOLBUS" && actionName?.ToUpper() != "REGISTER")
+            {
+                var result = await _schoolBusBusines.GetCardInfoByCodeAsync(_openid);
+                if (result == null)
+                {
+                    context.Result = new RedirectToActionResult("Register", "SchoolBus",null);// RedirectResult("~/Home/Index")
+                    return;
+                }
+            }
+            await next();
+        }
+
         #region 公共方法
 
         /// <summary>
-        ///     获取服务端验证的第一条错误信息
+        /// 获取服务端验证的第一条错误信息
         /// </summary>
         /// <returns></returns>
         public string GetModelStateError()
@@ -19,7 +45,7 @@ namespace SchoolBusWXWeb.Controllers
         }
 
         /// <summary>
-        ///     重定向验证
+        ///  重定向验证
         /// </summary>
         /// <param name="returnUrl"></param>
         /// <param name="action"></param>
