@@ -93,6 +93,6 @@ namespace SchoolBusWXWeb.Repository.Common
         /// <returns>分页数据</returns>
         Task<PageDataView<T>> GetPageDataAsync<T>(PageCriteria criteria) where T : class, new();
 
-        Task<int> ChangeOrderNum(ChangeOrder t);
+
     }
 }

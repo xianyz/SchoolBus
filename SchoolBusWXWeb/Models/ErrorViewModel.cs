@@ -1,5 +1,3 @@
-using System;
-
 namespace SchoolBusWXWeb.Models
 {
     public class ErrorViewModel

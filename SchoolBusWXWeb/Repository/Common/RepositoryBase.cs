@@ -249,19 +249,5 @@ namespace SchoolBusWXWeb.Repository.Common
             }
         }
 
-
-        /// <summary>
-        /// 更换两条数据排序字段的值
-        /// </summary>
-        /// <param name="t"></param>
-        /// <returns></returns>
-        public async Task<int> ChangeOrderNum(ChangeOrder t)
-        {
-            string sql = @"update " + t.Table + " set " + t.OrderNumfield + @" = 
-                              (case when " + t.Keyfield + " = " + t.Startid + " then (select " + t.OrderNumfield + " from " + t.Table + " where " + t.Keyfield + " = " + t.Endid + @")
-                               WHEN " + t.Keyfield + " = " + t.Endid + @" THEN
-                             (select " + t.OrderNumfield + " from " + t.Table + " where " + t.Keyfield + " = " + t.Startid + ") end) where " + t.Keyfield + " in (" + t.Startid + ", " + t.Endid + ")";
-            return await ExecuteEntityAsync(sql, new DynamicParameters());
-        }
     }
 }

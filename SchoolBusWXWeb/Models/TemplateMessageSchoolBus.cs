@@ -1,8 +1,9 @@
 ﻿using Senparc.Weixin.Entities.TemplateMessage;
 using Senparc.Weixin.MP.AdvancedAPIs.TemplateMessage;
+
 // ReSharper disable UnusedAutoPropertyAccessor.Local
 
-namespace SchoolBusWXWeb.Models.SchollBusModels
+namespace SchoolBusWXWeb.Models
 {
     public class TemplateMessageSchoolBus : TemplateMessageBase
     {

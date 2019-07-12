@@ -701,7 +701,7 @@ namespace SchoolBusWXWeb.Business
                                     "测试格式"
                                 );
                                 var openid= "ovzSu1Ux_R10fGTWCEawfdVADSy8";//user.fwxid
-                                var result = Senparc.Weixin.MP.AdvancedAPIs.TemplateApi.SendTemplateMessage(Config.SenparcWeixinSetting.WeixinAppId, openid, tempdata);
+                                Senparc.Weixin.MP.AdvancedAPIs.TemplateApi.SendTemplateMessage(Config.SenparcWeixinSetting.WeixinAppId, openid, tempdata);
 #endif
                                 #endregion
                             }
