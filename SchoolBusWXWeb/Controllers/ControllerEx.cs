@@ -21,9 +21,9 @@ namespace SchoolBusWXWeb.Controllers
             if (controller?.ToUpper() == "SCHOOLBUS" && actionName?.ToUpper() != "REGISTER")
             {
                 var result = await _schoolBusBusines.GetCardInfoByCodeAsync(_openid);
-                if (result == null)
+                if (result == null || string.IsNullOrEmpty(result.fcode) || string.IsNullOrEmpty(result.wxid))
                 {
-                    context.Result = new RedirectToActionResult("Register", "SchoolBus",null);// RedirectResult("~/Home/Index")
+                    context.Result = new RedirectToActionResult("Register", "SchoolBus", null);// RedirectResult("~/Home/Index")
                     return;
                 }
             }

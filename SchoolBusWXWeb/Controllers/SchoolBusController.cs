@@ -15,7 +15,7 @@ namespace SchoolBusWXWeb.Controllers
 #if DEBUG
     public class SchoolBusController : ControllerEx
     {
-        private const string Openid = "ovzSu1Ux_R10fGTWCEawfdVADSy800"; // oBcNx1lHzHxIpKm5m64XX99zTMGs // ovzSu1Ux_R10fGTWCEawfdVADSy8 
+        private const string Openid = "oBcNx1lHzHxIpKm5m64XX99zTMGs"; //  // ovzSu1Ux_R10fGTWCEawfdVADSy8 
         private const string Nickname = "测试昵称";
         private readonly ISchoolBusBusines _schoolBusBusines;
         public SchoolBusController(ISchoolBusBusines schoolBusBusines) : base(schoolBusBusines, Openid)
@@ -234,18 +234,8 @@ namespace SchoolBusWXWeb.Controllers
 
         #region 刷卡日历
         [HttpGet]
-        public async Task<IActionResult> GoCalendar()
+        public IActionResult GoCalendar()
         {
-#if DEBUG
-            const string wxid = Openid;
-#else
-            string wxid = TokenResult.openid;
-#endif
-            var data = await _schoolBusBusines.GetCardNumAsync(wxid);
-            if (string.IsNullOrEmpty(data))
-            {
-                return RedirectToAction(actionName: "Register", "SchoolBus");
-            }
             return View(new Base_JSSDKVD());
         }
 
@@ -261,7 +251,5 @@ namespace SchoolBusWXWeb.Controllers
             return Json(result);
         }
         #endregion
-
-      
     }
 }
