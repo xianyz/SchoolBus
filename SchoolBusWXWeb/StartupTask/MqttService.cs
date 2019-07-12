@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.Extensions.Hosting;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using SchoolBusWXWeb.Business;
-using SchoolBusWXWeb.Utilities;
 
 namespace SchoolBusWXWeb.StartupTask
 {
@@ -16,19 +10,20 @@ namespace SchoolBusWXWeb.StartupTask
     /// </summary>
     public class MqttService : BackgroundService
     {
-        private readonly IServiceScopeFactory _serviceScopeFactory;
-        public MqttService(IServiceScopeFactory serviceScopeFactory)
-        {
-            _serviceScopeFactory = serviceScopeFactory;
-        }
+        //private readonly IServiceScopeFactory _serviceScopeFactory;
+        //public MqttService(IServiceScopeFactory serviceScopeFactory)
+        //{
+        //    _serviceScopeFactory = serviceScopeFactory;
+        //}
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            using (var scope = _serviceScopeFactory.CreateScope())
-            {
-                var scoped = scope.ServiceProvider.GetRequiredService<ISchoolBusBusines>();
-                await Tools.ConnectMqttServerAsync(scoped);
-            }
+            await Task.CompletedTask;
+            //using (var scope = _serviceScopeFactory.CreateScope())
+            //{
+            //    //var scoped = scope.ServiceProvider.GetRequiredService<ISchoolBusBusines>();
+            //    // await Tools.ConnectMqttServerAsync(scoped);
+            //}
         }
     }
 }

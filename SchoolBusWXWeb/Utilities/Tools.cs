@@ -21,14 +21,9 @@ using SchoolBusWXWeb.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Reflection;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -37,8 +32,8 @@ namespace SchoolBusWXWeb.Utilities
 {
     public static class Tools
     {
-        private static IMqttClient _mqttClient;
-        private static bool _isReconnect = true;
+        //private static IMqttClient _mqttClient;
+        //private static bool _isReconnect = true;
         private static ILogger _toollogger;
         private static SiteConfig _settings;
         private static readonly string[] ImageExtensions = { ".jpg", ".png", ".gif", ".jpeg", ".bmp" };
@@ -49,6 +44,28 @@ namespace SchoolBusWXWeb.Utilities
             _toollogger = loggerFactory.CreateLogger("Tools");
             return serviceProvider;
         }
+
+        /// <summary>
+        /// 获取七牛Token
+        /// </summary>
+        /// <returns></returns>
+        public static Token GetUploadToken()
+        {
+            var mac = new Mac(_settings.QiniuOption.AccessKey, _settings.QiniuOption.SecretKey);
+            var auth = new Auth(mac);
+            var putPolicy = new PutPolicy
+            {
+                Scope = _settings.QiniuOption.Bucketfirst
+            };
+            // 上传策略有效期(对应于生成的凭证的有效期)
+            putPolicy.SetExpires(3600);
+            // putPolicy.DeleteAfterDays = 1; // 上传到云端多少天后自动删除该文件，如果不设置（即保持默认默认）则不删除 
+            return new Token
+            {
+                uptoken = auth.CreateUploadToken(putPolicy.ToJsonString())
+            };
+        }
+
 
         /// <summary>
         ///  上传图片到七牛
@@ -96,119 +113,7 @@ namespace SchoolBusWXWeb.Utilities
             return res;
         }
 
-        /// <summary>
-        /// 获取七牛Token
-        /// </summary>
-        /// <returns></returns>
-        public static Token GetUploadToken()
-        {
-            var mac = new Mac(_settings.QiniuOption.AccessKey, _settings.QiniuOption.SecretKey);
-            var auth = new Auth(mac);
-            var putPolicy = new PutPolicy
-            {
-                Scope = _settings.QiniuOption.Bucketfirst
-            };
-            // 上传策略有效期(对应于生成的凭证的有效期)
-            putPolicy.SetExpires(3600);
-            // putPolicy.DeleteAfterDays = 1; // 上传到云端多少天后自动删除该文件，如果不设置（即保持默认默认）则不删除 
-            return new Token
-            {
-                uptoken = auth.CreateUploadToken(putPolicy.ToJsonString())
-            };
-        }
-
-        /// <summary>
-        /// 生成验证码图片
-        /// </summary>
-        public static byte[] CreateCheckCodeImage()
-        {
-            var bb = default(byte[]);
-            try
-            {
-                var checkCode = VerficationCodeSrc(5);
-
-                if (!string.IsNullOrEmpty(checkCode.Trim()))
-                {
-                    var image = new Bitmap(90, 28);
-                    var g = Graphics.FromImage(image);
-                    try
-                    {
-                        //生成随机生成器
-                        var random = new Random();
-                        //清空图片背景色
-                        g.Clear(Color.White);
-                        //画图片的背景噪音线
-                        for (var i = 0; i < 2; i++)
-                        {
-                            var x1 = random.Next(image.Width);
-                            var x2 = random.Next(image.Width);
-                            var y1 = random.Next(image.Height);
-                            var y2 = random.Next(image.Height);
-                            g.DrawLine(new Pen(Color.Black), x1, y1, x2, y2);
-                        }
-
-                        var font = new Font("Arial", 16, FontStyle.Bold);
-
-                        var brush = new LinearGradientBrush(new Rectangle(0, 0, image.Width, image.Height), Color.Blue,
-                            Color.DarkRed, 1.2f, true);
-
-                        g.DrawString(checkCode, font, brush, 2, 2);
-                        //画图片的前景噪音点
-                        for (var i = 0; i < 100; i++)
-                        {
-                            var x = random.Next(image.Width);
-                            var y = random.Next(image.Height);
-                            image.SetPixel(x, y, Color.FromArgb(random.Next()));
-                        }
-
-                        //画图片的边框线
-                        g.DrawRectangle(new Pen(Color.Silver), 0, 0, image.Width - 1, image.Height - 1);
-                        using (var stream = new MemoryStream())
-                        {
-                            image.Save(stream, ImageFormat.Gif);
-                            bb = stream.GetBuffer();
-                        }
-                    }
-                    finally
-                    {
-                        g.Dispose();
-                        image.Dispose();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _toollogger.LogError("使用System.Drawing.Common生成验证码失败: 异常信息:" + ex);
-            }
-
-            return bb;
-        }
-
-        /// <summary>
-        /// 生成验证码字符串
-        /// </summary>
-        /// <param name="numberOfChars"></param>
-        /// <returns></returns>
-        private static string VerficationCodeSrc(int numberOfChars)
-        {
-            if (numberOfChars > 36)
-                throw new InvalidOperationException("Random Word Charecters can not be greater than 36.");
-            var columns = new char[36];
-            //字母
-            for (var charPos = 97; charPos < 97 + 26; charPos++)
-                columns[charPos - 97] = (char)charPos;
-            //数字
-            for (var intPos = 48; intPos <= 57; intPos++)
-                columns[intPos - 22] = (char)intPos;
-
-            var randomBuilder = new StringBuilder();
-            var randomSeed = new Random();
-            for (var incr = 0; incr < numberOfChars; incr++)
-                randomBuilder.Append(columns[randomSeed.Next(36)].ToString());
-
-            return randomBuilder.ToString();
-        }
-
+        
         /// <summary>
         /// 上传图片到七牛
         /// </summary>
@@ -276,42 +181,12 @@ namespace SchoolBusWXWeb.Utilities
             return b;
         }
 
+
         /// <summary>
-        ///  SHA1加密方法
+        /// 判断Url
         /// </summary>
-        /// <param name="str">需要加密的字符串</param>
+        /// <param name="str"></param>
         /// <returns></returns>
-        public static string GetSha1Str(string str)
-        {
-            var _byte = Encoding.Default.GetBytes(str);
-            HashAlgorithm ha = new SHA1CryptoServiceProvider();
-            _byte = ha.ComputeHash(_byte);
-            var sha1Str = new StringBuilder();
-            foreach (var b in _byte) sha1Str.AppendFormat("{0:x2}", b);
-            return sha1Str.ToString();
-        }
-
-        public static async Task<bool> Down(string oldsrc, string newsrc)
-        {
-            var stream = await HttpClientHelper.HttpGetStreamAsync(oldsrc);
-            var b = await UploadStream(_settings.QiniuOption.Bucketfirst, stream, newsrc);
-            return b;
-        }
-
-        public static async Task<string> DownloadAllAsync(IEnumerable<string> urls)
-        {
-            var httpClient = new HttpClient();
-            // 定义每一个url 的使用方法。
-            var downloads = urls.Select(url => httpClient.GetStringAsync(url));
-            // 注意，到这里，序列还没有求值，所以所有任务都还没真正启动。
-            // 下面，所有的URL 下载同步开始。
-            var downloadTasks = downloads.ToArray();
-            // 到这里，所有的任务已经开始执行了。
-            // 用异步方式等待所有下载完成。
-            var htmlPages = await Task.WhenAll(downloadTasks);
-            return string.Concat(htmlPages);
-        }
-
         public static bool IsUrl(string str)
         {
             try
@@ -325,6 +200,10 @@ namespace SchoolBusWXWeb.Utilities
             }
         }
 
+        /// <summary>
+        /// 获取站点配置
+        /// </summary>
+        /// <returns></returns>
         public static SiteConfig GetInitConst()
         {
             return AppSetting.GetConfig();
@@ -374,6 +253,29 @@ namespace SchoolBusWXWeb.Utilities
             httpContextAccessor.HttpContext.Response.Headers.Add("RedirectUrl", url);
         }
 
+        /// <summary>
+        /// 写TXT
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public static async Task WriteTxt(string path, string msg)
+        {
+            using (StreamWriter sw = new StreamWriter(path, true))
+            {
+                await sw.WriteLineAsync(msg);
+            }
+
+            //FileStream fs = new FileStream(path, FileMode.OpenOrCreate);
+            //StreamWriter sw = new StreamWriter(fs);
+            ////开始写入
+            //await sw.WriteAsync(msg);
+            ////清空缓冲区
+            //await sw.FlushAsync();
+            ////关闭流
+            //sw.Close();
+            //fs.Close();
+        }
 
         #region List和datatable相互转换
 
@@ -516,131 +418,107 @@ namespace SchoolBusWXWeb.Utilities
         }
         #endregion
 
-        /// <summary>
-        /// 写TXT
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="msg"></param>
-        /// <returns></returns>
-        public static async Task WriteTxt(string path, string msg)
-        {
-            using (StreamWriter sw = new StreamWriter(path, true))
-            {
-                await sw.WriteLineAsync(msg);
-            }
-
-            //FileStream fs = new FileStream(path, FileMode.OpenOrCreate);
-            //StreamWriter sw = new StreamWriter(fs);
-            ////开始写入
-            //await sw.WriteAsync(msg);
-            ////清空缓冲区
-            //await sw.FlushAsync();
-            ////关闭流
-            //sw.Close();
-            //fs.Close();
-        }
-
         #region Mqtt
-        public static async Task ConnectMqttServerAsync(ISchoolBusBusines _schoolBusBusines)
-        {
-            IMqttClientOptions MqttOptions()
-            {
-                var options = new MqttClientOptionsBuilder()
-                    .WithClientId(_settings.MqttOption.ClientID)
-                    .WithTcpServer(_settings.MqttOption.HostIp, _settings.MqttOption.HostPort)
-                    .WithCredentials(_settings.MqttOption.UserName, _settings.MqttOption.Password)
-                    //.WithTls()//服务器端没有启用加密协议，这里用tls的会提示协议异常
-                    .WithCleanSession()
-                    .Build();
-                return options;
-            }
+        //public static async Task ConnectMqttServerAsync(ISchoolBusBusines schoolBusBusines)
+        //{
+        //    IMqttClientOptions MqttOptions()
+        //    {
+        //        var options = new MqttClientOptionsBuilder()
+        //            .WithClientId(_settings.MqttOption.ClientID)
+        //            .WithTcpServer(_settings.MqttOption.HostIp, _settings.MqttOption.HostPort)
+        //            .WithCredentials(_settings.MqttOption.UserName, _settings.MqttOption.Password)
+        //            //.WithTls()//服务器端没有启用加密协议，这里用tls的会提示协议异常
+        //            .WithCleanSession()
+        //            .Build();
+        //        return options;
+        //    }
 
-            // Create a new Mqtt client.
-            try
-            {
-                if (_mqttClient == null)
-                {
-                    _mqttClient = new MqttFactory().CreateMqttClient();
+        //    // Create a new Mqtt client.
+        //    try
+        //    {
+        //        if (_mqttClient == null)
+        //        {
+        //            _mqttClient = new MqttFactory().CreateMqttClient();
 
-                    // 接收到消息回调
-                    _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate( e =>
-                    {
-                        var received = new MqttMessageReceived
-                        {
-                            Topic = e.ApplicationMessage.Topic,
-                            Payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload),
-                            QoS = e.ApplicationMessage.QualityOfServiceLevel,
-                            Retain = e.ApplicationMessage.Retain
-                        };
+        //            // 接收到消息回调
+        //            _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate( e =>
+        //            {
+        //                var received = new MqttMessageReceived
+        //                {
+        //                    Topic = e.ApplicationMessage.Topic,
+        //                    Payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload),
+        //                    QoS = e.ApplicationMessage.QualityOfServiceLevel,
+        //                    Retain = e.ApplicationMessage.Retain
+        //                };
 
-                        Console.WriteLine($">> ### 接受消息 ###{Environment.NewLine}");
-                        Console.WriteLine($">> Topic = {received.Topic}{Environment.NewLine}");
-                        Console.WriteLine($">> Payload = {received.Payload}{Environment.NewLine}");
-                        Console.WriteLine($">> QoS = {received.QoS}{Environment.NewLine}");
-                        Console.WriteLine($">> Retain = {received.Retain}{Environment.NewLine}");
-                    });
+        //                Console.WriteLine($">> ### 接受消息 ###{Environment.NewLine}");
+        //                Console.WriteLine($">> Topic = {received.Topic}{Environment.NewLine}");
+        //                Console.WriteLine($">> Payload = {received.Payload}{Environment.NewLine}");
+        //                Console.WriteLine($">> QoS = {received.QoS}{Environment.NewLine}");
+        //                Console.WriteLine($">> Retain = {received.Retain}{Environment.NewLine}");
+        //            });
 
-                    // 连接成功回调
-                    _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(async e =>
-                    {
-                        Console.WriteLine("已连接到MQTT服务器！" + Environment.NewLine);
-                        await Subscribe(_mqttClient, _settings.MqttOption.MqttTopic);
-                    });
-                    // 断开连接回调
-                    _mqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(async e =>
-                    {
-                        var curTime = DateTime.UtcNow;
-                        Console.WriteLine($">> [{curTime.ToLongTimeString()}]");
-                        Console.WriteLine("已断开MQTT连接！" + Environment.NewLine);
-                        //Reconnecting 重连
-                        if (_isReconnect && !e.ClientWasConnected)
-                        {
-                            Console.WriteLine("正在尝试重新连接" + Environment.NewLine);
-                            await Task.Delay(TimeSpan.FromSeconds(5));
-                            try
-                            {
-                                await _mqttClient.ConnectAsync(MqttOptions());
-                            }
-                            catch
-                            {
-                                Console.WriteLine("### 重新连接 失败 ###" + Environment.NewLine);
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("已下线！" + Environment.NewLine);
-                        }
-                    });
+        //            // 连接成功回调
+        //            _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(async e =>
+        //            {
+        //                Console.WriteLine("已连接到MQTT服务器！" + Environment.NewLine);
+        //                await Subscribe(_mqttClient, _settings.MqttOption.MqttTopic);
+        //            });
+        //            // 断开连接回调
+        //            _mqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(async e =>
+        //            {
+        //                var curTime = DateTime.UtcNow;
+        //                Console.WriteLine($">> [{curTime.ToLongTimeString()}]");
+        //                Console.WriteLine("已断开MQTT连接！" + Environment.NewLine);
+        //                //Reconnecting 重连
+        //                if (_isReconnect && !e.ClientWasConnected)
+        //                {
+        //                    Console.WriteLine("正在尝试重新连接" + Environment.NewLine);
+        //                    await Task.Delay(TimeSpan.FromSeconds(5));
+        //                    try
+        //                    {
+        //                        await _mqttClient.ConnectAsync(MqttOptions());
+        //                    }
+        //                    catch
+        //                    {
+        //                        Console.WriteLine("### 重新连接 失败 ###" + Environment.NewLine);
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    Console.WriteLine("已下线！" + Environment.NewLine);
+        //                }
+        //            });
 
-                    try
-                    {
-                        await _mqttClient.ConnectAsync(MqttOptions());
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("连接到MQTT服务器失败！" + Environment.NewLine + ex.Message + Environment.NewLine);
-                    }
-                }
+        //            try
+        //            {
+        //                await _mqttClient.ConnectAsync(MqttOptions());
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                Console.WriteLine("连接到MQTT服务器失败！" + Environment.NewLine + ex.Message + Environment.NewLine);
+        //            }
+        //        }
 
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("连接到MQTT服务器未知异常！" + Environment.NewLine + e.Message + Environment.NewLine);
-            }
-        }
-        private static async Task Subscribe(IMqttClient mqttClient, string topic)
-        {
-            if (mqttClient.IsConnected && !string.IsNullOrEmpty(topic))
-            {
-                // Subscribe to a topic
-                await mqttClient.SubscribeAsync(new TopicFilterBuilder()
-                    .WithTopic(topic)
-                    .WithAtMostOnceQoS()
-                    .Build()
-                );
-                Console.WriteLine($"已订阅[{topic}]主题{Environment.NewLine}");
-            }
-        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine("连接到MQTT服务器未知异常！" + Environment.NewLine + e.Message + Environment.NewLine);
+        //    }
+        //}
+        //private static async Task Subscribe(IMqttClient mqttClient, string topic)
+        //{
+        //    if (mqttClient.IsConnected && !string.IsNullOrEmpty(topic))
+        //    {
+        //        // Subscribe to a topic
+        //        await mqttClient.SubscribeAsync(new TopicFilterBuilder()
+        //            .WithTopic(topic)
+        //            .WithAtMostOnceQoS()
+        //            .Build()
+        //        );
+        //        Console.WriteLine($"已订阅[{topic}]主题{Environment.NewLine}");
+        //    }
+        //}
         #endregion
     }
 
