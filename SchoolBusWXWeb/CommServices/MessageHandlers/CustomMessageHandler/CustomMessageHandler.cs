@@ -44,7 +44,7 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
             return await Task.Run(() =>
             {
                 var defaultResponseMessage = CreateResponseMessage<ResponseMessageText>();
-                defaultResponseMessage.Content = $"{requestMessage.FromUserName},你刚才发送了消息Async。{requestMessage.Content}";
+                defaultResponseMessage.Content = $"你刚才发送了消息:{requestMessage.Content}";
                 return defaultResponseMessage;
             });
         }
@@ -102,7 +102,7 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
             return await Task.Run(() =>
             {
                 var responseMessage = CreateResponseMessage<ResponseMessageText>();
-                responseMessage.Content = $"这条消息来自DefaultResponseMessageAsync。{requestMessage.MsgType}";
+                responseMessage.Content = $"这条消息来自DefaultResponseMessageAsync.";
                 return responseMessage;
             });
         }

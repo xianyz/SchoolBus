@@ -85,6 +85,7 @@ namespace SchoolBusWXWeb.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterModel user)
         {
             var res = new RegisVD();
@@ -110,6 +111,7 @@ namespace SchoolBusWXWeb.Controllers
 
         #region 获取验证码
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendSmsCode(SmsModel sms)
         {
             var smsVd = new SmsVD();
@@ -176,6 +178,7 @@ namespace SchoolBusWXWeb.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DoUntying()
         {
 #if DEBUG
@@ -196,6 +199,7 @@ namespace SchoolBusWXWeb.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DoReport()
         {
 #if DEBUG
@@ -230,8 +234,6 @@ namespace SchoolBusWXWeb.Controllers
             var data = await _schoolBusBusines.GetUserCardInfoAsync(wxid, showType, cardLogId);
             return View(data);
         }
-
-
         #endregion
 
         #region 刷卡日历

@@ -74,7 +74,7 @@ namespace SchoolBusWXWeb
             {
                 options.Filters.Add<GlobalExceptionFilter>();
                 // 会自动忽略不需要做CSRF验证的请求类型，例如HttpGet请求 Post请求就不需要添加[ValidateAntiForgeryToken]
-                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+                // options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
         }
@@ -100,9 +100,7 @@ namespace SchoolBusWXWeb
 
             //});
             #endregion
-            app.SetUtilsProviderConfiguration(Configuration, loggerFactory); // 静态工具类
-            app.UseEnableRequestRewind();  // 微信sdk使用
-            app.UseSession();
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -119,7 +117,10 @@ namespace SchoolBusWXWeb
             app.UseStaticFiles();
             
             app.UseCookiePolicy();
-            
+
+            app.SetUtilsProviderConfiguration(Configuration, loggerFactory); // 静态工具类
+            app.UseEnableRequestRewind();  // 微信sdk使用
+            app.UseSession();
 
             #region 微信相关
             RegisterService.Start(env, senparcSetting.Value)
