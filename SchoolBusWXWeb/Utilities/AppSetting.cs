@@ -15,19 +15,19 @@ namespace SchoolBusWXWeb.Utilities
             var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", false, true);
             Config = builder.Build();
-            siteConfig = Config.GetSection("Settings").Get<SiteConfig>();
+            SiteConfig = Config.GetSection("Settings").Get<SiteConfig>();
         }
 
         private IConfigurationRoot Config { get; }
-        private SiteConfig siteConfig { get; }
+        private SiteConfig SiteConfig { get; }
 
         /// <summary>
-        ///     获取数据库字符串
+        /// 获取数据库字符串
         /// </summary>
         public static string DbConnection => GetConfig("SiteConfig:DefaultConnection");
 
         //加锁
-        public static AppSetting GetInstance()
+        private static AppSetting GetInstance()
         {
             if (_instance == null)
             {
@@ -40,7 +40,7 @@ namespace SchoolBusWXWeb.Utilities
         }
 
         /// <summary>
-        ///     根据key获取value
+        /// 根据key获取value
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -55,7 +55,7 @@ namespace SchoolBusWXWeb.Utilities
         /// <returns></returns>
         public static SiteConfig GetConfig()
         {
-            return GetInstance().siteConfig;
+            return GetInstance().SiteConfig;
         }
     }
 }
