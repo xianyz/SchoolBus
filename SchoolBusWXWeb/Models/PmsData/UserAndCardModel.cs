@@ -96,8 +96,13 @@ namespace SchoolBusWXWeb.Models.PmsData
         [Required(ErrorMessage = "必须填写车牌号")]
         [StringLength(10)]
         [RegularExpression(@"^(([\u4e00-\u9fa5][a-zA-Z]|[\u4e00-\u9fa5]{2}\d{2}|[\u4e00-\u9fa5]{2}[a-zA-Z])[-]?|([wW][Jj][\u4e00-\u9fa5]{1}[-]?)|([a-zA-Z]{2}))([A-Za-z0-9]{5}|[DdFf][A-HJ-NP-Za-hj-np-z0-9][0-9]{4}|[0-9]{5}[DdFf])$")]
-        public string fplatenumber { get; set; }
-
+        public string fplatenumber
+        {
+            get => _fplatenumber?.ToUpper();
+            set => _fplatenumber = value;
+        }
+        private string _fplatenumber = "";
+        
         /// <summary>
         /// 学校名称
         /// </summary>

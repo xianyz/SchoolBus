@@ -56,23 +56,24 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
         /// <returns></returns>
         public override async Task<IResponseMessageBase> OnEvent_ClickRequestAsync(RequestMessageEvent_Click requestMessage)
         {
-            return await Task.Run(() =>
+            return await Task.Run<IResponseMessageBase>(() =>
             {
                 var responseMessage = CreateResponseMessage<ResponseMessageNews>();
+                if (requestMessage.EventKey != "key7") return new ResponseMessageNoResponse();
                 responseMessage.Articles = new List<Article>
                 {
                     new Article
                     {
-                        Title = $"第一条你刚才点击了按钮{requestMessage.EventKey}",
-                        Description = "第一条带连接的内容",
+                        Title = $"绑卡指南",
+                        Description = "小鲸绑卡指南教程",
                         PicUrl = "http://bing.360wll.cn/20190622.JPG",
-                        Url = "http://metro.360wll.cn/Bing/Index"
+                        Url = "https://mp.weixin.qq.com/s/HRPdPiQqyGgoWKRud-N9-w"
                     },new Article
                     {
-                        Title = $"第二条你刚才点击了按钮{requestMessage.EventKey}",
-                        Description = "第二条带连接的内容",
-                        PicUrl = "http://bing.360wll.cn/20190621.JPG",
-                        Url = "http://metro.360wll.cn/Bing/Index"
+                        Title = $"开始注册绑卡吧",
+                        Description = "注册用户",
+                        PicUrl = "http://wx.360wll.cn/img/pic1.jpg",
+                        Url = "http://wx.360wll.cn/SchoolBus/index?type=0"
                     }
                 };
                 return responseMessage;
@@ -91,7 +92,7 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
                 var userInfo = UserApi.Info(_appId, OpenId);
                 var nickName = userInfo?.nickname ?? "test";
                 var responseMessage = CreateResponseMessage<ResponseMessageText>();
-                responseMessage.Content = $"欢迎您 {nickName} 的到来";
+                responseMessage.Content = $"小鲸欢迎您 {nickName} 的到来~\r\n点击下方菜单栏，了解“鲸卫士校车联盟”。绑定乘车卡请点击下方菜单栏中“我的校车”——“绑定新卡”按钮，完成相关信息的填写，或者直接点击下方蓝字 <a href=\"http://wx.360wll.cn/SchoolBus/index?type=0\">绑定新卡</a>如问问题和疑问，请随时与小鲸联系.\r\n客服电话 <a href=\"tel:024-62151515\">024-62151515</a>";
                 return responseMessage;
             });
         }

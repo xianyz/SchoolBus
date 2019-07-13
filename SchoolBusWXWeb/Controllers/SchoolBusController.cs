@@ -206,11 +206,11 @@ namespace SchoolBusWXWeb.Controllers
         }
         #endregion
 
-        #region 根据车牌号获取托运的学校 "辽A00002"
+        #region 根据车牌号获取托运的学校 车牌号要大写 "辽AL7562"
         [HttpGet]
         public async Task<IActionResult> GetSchoolListByNum(string platenumber)
         {
-            var result = await _schoolBusBusines.GetSchoolListByPlatenumberAsync(platenumber);
+            var result = await _schoolBusBusines.GetSchoolListByPlatenumberAsync(platenumber.ToUpper());
             return Json(result);
         }
         #endregion
