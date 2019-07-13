@@ -12,7 +12,6 @@ using SchoolBusWXWeb.Filters;
 using SchoolBusWXWeb.Hubs;
 using SchoolBusWXWeb.Models;
 using SchoolBusWXWeb.Repository;
-using SchoolBusWXWeb.StartupTask;
 using SchoolBusWXWeb.Utilities;
 using Senparc.CO2NET;
 using Senparc.CO2NET.RegisterServices;
@@ -67,8 +66,8 @@ namespace SchoolBusWXWeb
             services.AddSignalR();
             services.AddLoggingFileUI(); // https://localhost:5001/Logging
 
-            services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, KeepWebAliveService>();
-            //
+
+            // services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, KeepWebAliveService>();
             // services.AddHttpsRedirection(opt => opt.HttpsPort = 443); // 配合Configure->app.UseHttpsRedirection()
             // services.AddStartupTask<MqttStartupFilter>();
             // services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, MqttService>();
