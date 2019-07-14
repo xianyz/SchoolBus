@@ -41,11 +41,29 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
         /// <returns></returns>
         public override async Task<IResponseMessageBase> OnTextRequestAsync(RequestMessageText requestMessage)
         {
-            return await Task.Run(() =>
+            return await Task.Run<IResponseMessageBase>(() =>
             {
-                var defaultResponseMessage = CreateResponseMessage<ResponseMessageText>();
-                defaultResponseMessage.Content = $"你刚才发送了消息:{requestMessage.Content}";
-                return defaultResponseMessage;
+                if (requestMessage.Content.Contains("教程"))
+                {
+                    var responseMessage = CreateResponseMessage<ResponseMessageNews>();
+                    responseMessage.Articles = new List<Article>
+                    {
+                        new Article
+                        {
+                            Title = "绑卡指南",
+                            Description = "小鲸绑卡指南教程",
+                            PicUrl = "http://wx.360wll.cn/img/pic1.jpg",
+                            Url = "https://mp.weixin.qq.com/s/HRPdPiQqyGgoWKRud-N9-w"
+                        }
+                    };
+                    return responseMessage;
+                }
+                else
+                {
+                    var defaultResponseMessage = CreateResponseMessage<ResponseMessageText>();
+                    defaultResponseMessage.Content = $"你刚才发送了消息:{requestMessage.Content}";
+                    return defaultResponseMessage;
+                }
             });
         }
 
