@@ -16,8 +16,8 @@ namespace SchoolBusWXWeb.Controllers
 #if DEBUG
     public class SchoolBusController : ControllerEx
     {
-        private const string Openid = "oBcNx1lHzHxIpKm5m64XX99zTMGs"; //  // ovzSu1Ux_R10fGTWCEawfdVADSy8 
-        private const string Nickname = "测试昵称";
+        private const string Openid = "ovzSu1Ux_R10fGTWCEawfdVADSy8"; //oBcNx1lHzHxIpKm5m64XX99zTMGs  // ovzSu1Ux_R10fGTWCEawfdVADSy8 
+        private const string Nickname = "Gorillaz";
         private readonly ISchoolBusBusines _schoolBusBusines;
         public SchoolBusController(ISchoolBusBusines schoolBusBusines) : base(schoolBusBusines, Openid)
         {

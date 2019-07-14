@@ -77,12 +77,24 @@
             mask.close();
             getAjax("/SchoolBus/DoReport", {}, function (data) {
                 if (data.status == 1) {
-                    var con = confirm("挂失成功,是否重新注册绑定？");
-                    if (con) {
-                        window.location.href = "/SchoolBus/Register";
-                    } else {
-                        wx.closeWindow();  // 微信自动关闭内置浏览器页面，返回公众号窗口
-                    }
+                    $.confirm({
+                        title: '温馨提示',
+                        content: '挂失成功,是否重新注册绑定？',
+                        buttons: {
+                            ok: { //确定按钮
+                                text: '确定',
+                                action: function () {
+                                    window.location.href = "/SchoolBus/Register";
+                                }
+                            },
+                            close: { //关闭按钮
+                                text: '关闭',
+                                action: function () {
+                                    wx.closeWindow();  // 微信自动关闭内置浏览器页面，返回公众号窗口
+                                }
+                            }
+                        }
+                    });
                 } else {
                     alert(data.msg);
                 }
@@ -93,10 +105,7 @@
         $('#cancel').on('click', function () {
             pop.classList.remove('mui-active');
             mask.close();
-            // 取消时的操作
-            // 微信自动关闭内置浏览器页面，返回公众号窗口
-            //wx.closeWindow();
+            wx.closeWindow();
         });
-
     </script>
 }

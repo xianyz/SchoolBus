@@ -27,28 +27,64 @@ namespace SchoolBusWXWeb.Models.ViewData
 
     public class SchoolBaseInfo
     {
+        /// <summary>
+        /// 学校类型 1:小学 2:中学 3:高中
+        /// </summary>
         public int ftype { get; set; }
+        /// <summary>
+        /// 学校名称
+        /// </summary>
         public string text { get; set; }
+        /// <summary>
+        /// 学校主键pkid
+        /// </summary>
         public string value { get; set; }
+        /// <summary>
+        /// 根据车牌号管理设备主键pkid
+        /// </summary>
+        public string deviceid { get;set;}
 
     }
 
     public class SchoolMode
     {
+        /// <summary>
+        /// 学校类型 1 2 3 
+        /// </summary>
         public string value { get; set; }
+        /// <summary>
+        /// 学校类型名称 小学 中学 高中
+        /// </summary>
         public string text { get; set; }
         public List<SchoolValueText> children { get; set; }
     }
 
     public class SchoolValueText
     {
-        private string _value;
+       
+        /// <summary>
+        /// 学校主键pkid
+        /// </summary>
         public string value
         {
             get => string.IsNullOrEmpty(_value) ? "" : _value.TrimEnd();
             set => _value = !string.IsNullOrEmpty(value) ? value : "";
         }
+        private string _value;
+        /// <summary>
+        /// 学校名称
+        /// </summary>
         public string text { get; set; }
+        
+        /// <summary>
+        /// 根据车牌号管理设备主键pkid
+        /// </summary>
+        public string deviceid
+        {
+            get => string.IsNullOrEmpty(_deviceid) ? "" : _deviceid.TrimEnd();
+            set => _deviceid = !string.IsNullOrEmpty(value) ? value : "";
+        }
+        private string _deviceid;
     }
 
     public class AddressModel : Base_JSSDKVD

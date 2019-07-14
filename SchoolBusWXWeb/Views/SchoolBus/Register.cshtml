@@ -40,7 +40,7 @@
                 <div class="input-wrapper" id="relationshipname">
                     <span style="width: 10%">与学生关系</span>
                     <!--placeholder="选择与学生的关系">-->
-                    <input type="text" asp-for="relationship" value="@(Model?.relationship)" class="input" style="width: 20%; float: right" readonly="readonly"/>
+                    <input type="text" asp-for="relationship" value="@(Model?.relationship)" class="input" style="width: 20%; float: right" readonly="readonly" />
                     <span asp-validation-for="relationship" style="width: 60%;color: red"></span>
                 </div>
             </div>
@@ -712,7 +712,7 @@
                             if (result.status === 1) {
                                 window.location.href = "/SchoolBus/GoBinding";
                             } else {
-                                alert(result.msg);
+                                $.alert(result.msg);
                             }
                         },
                         error: function (result) {
@@ -741,7 +741,7 @@
         function popClose(d) {
             $(d).hide();
             $("body").css("overflow", "auto");
-            }
+        }
 
     </script>
 }

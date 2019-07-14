@@ -3,53 +3,53 @@
     ViewBag.Title = "解绑";
 }
 @section Css{
-    <link href="~/lib/mui/css/mui.picker.min.css" rel="stylesheet" />
-    <style>
-        body {
-            background: #ffe880;
-        }
+<link href="~/lib/mui/css/mui.picker.min.css" rel="stylesheet" />
+<style>
+    body {
+        background: #ffe880;
+    }
 
-        .mui-popover {
-            padding: 15px 12px;
-            border-radius: 3px;
-            position: fixed;
-            width: 80%;
-            height: auto;
-            left: 50%;
-            top: 50%;
-            margin: 0 auto;
-            z-index: 9999;
-            background-color: #fff;
-            -webkit-transform: translateX(-50%) translateY(-50%);
-            -moz-transform: translateX(-50%) translateY(-50%);
-            -ms-transform: translateX(-50%) translateY(-50%);
-            transform: translateX(-50%) translateY(-50%);
-        }
+    .mui-popover {
+        padding: 15px 12px;
+        border-radius: 3px;
+        position: fixed;
+        width: 80%;
+        height: auto;
+        left: 50%;
+        top: 50%;
+        margin: 0 auto;
+        z-index: 9999;
+        background-color: #fff;
+        -webkit-transform: translateX(-50%) translateY(-50%);
+        -moz-transform: translateX(-50%) translateY(-50%);
+        -ms-transform: translateX(-50%) translateY(-50%);
+        transform: translateX(-50%) translateY(-50%);
+    }
 
-        .mui-popover-arrow {
-            display: none;
-        }
+    .mui-popover-arrow {
+        display: none;
+    }
 
-        .mui-active {
-            color: #333;
-            font-size: 16px;
-        }
+    .mui-active {
+        color: #333;
+        font-size: 16px;
+    }
 
-        #pop button:nth-of-type(1) {
-            width: 48%;
-            float: left;
-        }
+    #pop button:nth-of-type(1) {
+        width: 48%;
+        float: left;
+    }
 
-        #pop button:nth-of-type(2) {
-            width: 48%;
-            float: right;
-        }
+    #pop button:nth-of-type(2) {
+        width: 48%;
+        float: right;
+    }
 
-        #pop p {
-            font-size: 18px;
-            color: #333;
-        }
-    </style>
+    #pop p {
+        font-size: 18px;
+        color: #333;
+    }
+</style>
 }
 <div id="pop" class="mui-popover">
     <p>是否确认要解绑？</p>
@@ -62,41 +62,51 @@
 <img src="~/img/bg.png" style="width:100%" />
 
 @section Scripts{
-    <script src="~/js/wxfunction.js" asp-append-version="true"></script>
-    <script>
-        var pop = document.getElementById("pop");
-        var mask = mui.createMask(function () {
-            pop.classList.remove('mui-active');
-        });
-        mask.show(); //显示遮罩
-        pop.classList.add('mui-active');
+<script src="~/js/wxfunction.js" asp-append-version="true"></script>
+<script>
+    var pop = document.getElementById("pop");
+    var mask = mui.createMask(function () {
+        pop.classList.remove('mui-active');
+    });
+    mask.show(); //显示遮罩
+    pop.classList.add('mui-active');
 
-        // 确认
-        $('#confirm').on('click', function () {
-            pop.classList.remove('mui-active');
-            mask.close();
-            getAjax("/SchoolBus/DoUntying", {}, function (data) {
-                if (data.status == 1) {
-                    var con = confirm("解绑成功,是否重新注册绑定？");
-                    if (con) {
-                        window.location.href = "/SchoolBus/Register";
-                    } else {
-                        wx.closeWindow();  // 微信自动关闭内置浏览器页面，返回公众号窗口
+    // 确认
+    $('#confirm').on('click', function () {
+        pop.classList.remove('mui-active');
+        mask.close();
+        getAjax("/SchoolBus/DoUntying", {}, function (data) {
+            if (data.status == 1) {
+                $.confirm({
+                    title: '温馨提示',
+                    content: '解绑成功,是否重新注册绑定？',
+                    buttons: {
+                        ok: { //确定按钮
+                            text: '确定',
+                            action: function () {
+                                window.location.href = "/SchoolBus/Register";
+                            }
+                        },
+                        close: { //关闭按钮
+                            text: '关闭',
+                            action: function () {
+                                wx.closeWindow();  // 微信自动关闭内置浏览器页面，返回公众号窗口
+                            }
+                        }
                     }
-                } else {
-                    alert(data.msg);
-                }
-            }, function () { });
-        });
+                });
+            } else {
+                alert(data.msg);
+            }
+        }, function () { });
+    });
 
-        // 取消
-        $('#cancel').on('click', function () {
-            pop.classList.remove('mui-active');
-            mask.close();
-            // 取消时的操作
-            // 微信自动关闭内置浏览器页面，返回公众号窗口
-            //wx.closeWindow();
-        });
+    // 取消
+    $('#cancel').on('click', function () {
+        pop.classList.remove('mui-active');
+        mask.close();
+        wx.closeWindow();
+    });
 
-    </script>
+</script>
 }

@@ -78,7 +78,7 @@ namespace SchoolBusWXWeb.Models.PmsData
         /// <summary>
         /// 出生日期
         /// </summary>
-        public DateTime fbirthdate { get; set; }=DateTime.Now.Date;
+        public DateTime fbirthdate { get; set; } = DateTime.Now.Date;
 
         /// <summary>
         /// 上车地址
@@ -89,7 +89,8 @@ namespace SchoolBusWXWeb.Models.PmsData
             get => _fboardingaddress?.TrimEnd();
             set => _fboardingaddress = value;
         }
-        private string _fboardingaddress="";
+        private string _fboardingaddress = "";
+
         /// <summary>
         /// 车牌号
         /// </summary>
@@ -102,6 +103,18 @@ namespace SchoolBusWXWeb.Models.PmsData
             set => _fplatenumber = value;
         }
         private string _fplatenumber = "";
+
+        /// <summary>
+        /// 设备pkid
+        /// </summary>
+        [Required(ErrorMessage = "必须填写设备id")]
+        [StringLength(36)]
+        public string deviceid
+        {
+            get => string.IsNullOrEmpty(_deviceid) ? null : _deviceid.TrimEnd();
+            set => _deviceid = !string.IsNullOrEmpty(value) ? value : null;
+        }
+        private string _deviceid = "";
         
         /// <summary>
         /// 学校名称
@@ -111,28 +124,16 @@ namespace SchoolBusWXWeb.Models.PmsData
         public string fschoolname { get; set; }
 
         /// <summary>
-        /// 微信分享链接
+        /// 学校主键pkid
         /// </summary>
-        [BindNever]
-        public string wxLink { get; set; }
-
-        /// <summary>
-        /// 微信分享图标
-        /// </summary>
-        [BindNever]
-        public string wximgUrl { get; set; }
-
-        /// <summary>
-        /// 微信分享标题
-        /// </summary>
-        [BindNever]
-        public string wxshareTitle { get; set; }
-
-        /// <summary>
-        /// 微信分享描述
-        /// </summary>
-        [BindNever]
-        public string wxshareDescription { get; set; }
-
+        [Required(ErrorMessage = "必须填写学校id")]
+        [StringLength(36)]
+        public string schoolid
+        {
+            get => string.IsNullOrEmpty(_schoolid) ? null : _schoolid.TrimEnd();
+            set => _schoolid = !string.IsNullOrEmpty(value) ? value : null;
+        }
+        private string _schoolid = "";
+        
     }
 }

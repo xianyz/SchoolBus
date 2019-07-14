@@ -225,28 +225,6 @@ namespace SchoolBusWXWeb.Business
                         return new SaveCardInfoVD { msg = isCode.msg };
                     }
                 }
-
-                #endregion
-
-                #region 车牌号校验
-                var deviceRecord = await _schoolBusRepository.GetDeviceByPlatenumberAsync(model.fplatenumber);
-                if (deviceRecord == null)
-                {
-                    return new SaveCardInfoVD { msg = "该车未绑定设备" };
-                }
-                #endregion
-
-                #region 校验车牌号和所在学校是否属于同一校车公司
-                var schoolRecord = await _schoolBusRepository.GetSchoolByNameAsync(model.fschoolname);
-                if (schoolRecord == null)
-                {
-                    return new SaveCardInfoVD { msg = "该学校不存在" };
-                }
-                var companySchoolRecord = await _schoolBusRepository.GetCompanySchoolRelAsync(deviceRecord.fk_company_id, schoolRecord.pkid);
-                if (companySchoolRecord == null)
-                {
-                    return new SaveCardInfoVD { msg = "所输车牌号和学校不属于同一校车公司" };
-                }
                 #endregion
 
                 #region 更新完善用户和卡信息
@@ -257,8 +235,8 @@ namespace SchoolBusWXWeb.Business
                     return new SaveCardInfoVD { msg = "不存在此卡,请联系管理员" };
                 }
                 cardRecord.fname = model.fname;
-                cardRecord.fk_school_id = schoolRecord.pkid;
-                cardRecord.fk_device_id = deviceRecord.pkid;
+                cardRecord.fk_school_id = model.schoolid;
+                cardRecord.fk_device_id = model.deviceid;
                 cardRecord.fboardingaddress = model.fboardingaddress.Trim();
                 cardRecord.fbirthdate = model.fbirthdate;
                 var iscard = await _schoolBusRepository.UpdateTCardAsync(cardRecord);
@@ -274,6 +252,29 @@ namespace SchoolBusWXWeb.Business
                 {
                     return new SaveCardInfoVD { msg = "维护用户信息失败" };
                 }
+                #endregion
+
+                #region 一些数据库校验 暂不需要
+                #region 车牌号校验
+                //var deviceRecord = await _schoolBusRepository.GetDeviceByPlatenumberAsync(model.fplatenumber);
+                //if (deviceRecord == null)
+                //{
+                //    return new SaveCardInfoVD { msg = "该车未绑定设备" };
+                //}
+                #endregion
+
+                #region 校验车牌号和所在学校是否属于同一校车公司
+                //var schoolRecord = await _schoolBusRepository.GetSchoolByNameAsync(model.fschoolname);
+                //if (schoolRecord == null)
+                //{
+                //    return new SaveCardInfoVD { msg = "该学校不存在" };
+                //}
+                //var companySchoolRecord = await _schoolBusRepository.GetCompanySchoolRelAsync(deviceRecord.fk_company_id, schoolRecord.pkid);
+                //if (companySchoolRecord == null)
+                //{
+                //    return new SaveCardInfoVD { msg = "所输车牌号和学校不属于同一校车公司" };
+                //}
+                #endregion
                 #endregion
             }
             else
@@ -346,13 +347,7 @@ namespace SchoolBusWXWeb.Business
         /// <returns></returns>
         public async Task<UserAndCardModel> GetCardInfoByCodeAsync(string wxid)
         {
-            var data = await _schoolBusRepository.GetUserAndCardByOpenidAsync(wxid);
-            return data ?? new UserAndCardModel();
-            //var configList = await _schoolBusRepository.GetSchoolConfigListAsync("'002','003'");
-            //data.wxshareTitle = configList.FirstOrDefault(x => x.fcode == "002")?.fvalue;
-            //data.wxshareDescription = configList.FirstOrDefault(x => x.fcode == "003")?.fvalue;
-            //data.wxLink = _option.WxOption.URL + "SchoolBus/GoCardInfo";
-            //data.wximgUrl = _option.WxOption.URL + "/img/pic1.jpg";
+            return await _schoolBusRepository.GetUserAndCardByOpenidAsync(wxid);
         }
 
         /// <summary>
@@ -373,7 +368,8 @@ namespace SchoolBusWXWeb.Business
                     typeList.Add(new SchoolValueText
                     {
                         text = z.text,
-                        value = z.value
+                        value = z.value,
+                        deviceid = z.deviceid
                     });
                 });
                 switch (x.ftype)

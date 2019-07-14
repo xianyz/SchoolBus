@@ -29,22 +29,6 @@
         })
     });
 });
-//(function () {
-//    // 监听返回按钮
-//    pushHistory();
-//    window.addEventListener("popstate", function (e) {
-//        //关闭当前浏览器
-//        wx.closeWindow();
-//    }, false);
-//    function pushHistory() {
-//        var state = {
-//            title: "title",
-//            url: "#"
-//        };
-//        window.history.pushState(state, "title", "#");
-//    }
-//})();
-
 
 // 倒计时
 var countdown = 60;
@@ -69,10 +53,9 @@ function settime() {
 function sendSmsCode(codetype) {
     var phone = $("#phoneNum").val();
     if (phone != "") {
+        settime();
         getAjax("/SchoolBus/SendSmsCode", { phoneNum: phone, verificationCodeType: codetype }, function (data) {
-            if (data.status == 1) {
-                settime();
-            } else {
+            if (data.status != 1) {
                 alert(data.msg);
             }
         }, function () {});
@@ -101,3 +84,50 @@ function getAjax(url, parm, callBack, cmBack) {
         }
     });
 }
+
+(function () {
+    //先判断是否为微信浏览器
+    var ua = window.navigator.userAgent.toLowerCase();
+    if (ua.match(/MicroMessenger/i) == 'micromessenger') {
+        //微信浏览器中，aler弹框不显示域名
+        //重写alert方法，alert()方法重写，不能传多余参数
+        window.alert = function (name) {
+            var iframe = document.createElement("IFRAME");
+            iframe.style.display = "none";
+            iframe.setAttribute("src", 'data:text/plain');
+            document.documentElement.appendChild(iframe);
+            window.frames[0].window.alert(name);
+            iframe.parentNode.removeChild(iframe);
+        }
+    }
+    //微信浏览器中，confirm弹框不显示域名
+    //if (ua.match(/MicroMessenger/i) == 'micromessenger') {
+    //    //重写confirm方法，confirm()方法重写，不能传多余参数
+    //    window.confirm = function (message) {
+    //        var iframe = document.createElement("IFRAME");
+    //        iframe.style.display = "none";
+    //        iframe.setAttribute("src", 'data:text/plain,');
+    //        document.documentElement.appendChild(iframe);
+    //        var alertFrame = window.frames[0];
+    //        var result = alertFrame.window.confirm(message);
+    //        iframe.parentNode.removeChild(iframe);
+    //        return result;
+    //    };
+    //}
+})();
+//(function () {
+//    // 监听返回按钮
+//    pushHistory();
+//    window.addEventListener("popstate", function (e) {
+//        //关闭当前浏览器
+//        wx.closeWindow();
+//    }, false);
+//    function pushHistory() {
+//        var state = {
+//            title: "title",
+//            url: "#"
+//        };
+//        window.history.pushState(state, "title", "#");
+//    }
+//})();
+

@@ -3,9 +3,14 @@
     ViewData["Title"] = "Home Page";
 }
 @model SchoolBusWXWeb.Models.ViewData.IndexModel
-<div class="text-center">
-    <h1 class="display-4">Welcome:</h1>
-    <div>@ViewData["OpenId"]</div>
+
+<div class="mui-slider">
+    <div class="mui-slider-group mui-slider-loop">
+        <div class="mui-slider-item"><img src="~/img/skjllb.jpg" /></div>
+    </div>
+</div>
+<div class="record" id="vue" v-cloak>
+    <h1>温馨提示:</h1>
     @{
         if (Model.code != -1)
         {
@@ -20,11 +25,11 @@
                             break;
                         case 2:
                             <div>该微信已注册绑卡并且卡已到期->关闭浏览器</div>
-                            <div onclick="closeweb()">确定</div>
+                            <a href="#" onclick="closeweb()">确定</a>
                             break;
                         case 3:
-                            <div>该微信已注册绑卡并且已成功绑定->关闭浏览器器</div>
-                            <div onclick="closeweb()">确定</div>
+                            <div>该微信已注册绑卡并且已成功绑定->关闭浏览器</div>
+                            <a href="#" onclick="closeweb()">确定</a>
                             break;
                         case 4:
                             <div>已注册并且卡已挂失，跳转至注册页</div>
@@ -53,12 +58,12 @@
                         case 4:
                             // 已注册并且卡已挂失，提示挂失信息，确定信息返回公众号
                             <div>已注册绑定卡片已挂失->关闭浏览器</div>
-                            <div onclick="closeweb()">确定</div>
+                            <a href="#" onclick="closeweb()">确定</a>
                             break;
                         case 5:
                             // 已注册并且卡已注销，提示注销信息，确定信息返回公众号
                             <div>已注册绑定卡片已注销，无法挂失</div>
-                            <div onclick="closeweb()">确定</div>
+                            <a href="#" onclick="closeweb()">确定</a>
                             break;
                     }
                     break;
@@ -71,7 +76,7 @@
                         case 2:
                             // 已注册并且卡已到期，提示已到期信息，确定信息返回公众号
                             <div>所绑定卡已到期</div>
-                            <div onclick="closeweb()">确定</div>
+                            <a href="#" onclick="closeweb()">确定</a>
                             break;
                         case 3:
                             // 已注册并且卡已成功绑定，跳转卡片信息修改页
@@ -81,12 +86,12 @@
                         case 4:
                             // 已注册并且卡已挂失，提示挂失信息，确定信息返回公众号
                             <div>已注册绑定卡片已挂失->关闭浏览器</div>
-                            <div onclick="closeweb()">确定</div>
+                            <a href="#" onclick="closeweb()">确定</a>
                             break;
                         case 5:
                             // 已注册并且卡已注销，提示注销信息，确定信息返回公众号
                             <div>已注册绑定卡片已注销</div>
-                            <div onclick="closeweb()">确定</div>
+                            <a href="#" onclick="closeweb()">确定</a>
                             break;
                     }
                     break;
@@ -99,7 +104,7 @@
                         case 2:
                             // 已注册并且卡已到期，提示已到期信息，确定信息返回公众号
                             <div>所绑定卡已到期</div>
-                            <div onclick="closeweb()">确定</div>
+                            <a href="#" onclick="closeweb()">确定</a>
                             break;
                         case 3:
                             // 已注册并且卡已成功绑定，跳转实时位置查看页
@@ -109,12 +114,12 @@
                         case 4:
                             // 已注册并且卡已挂失，提示挂失信息，确定信息返回公众号
                             <div>已注册绑定卡片已挂失->关闭浏览器</div>
-                            <div onclick="closeweb()">确定</div>
+                            <a href="#" onclick="closeweb()">确定</a>
                             break;
                         case 5:
                             // 已注册并且卡已注销，提示注销信息，确定信息返回公众号
                             <div>已注册绑定卡片已注销</div>
-                            <div onclick="closeweb()">确定</div>
+                            <a href="#" onclick="closeweb()">确定</a>
                             break;
                     }
                     break;
@@ -127,7 +132,7 @@
                         case 2:
                             // 已注册并且卡已到期，提示已到期信息，确定信息返回公众号
                             <div>所绑定卡已到期</div>
-                            <div onclick="closeweb()">确定</div>
+                            <a href="#" onclick="closeweb()">确定</a>
                             break;
                         case 3:
                             // 已注册并且卡已成功绑定，跳转考勤查看页
@@ -137,12 +142,12 @@
                         case 4:
                             // 已注册并且卡已挂失，提示挂失信息，确定信息返回公众号
                             <div>已注册绑定卡片已挂失->关闭浏览器</div>
-                            <div onclick="closeweb()">确定</div>
+                            <a href="#" onclick="closeweb()">确定</a>
                             break;
                         case 5:
                             // 已注册并且卡已注销，提示注销信息，确定信息返回公众号
                             <div>已注册绑定卡片已注销</div>
-                            <div onclick="closeweb()">确定</div>
+                            <a href="#" onclick="closeweb()">确定</a>
                             break;
                     }
                     break;
@@ -161,10 +166,11 @@
         }
         else
         {
-            <div>-1 关闭wx浏览器</div>
+            <a href="#" onclick="closeweb()">-1 关闭wx浏览器</a>
         }
     }
 </div>
+
 @section Scripts{
     <script src="~/js/wxfunction.js" asp-append-version="true"></script>
     <script>

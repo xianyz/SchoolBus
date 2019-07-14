@@ -42,6 +42,7 @@
             <div class="input" onclick="$(this).find('input').focus()">
                 <span style="width: 30%">车牌号<span style="width: 10px; color: red; float: right">*</span></span>
                 <input type="text" asp-for="fplatenumber" value="@(Model?.fplatenumber)" maxlength="10" />
+                <input type="hidden" asp-for="deviceid" value="@(Model?.deviceid)" />
                 <span asp-validation-for="fplatenumber" style="color: red"></span>
             </div>
             <div class="input" onclick="$(this).find('input').focus()">
@@ -52,6 +53,7 @@
             <div class="input" id="dateSelect2">
                 <span style="width: 30%">所在学校<span style="width: 10px; color: red; float: right">*</span></span>
                 <input type="text" asp-for="fschoolname" value="@(Model?.fschoolname)" maxlength="50" readonly="readonly" />
+                <input type="hidden" asp-for="schoolid" value="@(Model?.schoolid)" />
                 <span asp-validation-for="fschoolname" style="color: red"></span>
             </div>
             <div class="input" onclick="$(this).find('input').focus()">
@@ -105,6 +107,8 @@
                 picker.pickers[0].setSelectedIndex(0);
                 picker.show(function (selectItems) {
                     $("#fschoolname").val(selectItems[1].text);
+                    $("#deviceid").val(selectItems[1].deviceid);
+                    $("#schoolid").val(selectItems[1].value);
                 });
             }
         });

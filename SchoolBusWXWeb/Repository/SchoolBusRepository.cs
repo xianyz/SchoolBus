@@ -195,7 +195,7 @@ namespace SchoolBusWXWeb.Repository
         {
             const string sql = @"select twxuser.pkid as wxpkid,twxuser.fphone,twxuser.frelationship,
             tcard.pkid, tcard.fcode, tcard.fstatus,tcard.fname,tcard.fbirthdate,tcard.fboardingaddress,
-            tdevice.fplatenumber,tschool.fname AS fschoolname from public.twxuser
+            tdevice.fplatenumber,tdevice.pkid as deviceid, tschool.fname AS fschoolname,tschool.pkid as schoolid from public.twxuser
             left join public.tcard on twxuser.fk_card_id=tcard.pkid
             left join public.tdevice ON tcard.fk_device_id = tdevice.pkid
             left join public.tschool ON tcard.fk_school_id = tschool.pkid
@@ -212,7 +212,7 @@ namespace SchoolBusWXWeb.Repository
         /// <returns></returns>
         public async Task<List<SchoolBaseInfo>> GetSchoolListByPlatenumberAsync(string platenumber)
         {
-            const string sql = @"SELECT tschool.ftype, tschool.pkid AS value,tschool.fname AS text FROM tschool 
+            const string sql = @"SELECT tschool.ftype, tschool.pkid AS value,tschool.fname AS text,tdevice.pkid as deviceid FROM tschool 
                                 INNER JOIN tcompany_school ON tschool.pkid = tcompany_school.fk_school_id
                                 INNER JOIN tdevice ON tcompany_school.fk_company_id = tdevice.fk_company_id
                                 WHERE tdevice.fplatenumber = @fplatenumber ORDER BY text";
