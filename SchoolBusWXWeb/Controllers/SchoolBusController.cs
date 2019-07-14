@@ -210,7 +210,7 @@ namespace SchoolBusWXWeb.Controllers
         [HttpGet]
         public async Task<IActionResult> GetSchoolListByNum(string platenumber)
         {
-            var result = await _schoolBusBusines.GetSchoolListByPlatenumberAsync(platenumber.ToUpper());
+            var result = await _schoolBusBusines.GetSchoolListByPlatenumberAsync(platenumber.ToUpper().Trim());
             return Json(result);
         }
         #endregion
