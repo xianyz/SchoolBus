@@ -28,17 +28,20 @@ namespace SchoolBusWXWeb.Controllers
             _option = option.Value;
             _schoolBusBusines = schoolBusBusines;
         }
-        public async Task<IActionResult> Index(double jd= 123.373345, double wd= 41.874623)
+        public async Task<IActionResult> Index(string key, double jd= 123.373345, double wd= 41.874623)
         {
-            // 设备编码 测试: 1125132097 线上有数据:1124347989
-            //var received = new MqttMessageReceived
-            //{
-            //    Topic = "cnc_sbm/gps_card",
-            //    Payload = "{\"pkid\":\"4475EEDC2BB74F7C8FA6A59CEDB64720\",\"dev_id\":\"1124347989\",\"sxc_zt\":\"1\",\"jd\":\"123.354068\",\"wd\":\"41.857727\",\"gd\":\"0\",\"card_num\":\"1\",\"card_list\":[\"3603631297\"]}",
-            //    QoS = new MQTTnet.Protocol.MqttQualityOfServiceLevel(),
-            //    Retain = false
-            //};
-            //await _schoolBusBusines.MqttMessageReceivedAsync(received);
+            if (key=="liuzhe")
+            {
+                // 设备编码 测试: 1125132097 线上有数据: 1124347989
+                var received = new MqttMessageReceived
+                {
+                    Topic = "cnc_sbm/gps_card",
+                    Payload = "{\"pkid\":\"4475EEDC2BB74F7C8FA6A59CEDB64720\",\"dev_id\":\"1124347989\",\"sxc_zt\":\"1\",\"jd\":\"123.354068\",\"wd\":\"41.857727\",\"gd\":\"0\",\"card_num\":\"1\",\"card_list\":[\"3603631297\"]}",
+                    QoS = new MQTTnet.Protocol.MqttQualityOfServiceLevel(),
+                    Retain = false
+                };
+                await _schoolBusBusines.MqttMessageReceivedAsync(received);
+            }
             await _chatHub.Clients.Group("3603631297").SendAsync("ReceiveMessage", jd, wd);
             return View();
         }
