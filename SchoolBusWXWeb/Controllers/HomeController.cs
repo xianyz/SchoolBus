@@ -34,7 +34,7 @@ namespace SchoolBusWXWeb.Controllers
             //var received = new MqttMessageReceived
             //{
             //    Topic = "cnc_sbm/gps_card",
-            //    Payload = "{\"pkid\":\"4475EEDC2BB74F7C8FA6A59CEDB64720\",\"dev_id\":\"1125132097\",\"sxc_zt\":\"2\",\"jd\":\"123.354068\",\"wd\":\"41.857727\",\"gd\":\"0\",\"card_num\":\"1\",\"card_list\":[\"3603631297\"]}",
+            //    Payload = "{\"pkid\":\"4475EEDC2BB74F7C8FA6A59CEDB64720\",\"dev_id\":\"1124347989\",\"sxc_zt\":\"1\",\"jd\":\"123.354068\",\"wd\":\"41.857727\",\"gd\":\"0\",\"card_num\":\"1\",\"card_list\":[\"3603631297\"]}",
             //    QoS = new MQTTnet.Protocol.MqttQualityOfServiceLevel(),
             //    Retain = false
             //};

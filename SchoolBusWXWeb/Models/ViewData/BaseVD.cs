@@ -273,4 +273,5 @@ namespace SchoolBusWXWeb.Models.ViewData
         /// </summary>
         public int wxmsgcount { get; set; }
     }
+
 }

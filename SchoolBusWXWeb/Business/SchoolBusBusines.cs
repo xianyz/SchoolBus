@@ -5,8 +5,8 @@ using SchoolBusWXWeb.Models.SchollBusModels;
 using SchoolBusWXWeb.Models.ViewData;
 using SchoolBusWXWeb.Repository;
 #if !DEBUG
-using Senparc.Weixin;
 using SchoolBusWXWeb.Utilities;
+using Senparc.Weixin.MP.AdvancedAPIs.TemplateMessage;
 #endif
 using System;
 using System.Collections.Generic;
@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using SchoolBusWXWeb.Hubs;
+
 
 
 // ReSharper disable RedundantToStringCallForValueType
@@ -623,6 +624,7 @@ namespace SchoolBusWXWeb.Business
                                 await _chatHub.Clients.Group("3603631297").SendAsync("ReceiveMessage", jd, wd);
                                 var tcardlog = new tcardlog
                                 {
+                                    pkid= Guid.NewGuid().ToString("N"),
                                     fcreatetime = DateTime.Now,
                                     fcode = mqttMessage.dev_id,
                                     fid = cardid,
@@ -646,7 +648,7 @@ namespace SchoolBusWXWeb.Business
                             #endregion
 
                             #region 推送模板消息和日志
-                            var sb = new StringBuilder("SELECT tcard.fname,twxuser.fwxid,tdevice.fplatenumber,tdevice.fdriver,tdevice.fdriverphone,tcard.fid,");
+                            var sb = new StringBuilder("SELECT tcard.fname as fname,twxuser.fwxid as fwxid,tdevice.fplatenumber as fplatenumber,tdevice.fdriver,tdevice.fdriverphone,tcard.fid,");
                             sb.Append("case when(tcard.ftrialdate >= now() or (SELECT count(1) FROM tterm INNER JOIN ttermpay ON ttermpay.fk_term_id = tterm.pkid ");
                             // 是否服务判断,未在试用期和付费用户只推送一条上车消息
                             sb.Append("where ttermpay.fcode = tcard.fcode and tterm.fstartdate <= now() and tterm.fenddate >= now()) > 0)");
@@ -685,19 +687,17 @@ namespace SchoolBusWXWeb.Business
 
 #if !DEBUG
                                 const string remk = "\r\n鲸卫士全面上线，关注学生安全，鲸卫士让您实时了解孩子行程！";
-                                var tempdata = new TemplateMessageSchoolBus("点击查看刷卡位置",
-                                    user.fname,
-                                    DateTime.Now.ToString("HH:mm"),
-                                    user.fdriver,
-                                    user.fdriverphone,
-                                    user.fplatenumber,
-                                    user.paystate == 1 ? remk : " *您绑定的卡已经不在使用期内，请及时续费" + remk,
-                                    _option.WxOption.TemplateId,
-                                    _option.WxOption.Domainnames + "SchoolBus/GoAddress?showType=0&cardLogId=" + map.GetValueOrDefault(user.fid),
-                                    "测试格式"
-                                );
-                                var openid= "ovzSu1Ux_R10fGTWCEawfdVADSy8";//user.fwxid
-                                Senparc.Weixin.MP.AdvancedAPIs.TemplateApi.SendTemplateMessage(Config.SenparcWeixinSetting.WeixinAppId, openid, tempdata);
+                                string url= _option.WxOption.Domainnames + "SchoolBus/GoAddress?showType=0&cardLogId=" + map.GetValueOrDefault(user.fid);
+                                const string openid = "ovzSu1Ux_R10fGTWCEawfdVADSy8"; //user.fwxid
+                                var schoolData = new 
+                                {
+                                    first = new TemplateDataItem("点击查看刷卡位置", "#000000"),
+                                    keyword1 = new TemplateDataItem(user.fname, "#000000"),
+                                    keyword2 = new TemplateDataItem(DateTime.Now.ToString("HH:mm"), "#000000"),
+                                    keyword3 = new TemplateDataItem(user.fplatenumber, "#000000"),
+                                    remark = new TemplateDataItem(remk, "#ff0000")
+                                };
+                                await Senparc.Weixin.MP.AdvancedAPIs.TemplateApi.SendTemplateMessageAsync(Senparc.Weixin.Config.SenparcWeixinSetting.WeixinAppId, openid, _option.WxOption.TemplateId, url, schoolData, null);
 #endif
                                 #endregion
                             }
