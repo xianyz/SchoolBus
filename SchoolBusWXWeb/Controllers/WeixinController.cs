@@ -36,6 +36,7 @@ namespace SchoolBusWXWeb.Controllers
         /// 最简化的处理流程
         /// </summary>
         [HttpPost]
+        [IgnoreAntiforgeryToken]
         [ActionName("Index")]
         public async Task<ActionResult> Post(PostModel postModel)
         {
