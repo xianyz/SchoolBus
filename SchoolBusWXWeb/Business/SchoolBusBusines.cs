@@ -192,7 +192,7 @@ namespace SchoolBusWXWeb.Business
                 DateTime triald = Convert.ToDateTime(cardRecord.ftrialdate);
                 var trialdateRecord = await _schoolBusRepository.GetSchoolConfigAsync("001"); // 首次注册试用期（天）
                 int.TryParse(trialdateRecord.fvalue, out int tt);
-                cardRecord.ftrialdate = triald.AddYears(tt);  // 卡片试用期赋值
+                cardRecord.ftrialdate = triald.AddDays(tt);  // 卡片试用期赋值
             }
             cardRecord.fstatus = 1;   // 维护卡片信息状态 
             var s3 = await _schoolBusRepository.UpdateTCardAsync(cardRecord);
