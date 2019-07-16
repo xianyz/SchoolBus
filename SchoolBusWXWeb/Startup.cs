@@ -147,6 +147,7 @@ namespace SchoolBusWXWeb
             //{
             //    await Tools.ConnectMqttServerAsync();
             //});
+            //Task.FromResult(Tools.ConnectMqttServerAsync());
         }
         /// <summary>
         /// 配置微信跟踪日志
