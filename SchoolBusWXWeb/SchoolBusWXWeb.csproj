@@ -36,7 +36,7 @@
     <PackageReference Include="Npgsql" Version="4.0.7" />
     <PackageReference Include="Qiniu.Shared" Version="7.2.15" />
     <PackageReference Include="Senparc.Weixin" Version="6.4.11" />
-    <PackageReference Include="Senparc.Weixin.MP" Version="16.7.9" />
+    <PackageReference Include="Senparc.Weixin.MP" Version="16.7.10" />
     <PackageReference Include="Senparc.Weixin.MP.MVC" Version="7.2.14" />
   </ItemGroup>
 
