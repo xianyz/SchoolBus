@@ -2,41 +2,41 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <UserSecretsId>e2cc770e-5c7b-441e-883c-d157600d6c95</UserSecretsId>
+    <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
+    <UserSecretsId>388d989b-70ef-4dc9-8045-b94f79fd7f43</UserSecretsId>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;AD0001</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;AD0001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\css\base.less" />
-    <None Include="wwwroot\css\main.css.map" />
-    <None Include="wwwroot\css\main.less" />
-    <None Include="wwwroot\css\tools\global.css.map" />
-    <None Include="wwwroot\css\tools\global.less" />
-    <None Include="wwwroot\css\tools\reset.css.map" />
-    <None Include="wwwroot\css\tools\reset.less" />
-    <None Include="wwwroot\lib\jquery\dist\jquery.js" />
-    <None Include="wwwroot\lib\jquery\dist\jquery.min.js" />
-    <None Include="wwwroot\lib\jquery\dist\jquery.min.map" />
-    <None Include="wwwroot\lib\laydate\laydate.js" />
-    <None Include="wwwroot\lib\laydate\theme\default\font\iconfont.svg" />
+    <None Include="Views\Home\Index.cshtml" />
+    <None Include="Views\Home\Privacy.cshtml" />
+    <None Include="Views\Shared\Error.cshtml" />
+    <None Include="Views\Shared\_Layout.cshtml" />
+    <None Include="Views\Shared\_ValidationScriptsPartial.cshtml" />
+    <None Include="Views\_ViewImports.cshtml" />
+    <None Include="Views\_ViewStart.cshtml" />
   </ItemGroup>
 
 
   <ItemGroup>
     <PackageReference Include="aliyun-net-sdk-core" Version="1.5.3" />
     <PackageReference Include="Dapper" Version="2.0.4" />
+    <PackageReference Include="Metro.Logging.File" Version="1.0.3" />
+    <PackageReference Include="Metro.Logging.File.UI" Version="1.0.3" />
     <PackageReference Include="MQTTnet" Version="3.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="Npgsql" Version="4.0.10" />
+    <PackageReference Include="Npgsql" Version="4.1.0-preview2" />
     <PackageReference Include="Qiniu.Shared" Version="7.2.15" />
     <PackageReference Include="Senparc.Weixin" Version="6.6.0" />
     <PackageReference Include="Senparc.Weixin.MP" Version="16.9.0" />
     <PackageReference Include="Senparc.Weixin.MP.MVC" Version="7.4.0" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <ProjectReference Include="..\Metro.Logging.File.UI\Metro.Logging.File.UI.csproj" />
-    <ProjectReference Include="..\Metro.Logging.File\Metro.Logging.File.csproj" />
   </ItemGroup>
 
 </Project>
