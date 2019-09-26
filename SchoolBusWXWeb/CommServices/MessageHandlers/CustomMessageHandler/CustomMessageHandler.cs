@@ -7,6 +7,8 @@ using Senparc.Weixin.MP.MessageHandlers;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Senparc.Weixin.MP.MessageContexts;
+
 // ReSharper disable RedundantToStringCallForValueType
 // ReSharper disable RedundantToStringCall
 // ReSharper disable NotAccessedField.Local
@@ -19,7 +21,7 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
     /// 自定义MessageHandler
     /// 把MessageHandler作为基类，重写对应请求的处理方法
     /// </summary>
-    public class CustomMessageHandler : MessageHandler<CustomMessageContext>
+    public class CustomMessageHandler : MessageHandler<DefaultMpMessageContext>
     {
         private readonly string _appId = Config.SenparcWeixinSetting.WeixinAppId;
         public CustomMessageHandler(Stream inputStream, PostModel postModel, int maxRecordCount = 0) : base(inputStream, postModel, maxRecordCount)
