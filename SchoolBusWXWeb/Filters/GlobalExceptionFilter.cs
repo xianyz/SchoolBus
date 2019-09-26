@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -13,11 +14,11 @@ namespace SchoolBusWXWeb.Filters
 {
     public class GlobalExceptionFilter : IAsyncExceptionFilter
     {
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
         private readonly ILoggerFactory _loggerFactory; // 自带日志
 
         //构造函数注入ILoggerHelper
-        public GlobalExceptionFilter(ILoggerFactory loggerFactory, IHostingEnvironment env)
+        public GlobalExceptionFilter(ILoggerFactory loggerFactory, IWebHostEnvironment env)
         {
             _env = env;
             _loggerFactory = loggerFactory;

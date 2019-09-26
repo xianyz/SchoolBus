@@ -24,7 +24,7 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
         private readonly string _appId = Config.SenparcWeixinSetting.WeixinAppId;
         public CustomMessageHandler(Stream inputStream, PostModel postModel, int maxRecordCount = 0) : base(inputStream, postModel, maxRecordCount)
         {
-            base.CurrentMessageContext.ExpireMinutes = 10;
+            base.GetCurrentMessageContext().ExpireMinutes = 10;
             if (!string.IsNullOrEmpty(postModel.AppId))
             {
                 _appId = postModel.AppId;//通过第三方开放平台发送过来的请求

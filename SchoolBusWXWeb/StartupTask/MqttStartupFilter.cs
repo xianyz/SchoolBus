@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using MQTTnet;
 using MQTTnet.Client;
@@ -14,6 +13,8 @@ using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
+using IApplicationLifetime = Microsoft.AspNetCore.Hosting.IApplicationLifetime;
 
 // ReSharper disable NotAccessedField.Local
 // ReSharper disable IdentifierTypo
@@ -29,9 +30,9 @@ namespace SchoolBusWXWeb.StartupTask
     {
         private readonly MqttOption _option;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IApplicationLifetime _appLifetime;
+        private readonly IHostApplicationLifetime _appLifetime;
         private readonly IHubContext<ChatHub> _chatHub;
-        public MqttStartupFilter(IServiceProvider serviceProvider, IOptions<SiteConfig> option, IApplicationLifetime appLifetime, IHubContext<ChatHub> chatHub)
+        public MqttStartupFilter(IServiceProvider serviceProvider, IOptions<SiteConfig> option, IHostApplicationLifetime appLifetime, IHubContext<ChatHub> chatHub)
         {
             _chatHub = chatHub;
             _serviceProvider = serviceProvider;
