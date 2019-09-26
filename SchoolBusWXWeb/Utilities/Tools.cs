@@ -31,11 +31,10 @@ namespace SchoolBusWXWeb.Utilities
         private static SiteConfig _settings;
         private static readonly string[] ImageExtensions = { ".jpg", ".png", ".gif", ".jpeg", ".bmp" };
 
-        public static IApplicationBuilder SetUtilsProviderConfiguration(this IApplicationBuilder serviceProvider, IConfiguration configuration, ILoggerFactory loggerFactory)
+        public static void SetUtilsProviderConfiguration(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
             _settings = configuration.GetSection("SiteConfig").Get<SiteConfig>();
             _toollogger = loggerFactory.CreateLogger("Tools");
-            return serviceProvider;
         }
 
         /// <summary>
