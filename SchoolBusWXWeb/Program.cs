@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
+
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -12,18 +14,20 @@ namespace SchoolBusWXWeb
     {
         public static async Task Main(string[] args)
         {
-            await CreateWebHostBuilder(args)
+            await CreateHostBuilder(args)
                 .Build()
                 .RunAsync();
                 //.RunWithTasksAsync();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
 #if !DEBUG
-                .UseUrls("http://0.0.0.0:5005/")
+                    webBuilder.UseUrls("http://0.0.0.0:5005/");
 #endif
-                .ConfigureLogging(builder => builder.AddFile())
-                .UseStartup<Startup>();
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }

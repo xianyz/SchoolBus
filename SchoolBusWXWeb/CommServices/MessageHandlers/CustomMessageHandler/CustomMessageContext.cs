@@ -1,9 +1,10 @@
 ﻿using Senparc.NeuChar.Context;
 using Senparc.NeuChar.Entities;
+using Senparc.Weixin.MP.MessageContexts;
 
 namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
 {
-    public class CustomMessageContext : MessageContext<IRequestMessageBase, IResponseMessageBase>
+    public class CustomMessageContext : DefaultMpMessageContext
     {
         public CustomMessageContext()
         {

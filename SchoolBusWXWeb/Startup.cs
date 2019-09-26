@@ -20,6 +20,7 @@ using Senparc.Weixin;
 using Senparc.Weixin.Entities;
 using Senparc.Weixin.MP;
 using Senparc.Weixin.RegisterServices;
+using Microsoft.Extensions.Hosting;
 
 
 #if !DEBUG
@@ -55,15 +56,27 @@ namespace SchoolBusWXWeb
             services.AddDataProtection().SetApplicationName("SchoolBusWeb").PersistKeysToFileSystem(new DirectoryInfo(@"/var/schooldpkeys/"));
 #endif
             services.Configure<SiteConfig>(Configuration.GetSection("SiteConfig"));
+            services.AddControllersWithViews(options =>
+            {
+                options.Filters.Add<GlobalExceptionFilter>();
+                // 会自动忽略不需要做CSRF验证的请求类型，例如HttpGet请求 Post请求就不需要添加[ValidateAntiForgeryToken]
+                // 使用senparc开发微信会接收不到消息,需要给微信post action添加[IgnoreAntiforgeryToken]
+                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+            });
+
+            
             services.AddScoped<ISchoolBusBusines, SchoolBusBusines>();
             services.AddScoped<ISchoolBusRepository, SchoolBusRepository>();
             services.AddScoped<MqttHelper>();
+            
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddMemoryCache();                           // 使用本地缓存必须添加
             services.AddSession();                               // 使用Session
+            services.AddSignalR();//使用 SignalR
+
             services.AddSenparcGlobalServices(Configuration)     // Senparc.CO2NET 全局注册
                     .AddSenparcWeixinServices(Configuration);    // Senparc.Weixin 注册
-            services.AddSignalR();
+                    //.AddSenparcWebSocket<CustomNetCoreWebSocketMessageHandler>();//Senparc.WebSocket 注册（按需）
             services.AddLoggingFileUI(); // https://localhost:5001/Logging
 
 
@@ -71,31 +84,22 @@ namespace SchoolBusWXWeb
             // services.AddHttpsRedirection(opt => opt.HttpsPort = 443); // 配合Configure->app.UseHttpsRedirection()
             // services.AddStartupTask<MqttStartupFilter>();
             // services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, MqttService>();
-
-            services.AddMvc(options =>
-            {
-                options.Filters.Add<GlobalExceptionFilter>();
-                // 会自动忽略不需要做CSRF验证的请求类型，例如HttpGet请求 Post请求就不需要添加[ValidateAntiForgeryToken]
-                // 使用senparc开发微信会接收不到消息,需要给微信post action添加[IgnoreAntiforgeryToken]
-                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<SenparcSetting> senparcSetting, IOptions<SenparcWeixinSetting> senparcWeixinSetting, IApplicationLifetime appLifetime, MqttHelper mQtt)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory, IOptions<SenparcSetting> senparcSetting, IOptions<SenparcWeixinSetting> senparcWeixinSetting, IHostApplicationLifetime appLifetime, MqttHelper mQtt)
         {
             #region 控制程序生命周期
             // 发生在应用启动成功以后，也就是Startup.Configure()方法结束后。
             appLifetime.ApplicationStarted.Register(async () =>
             {
-                await mQtt.ConnectMqttServerAsync();
+                // await mQtt.ConnectMqttServerAsync(); // 服务器已经下线了
             });
             // 发生在程序正在完成正常退出的时候，所有请求都被处理完成。程序会在处理完这货的Action委托代码以后退出
             appLifetime.ApplicationStopped.Register(async () =>
             {
-                MqttHelper.IsReconnect = false;
-                await MqttHelper.MqttClient.DisconnectAsync();
+                // MqttHelper.IsReconnect = false;      // 服务器已经下线了
+                // await MqttHelper.MqttClient.DisconnectAsync();
             });
             // 发生在程序正在执行退出的过程中，此时还有请求正在被处理。应用程序也会等到这个事件完成后，再退出。
             //appLifetime.ApplicationStopping.Register(() =>
@@ -133,14 +137,17 @@ namespace SchoolBusWXWeb
                 .RegisterMpAccount(senparcWeixinSetting.Value, "【刘哲测试】公众号"); // 注册公众号(可注册多个)
             #endregion
 
-            app.UseSignalR(route =>
-            {
-                route.MapHub<ChatHub>("/chathub");
-            });
 
-            app.UseMvc(routes =>
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapHub<ChatHub>("/chathub");
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
 
             //Task.Run(async () =>

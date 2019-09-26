@@ -29,7 +29,7 @@ namespace SchoolBusWXWeb.Filters
                  var logger = _loggerFactory.CreateLogger(context.Exception.TargetSite.ReflectedType);
                  var json = new ErrorResponse("未知错误,请重试")
                  {
-                     Name = context.ActionDescriptor.GetType().GetProperty("ActionName").GetValue(context.ActionDescriptor).ToString(),
+                     Name = context.ActionDescriptor.GetType().GetProperty("ActionName")?.GetValue(context.ActionDescriptor).ToString(),
                      Path = $"链接访问出错：{context.HttpContext.Request.Path}",
                      Msg = context.Exception.Message,
                      Data = context.Exception
@@ -43,8 +43,6 @@ namespace SchoolBusWXWeb.Filters
                  {
                      logger.LogError(new EventId(context.Exception.HResult), context.Exception, JsonConvert.SerializeObject(json));
                  }
-                 //context.Result = new ApplicationErrorResult(json);
-                 //context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                  context.Result = new RedirectResult("/Home/Error");
                  context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                  context.ExceptionHandled = true; //设置异常已经处理,否则会被其他异常过滤器覆盖

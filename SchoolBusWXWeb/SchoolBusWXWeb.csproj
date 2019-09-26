@@ -1,10 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
-    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-    <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
-    <LangVersion>7.3</LangVersion>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <UserSecretsId>e2cc770e-5c7b-441e-883c-d157600d6c95</UserSecretsId>
   </PropertyGroup>
 
@@ -25,19 +22,21 @@
 
 
   <ItemGroup>
-    <PackageReference Include="aliyun-net-sdk-core" Version="1.5.1" />
-    <PackageReference Include="Dapper" Version="1.60.6" />
-    <PackageReference Include="Metro.Logging.File" Version="1.0.2" />
-    <PackageReference Include="Metro.Logging.File.UI" Version="1.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
-    <PackageReference Include="MQTTnet" Version="3.0.5" />
+    <PackageReference Include="aliyun-net-sdk-core" Version="1.5.3" />
+    <PackageReference Include="Dapper" Version="2.0.4" />
+    <PackageReference Include="MQTTnet" Version="3.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="Npgsql" Version="4.0.7" />
+    <PackageReference Include="Npgsql" Version="4.0.10" />
     <PackageReference Include="Qiniu.Shared" Version="7.2.15" />
-    <PackageReference Include="Senparc.Weixin" Version="6.4.11" />
-    <PackageReference Include="Senparc.Weixin.MP" Version="16.7.10" />
-    <PackageReference Include="Senparc.Weixin.MP.MVC" Version="7.2.14" />
+    <PackageReference Include="Senparc.Weixin" Version="6.6.0" />
+    <PackageReference Include="Senparc.Weixin.MP" Version="16.9.0" />
+    <PackageReference Include="Senparc.Weixin.MP.MVC" Version="7.4.0" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\Metro.Logging.File.UI\Metro.Logging.File.UI.csproj" />
+    <ProjectReference Include="..\Metro.Logging.File\Metro.Logging.File.csproj" />
   </ItemGroup>
 
 </Project>

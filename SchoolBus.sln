@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolBusWXWeb", "SchoolBusWXWeb\SchoolBusWXWeb.csproj", "{AD011582-3B29-4119-9034-A0A1F24EA1CE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Metro.Logging.File", "Metro.Logging.File\Metro.Logging.File.csproj", "{38111513-A714-4D17-B1DC-988DB706EB9B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Metro.Logging.File.UI", "Metro.Logging.File.UI\Metro.Logging.File.UI.csproj", "{8E367910-D09C-4A8D-89AA-98A10E3578AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{AD011582-3B29-4119-9034-A0A1F24EA1CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD011582-3B29-4119-9034-A0A1F24EA1CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD011582-3B29-4119-9034-A0A1F24EA1CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38111513-A714-4D17-B1DC-988DB706EB9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38111513-A714-4D17-B1DC-988DB706EB9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38111513-A714-4D17-B1DC-988DB706EB9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38111513-A714-4D17-B1DC-988DB706EB9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E367910-D09C-4A8D-89AA-98A10E3578AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E367910-D09C-4A8D-89AA-98A10E3578AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E367910-D09C-4A8D-89AA-98A10E3578AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E367910-D09C-4A8D-89AA-98A10E3578AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
