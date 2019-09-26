@@ -49,7 +49,12 @@ namespace SchoolBusWXWeb
             services.AddScoped<ISchoolBusRepository, SchoolBusRepository>();
             services.AddScoped<MqttHelper>();
             // services.AddStartupTask<MqttStartupFilter>();
-            services.AddLoggingFileUI();
+            services.AddLoggingFileUI();         
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddMemoryCache(); // 使用本地缓存必须添加
+            services.AddSession();   
+            services.AddSignalR();
+            services.AddSenparcGlobalServices(Configuration).AddSenparcWeixinServices(Configuration);
             services.AddRazorPages();
             services.AddControllersWithViews(options =>
             {
@@ -57,11 +62,6 @@ namespace SchoolBusWXWeb
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
             });
 
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddMemoryCache(); // 使用本地缓存必须添加
-            services.AddSession();   
-            services.AddSignalR();
-            services.AddSenparcGlobalServices(Configuration).AddSenparcWeixinServices(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -95,23 +95,15 @@ namespace SchoolBusWXWeb
             {
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                // app.UseHsts();
             }
-            app.UseHttpsRedirection();
+          
+            // app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseRouting();
             app.UseAuthorization();
             app.UseSession();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapHub<ChatHub>("/chathub");
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapRazorPages();
-            });
-
             #region 微信相关
             RegisterService.Start(env, senparcSetting.Value)
                 .UseSenparcGlobal()  // 启动 CO2NET 全局注册，必须！
@@ -119,8 +111,14 @@ namespace SchoolBusWXWeb
                 .UseSenparcWeixin(senparcWeixinSetting.Value, senparcSetting.Value)
                 .RegisterMpAccount(senparcWeixinSetting.Value, "【刘哲测试】公众号");
             #endregion
-
-
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHub<ChatHub>("/chathub");
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
+            });         
         }
         /// <summary>
         /// 配置微信跟踪日志
