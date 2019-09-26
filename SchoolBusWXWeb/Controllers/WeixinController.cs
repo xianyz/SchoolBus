@@ -48,11 +48,11 @@ namespace SchoolBusWXWeb.Controllers
             //自定义MessageHandler，对微信请求的详细判断操作都在这里面。
             var messageHandler = new CustomMessageHandler(Request.GetRequestMemoryStream(), postModel, 10);
 
-            messageHandler.SaveRequestMessageLog();//记录 Request 日志（可选）
+            // messageHandler.SaveRequestMessageLog();//记录 Request 日志（可选）
 
             await messageHandler.ExecuteAsync(new CancellationToken());//执行微信处理过程（关键）这里用异步CustomMessageHandler里面也需要用异步
 
-            messageHandler.SaveResponseMessageLog();//记录 Response 日志（可选）
+            // messageHandler.SaveResponseMessageLog();//记录 Response 日志（可选）
 
             //return Content(messageHandler.ResponseDocument.ToString());//v0.7-
             //return new WeixinResult(messageHandler);//v0.8+
