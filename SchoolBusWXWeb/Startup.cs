@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MQTTnet.Client;
 using SchoolBusWXWeb.Business;
+using SchoolBusWXWeb.CommServices;
 using SchoolBusWXWeb.Filters;
 using SchoolBusWXWeb.Hubs;
 using SchoolBusWXWeb.Models;
@@ -55,6 +57,10 @@ namespace SchoolBusWXWeb
             services.AddSession();   
             services.AddSignalR();
             services.AddSenparcGlobalServices(Configuration).AddSenparcWeixinServices(Configuration);
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
             services.AddRazorPages();
             services.AddControllersWithViews(options =>
             {
@@ -95,10 +101,10 @@ namespace SchoolBusWXWeb
             {
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                // app.UseHsts();
+                app.UseHsts();
             }
           
-            // app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseRouting();
@@ -118,7 +124,8 @@ namespace SchoolBusWXWeb
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
-            });         
+            });
+          
         }
         /// <summary>
         /// 配置微信跟踪日志
@@ -142,8 +149,8 @@ namespace SchoolBusWXWeb
                 //加入每次触发WeixinExceptionLog后需要执行的代码
 
                 //发送模板消息给管理员                             -- DPBMARK Redis
-                //var eventService = new Senparc.Weixin.MP.Sample.CommonService.EventService();
-                //eventService.ConfigOnWeixinExceptionFunc(ex);      // DPBMARK_END
+                var eventService = new EventService();
+                eventService.ConfigOnWeixinExceptionFunc(ex);      // DPBMARK_END
             };
         }
     }
