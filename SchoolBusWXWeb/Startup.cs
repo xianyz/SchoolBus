@@ -92,7 +92,6 @@ namespace SchoolBusWXWeb
             //});
             #endregion
 
-            Tools.SetUtilsProviderConfiguration(Configuration, loggerFactory); // æ≤Ã¨π§æﬂ¿‡
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

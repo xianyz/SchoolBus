@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ namespace SchoolBusWXWeb.StartupTask
     }
     public static class StartupTaskWebHostExtensions
     {
-        public static async Task RunWithTasksAsync(this IWebHost webHost, CancellationToken cancellationToken = default)
+        public static async Task RunWithTasksAsync(this IHost webHost, CancellationToken cancellationToken = default)
         {
             var startupTasks = webHost.Services.GetServices<IStartupTask>();
 

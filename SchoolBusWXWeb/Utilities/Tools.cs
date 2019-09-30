@@ -31,9 +31,9 @@ namespace SchoolBusWXWeb.Utilities
         private static SiteConfig _settings;
         private static readonly string[] ImageExtensions = { ".jpg", ".png", ".gif", ".jpeg", ".bmp" };
 
-        public static void SetUtilsProviderConfiguration(IConfiguration configuration, ILoggerFactory loggerFactory)
+        public static void SetUtilsProviderConfiguration(SiteConfig settings, ILoggerFactory loggerFactory)
         {
-            _settings = configuration.GetSection("SiteConfig").Get<SiteConfig>();
+            _settings = settings;
             _toollogger = loggerFactory.CreateLogger("Tools");
         }
 
@@ -198,7 +198,7 @@ namespace SchoolBusWXWeb.Utilities
         /// <returns></returns>
         public static SiteConfig GetInitConst()
         {
-            return AppSetting.GetConfig();
+            return _settings;
         }
 
         /// <summary>

@@ -13,7 +13,7 @@ namespace SchoolBusWXWeb.Repository.Common
         {
             return await Task.Run(() =>
             {
-                if (string.IsNullOrWhiteSpace(npgsqlConnectionString)) npgsqlConnectionString = AppSetting.DbConnection;
+                if (string.IsNullOrWhiteSpace(npgsqlConnectionString)) npgsqlConnectionString = Tools.GetInitConst().DefaultConnection;
                 var conn = new NpgsqlConnection(npgsqlConnectionString);
                 return conn;
             });
