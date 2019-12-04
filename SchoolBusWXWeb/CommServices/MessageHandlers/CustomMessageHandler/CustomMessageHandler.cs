@@ -3,16 +3,12 @@ using Senparc.Weixin;
 using Senparc.Weixin.MP.AdvancedAPIs;
 using Senparc.Weixin.MP.Entities;
 using Senparc.Weixin.MP.Entities.Request;
+using Senparc.Weixin.MP.MessageContexts;
 using Senparc.Weixin.MP.MessageHandlers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Senparc.Weixin.MP.MessageContexts;
-
-// ReSharper disable RedundantToStringCallForValueType
-// ReSharper disable RedundantToStringCall
-// ReSharper disable NotAccessedField.Local
-
 
 namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
 {
@@ -24,9 +20,20 @@ namespace SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler
     public class CustomMessageHandler : MessageHandler<DefaultMpMessageContext>
     {
         private readonly string _appId = Config.SenparcWeixinSetting.WeixinAppId;
-        public CustomMessageHandler(Stream inputStream, PostModel postModel, int maxRecordCount = 0) : base(inputStream, postModel, maxRecordCount)
+
+        /// <summary>
+        /// 为中间件提供生成当前类的委托
+        /// </summary>
+        public static Func<Stream, PostModel, int, CustomMessageHandler> GenerateMessageHandler = (stream, postModel, maxRecordCount)
+                        => new CustomMessageHandler(stream, postModel, maxRecordCount, false /* 是否只允许处理加密消息，以提高安全性 */);
+
+        public CustomMessageHandler(Stream inputStream, PostModel postModel, int maxRecordCount = 0, bool onlyAllowEcryptMessage = false)
+            : base(inputStream, postModel, maxRecordCount, onlyAllowEcryptMessage)
         {
-            base.GetCurrentMessageContext().ExpireMinutes = 10;
+            //这里设置仅用于测试，实际开发可以在外部更全局的地方设置，
+            //比如MessageHandler<MessageContext>.GlobalGlobalMessageContext.ExpireMinutes = 3。
+            GlobalMessageContext.ExpireMinutes = 3;
+            //OnlyAllowEcryptMessage = true;//是否只允许接收加密消息，默认为 false
             if (!string.IsNullOrEmpty(postModel.AppId))
             {
                 _appId = postModel.AppId;//通过第三方开放平台发送过来的请求

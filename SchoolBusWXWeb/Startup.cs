@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using MQTTnet.Client;
 using SchoolBusWXWeb.Business;
 using SchoolBusWXWeb.CommServices;
+using SchoolBusWXWeb.CommServices.MessageHandlers.CustomMessageHandler;
 using SchoolBusWXWeb.Filters;
 using SchoolBusWXWeb.Hubs;
 using SchoolBusWXWeb.Models;
@@ -19,9 +20,11 @@ using SchoolBusWXWeb.Utilities;
 using Senparc.CO2NET;
 using Senparc.CO2NET.RegisterServices;
 using Senparc.CO2NET.Trace;
+using Senparc.NeuChar.MessageHandlers;
 using Senparc.Weixin;
 using Senparc.Weixin.Entities;
 using Senparc.Weixin.MP;
+using Senparc.Weixin.MP.MessageHandlers.Middleware;
 using Senparc.Weixin.RegisterServices;
 
 #if !DEBUG
@@ -51,10 +54,10 @@ namespace SchoolBusWXWeb
             services.AddScoped<ISchoolBusRepository, SchoolBusRepository>();
             services.AddScoped<MqttHelper>();
             // services.AddStartupTask<MqttStartupFilter>();
-            services.AddLoggingFileUI();         
+            services.AddLoggingFileUI();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddMemoryCache(); // 使用本地缓存必须添加
-            services.AddSession();   
+            services.AddSession();
             services.AddSignalR();
             services.AddSenparcGlobalServices(Configuration).AddSenparcWeixinServices(Configuration);
             services.Configure<KestrelServerOptions>(options =>
@@ -77,7 +80,7 @@ namespace SchoolBusWXWeb
             // 发生在应用启动成功以后，也就是Startup.Configure()方法结束后。
             appLifetime.ApplicationStarted.Register(async () =>
             {
-                 await mQtt.ConnectMqttServerAsync();
+                await mQtt.ConnectMqttServerAsync();
             });
             // 发生在程序正在完成正常退出的时候，所有请求都被处理完成。程序会在处理完这货的Action委托代码以后退出
             appLifetime.ApplicationStopped.Register(async () =>
@@ -102,7 +105,7 @@ namespace SchoolBusWXWeb
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-          
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
@@ -110,11 +113,29 @@ namespace SchoolBusWXWeb
             app.UseAuthorization();
             app.UseSession();
             #region 微信相关
-            RegisterService.Start(env, senparcSetting.Value)
-                .UseSenparcGlobal()  // 启动 CO2NET 全局注册，必须！
-                .RegisterTraceLog(ConfigTraceLog) //配置TraceLog
-                .UseSenparcWeixin(senparcWeixinSetting.Value, senparcSetting.Value)
-                .RegisterMpAccount(senparcWeixinSetting.Value, "【刘哲测试】公众号");
+            //RegisterService.Start(env, senparcSetting.Value)
+            //    .UseSenparcGlobal()  // 启动 CO2NET 全局注册，必须！
+            //    .RegisterTraceLog(ConfigTraceLog) //配置TraceLog
+            //    .UseSenparcWeixin(senparcWeixinSetting.Value, senparcSetting.Value)
+            //    .RegisterMpAccount(senparcWeixinSetting.Value, "【刘哲测试】公众号");
+
+            app.UseSenparcGlobal(env, senparcSetting.Value, globalRegister =>
+            {
+                #region 注册日志（按需，建议）
+                globalRegister.RegisterTraceLog(ConfigTraceLog);//配置TraceLog
+                #endregion
+            }, true).UseSenparcWeixin(senparcWeixinSetting.Value, weixinRegister =>
+            {
+                weixinRegister.RegisterMpAccount(senparcWeixinSetting.Value, "【刘哲测试】公众号");
+            });
+            app.UseMessageHandlerForMp("/WeixinAsync", CustomMessageHandler.GenerateMessageHandler, options =>
+            {
+                //此处为委托，可以根据条件动态判断输入条件（必须）
+                options.AccountSettingFunc = context => senparcWeixinSetting.Value;
+                //对 MessageHandler 内异步方法未提供重写时，调用同步方法（按需）
+                options.DefaultMessageHandlerAsyncEvent = DefaultMessageHandlerAsyncEvent.SelfSynicMethod;
+
+            });
             #endregion
             app.UseEndpoints(endpoints =>
             {
@@ -124,7 +145,7 @@ namespace SchoolBusWXWeb
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
-          
+
         }
         /// <summary>
         /// 配置微信跟踪日志
