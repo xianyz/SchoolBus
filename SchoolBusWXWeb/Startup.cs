@@ -78,16 +78,16 @@ namespace SchoolBusWXWeb
         {
             #region 控制程序生命周期
             // 发生在应用启动成功以后，也就是Startup.Configure()方法结束后。
-            appLifetime.ApplicationStarted.Register(async () =>
-            {
-                await mQtt.ConnectMqttServerAsync();
-            });
-            // 发生在程序正在完成正常退出的时候，所有请求都被处理完成。程序会在处理完这货的Action委托代码以后退出
-            appLifetime.ApplicationStopped.Register(async () =>
-            {
-                MqttHelper.IsReconnect = false;
-                await MqttHelper.MqttClient.DisconnectAsync();
-            });
+            //appLifetime.ApplicationStarted.Register(async () =>
+            //{
+            //    await mQtt.ConnectMqttServerAsync();
+            //});
+            //// 发生在程序正在完成正常退出的时候，所有请求都被处理完成。程序会在处理完这货的Action委托代码以后退出
+            //appLifetime.ApplicationStopped.Register(async () =>
+            //{
+            //    MqttHelper.IsReconnect = false;
+            //    await MqttHelper.MqttClient.DisconnectAsync();
+            //});
             // 发生在程序正在执行退出的过程中，此时还有请求正在被处理。应用程序也会等到这个事件完成后，再退出。
             //appLifetime.ApplicationStopping.Register(() =>
             //{
